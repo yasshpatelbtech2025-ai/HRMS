@@ -20,7 +20,7 @@
     <nav class="{{ $nested ? 'mb-4' : 'mb-6' }} -mx-1 overflow-x-auto print:hidden" aria-label="{{ $nested ? __('Sub-section') : __('Section') }}">
         <ul class="flex w-max gap-1 rounded-lg p-1 {{ $nested ? 'bg-gray-100' : 'bg-white shadow-sm ring-1 ring-gray-200' }}">
             @foreach ($tabs as $name => $label)
-                @php($active = $name === $activeTab)
+                @php $active = $name === $activeTab; @endphp
                 <li>
                     <a href="{{ route($name) }}" @if ($active) aria-current="page" @endif
                        class="block whitespace-nowrap rounded-md font-medium transition {{ $nested ? 'px-3 py-1.5 text-sm' : 'px-4 py-2 text-sm' }}

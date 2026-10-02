@@ -72,7 +72,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($punches as $punch)
-                            @php($form = 'punch-'.$punch->uuid)
+                            @php $form = 'punch-'.$punch->uuid; @endphp
                             <tr @class(['hover:bg-gray-50', 'bg-amber-50' => $punch->is_missing])>
                                 <td class="px-4 py-2 text-gray-500">{{ $punches->firstItem() + $loop->index }}</td>
                                 <td class="px-4 py-2">{{ $punch->device ?? '--' }}</td>

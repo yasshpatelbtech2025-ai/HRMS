@@ -171,7 +171,7 @@
                             <td class="px-4 py-3"><x-status-badge :active="$employee->status === \App\Enums\EmployeeStatus::Active" /></td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-0.5">
-                                    @php($makeInactive = $employee->status === \App\Enums\EmployeeStatus::Active)
+                                    @php $makeInactive = $employee->status === \App\Enums\EmployeeStatus::Active; @endphp
                                     <form method="POST" action="{{ route('employees.status', $employee) }}">
                                         @csrf
                                         @method('PATCH')

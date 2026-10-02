@@ -73,7 +73,7 @@
         ])->all() ?: [__('Salary structure') => __('Not entered')]])
 
         @foreach (['present' => '4. '.__('Present Address'), 'permanent' => '5. '.__('Permanent Address')] as $type => $title)
-            @php($address = $e->address($type))
+            @php $address = $e->address($type); @endphp
             @include('employees._details-section', ['title' => $title, 'rows' => [
                 __('Address Line 1') => $address?->address_line_1, __('Address Line 2') => $address?->address_line_2, __('Village') => $address?->village,
                 __('District') => $address?->district, __('Taluka') => $address?->taluka, __('State') => $address?->state,
@@ -111,7 +111,7 @@
                 <thead class="text-gray-600"><tr><th class="py-1">{{ __('Qualification') }}</th><th>{{ __('School/College Name') }}</th><th>{{ __('Tenure') }}</th><th>{{ __('Year of Passing') }}</th><th>{{ __('Percentage') }}</th></tr></thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach (config('employee.qualification_levels') as $level => $label)
-                        @php($q = $e->qualifications->firstWhere('level', $level))
+                        @php $q = $e->qualifications->firstWhere('level', $level); @endphp
                         <tr><td class="py-1">{{ $label }}</td><td>{{ $q?->school }}</td><td>{{ $q?->tenure }}</td><td>{{ $q?->passing_year }}</td><td>{{ $q?->percentage }}</td></tr>
                     @endforeach
                 </tbody>
@@ -140,7 +140,7 @@
                 <thead class="text-gray-600"><tr><th class="py-1">{{ __('Relation') }}</th><th>{{ __('Full Name') }}</th><th>{{ __('Date of Birth') }}</th><th>{{ __('Aadhar No') }}</th><th>{{ __('Is Nominee') }}</th></tr></thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach (config('employee.family_relations') as $relation => $label)
-                        @php($m = $e->familyMembers->firstWhere('relation', $relation))
+                        @php $m = $e->familyMembers->firstWhere('relation', $relation); @endphp
                         <tr><td class="py-1">{{ $label }}</td><td>{{ $m?->full_name }}</td><td>{{ $date($m?->date_of_birth) }}</td><td>{{ $masked($m?->aadhar_card_no) }}</td><td>{{ $m ? $yesNo($m->is_nominee) : '' }}</td></tr>
                     @endforeach
                 </tbody>
@@ -148,7 +148,7 @@
         </section>
 
         @foreach (['nominee_current' => '11(a). '.__('Nominee Present Address'), 'nominee_permanent' => '11(b). '.__('Nominee Permanent Address')] as $type => $title)
-            @php($address = $e->address($type))
+            @php $address = $e->address($type); @endphp
             @include('employees._details-section', ['title' => $title, 'rows' => [
                 __('Address Line 1') => $address?->address_line_1, __('Address Line 2') => $address?->address_line_2, __('Village') => $address?->village,
                 __('District') => $address?->district, __('Taluka') => $address?->taluka, __('State') => $address?->state,

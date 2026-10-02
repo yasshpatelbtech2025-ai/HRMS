@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Attendance\CompanyHolidayController;
+use App\Http\Controllers\Attendance\EmployeeReportController;
 use App\Http\Controllers\Attendance\HolidayController;
 use App\Http\Controllers\Attendance\LeaveTypeController;
+use App\Http\Controllers\Attendance\MissingPunchController;
+use App\Http\Controllers\Attendance\MonthlyAttendanceController;
 use App\Http\Controllers\Attendance\RawDataController;
 use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
@@ -80,6 +83,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('letters/{letter}', 'letter')->name('employees.letter');
         });
     });
+
+    Route::controller(MonthlyAttendanceController::class)->prefix('attendance')->group(function () {
+        Route::get('/', 'index')->name('attendance.index');
+        Route::post('monthly/time', 'setTime')->name('attendance.monthly.time');
+        Route::post('monthly/leave', 'setLeave')->name('attendance.monthly.leave');
+        Route::post('monthly/coff', 'useCompOff')->name('attendance.monthly.coff');
+        Route::post('monthly/reset', 'reset')->name('attendance.monthly.reset');
+    });
+    Route::get('attendance/missing-punch', [MissingPunchController::class, 'index'])->name('attendance.missing-punch');
+    Route::get('attendance/employee-report', [EmployeeReportController::class, 'index'])->name('attendance.employee-report');
 
     Route::controller(RawDataController::class)->prefix('attendance/raw-data')->group(function () {
         Route::get('/', 'index')->name('attendance.raw-data');

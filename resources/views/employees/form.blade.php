@@ -319,7 +319,7 @@
         <x-form-section :title="__('Family Detail')" :fields="['family', 'addresses.nominee_permanent', 'addresses.nominee_current']">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 @foreach (config('employee.family_relations') as $relation => $label)
-                    @php($member = $family($relation))
+                    @php $member = $family($relation); @endphp
                     <fieldset class="rounded-md border border-gray-200 p-4">
                         <legend class="px-1 text-sm font-semibold text-gray-900">{{ __(':relation detail', ['relation' => $label]) }}</legend>
                         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
