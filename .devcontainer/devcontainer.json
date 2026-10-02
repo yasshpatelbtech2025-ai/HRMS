@@ -1,5 +1,10 @@
 {
   "name": "HRMS",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "postCreateCommand": "bash .devcontainer/install-php-pgsql.sh"
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": "pgrep -f '[a]rtisan serve' >/dev/null || nohup php artisan serve --host=0.0.0.0 --port=8000 >/tmp/serve.log 2>&1 &",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "HRMS", "onAutoForward": "openBrowser" }
+  }
 }
