@@ -60,7 +60,35 @@ return [
             'report' => false,
         ],
 
+        // Supabase Storage through its S3-compatible endpoint. Use a private
+        // bucket; files are only ever served through the app.
+        'supabase' => [
+            'driver' => 's3',
+            'key' => env('SUPABASE_STORAGE_KEY'),
+            'secret' => env('SUPABASE_STORAGE_SECRET'),
+            'region' => env('SUPABASE_STORAGE_REGION', 'ap-northeast-1'),
+            'bucket' => env('SUPABASE_STORAGE_BUCKET', 'employee-files'),
+            'endpoint' => env('SUPABASE_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'private',
+            'throw' => true,
+            'report' => false,
+        ],
+
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee Files Disk
+    |--------------------------------------------------------------------------
+    |
+    | Where employee photos and document scans (Aadhaar, PAN, passbook) are
+    | kept: "supabase" in production, "local" (storage/app/private) until the
+    | Supabase Storage keys are set.
+    |
+    */
+
+    'employee_files' => env('EMPLOYEE_FILES_DISK', 'local'),
 
     /*
     |--------------------------------------------------------------------------

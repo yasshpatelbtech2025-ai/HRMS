@@ -4,18 +4,18 @@ namespace App\Enums;
 
 enum EmploymentType: string
 {
-    case FullTime = 'full_time';
-    case PartTime = 'part_time';
-    case Contract = 'contract';
     case Intern = 'intern';
+    case Contractual = 'contractual';
+    case FullTime = 'full_time';
+    case Remote = 'remote';
 
     public function label(): string
     {
         return match ($this) {
-            self::FullTime => 'Full-time',
-            self::PartTime => 'Part-time',
-            self::Contract => 'Contract',
             self::Intern => 'Intern',
+            self::Contractual => 'Contractual',
+            self::FullTime => 'Full Time',
+            self::Remote => 'Remote',
         };
     }
 }

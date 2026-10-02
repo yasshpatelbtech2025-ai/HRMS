@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -72,5 +73,23 @@ class Company extends Model
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
+    }
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class);
+    }
+
+    public function shifts(): HasMany
+    {
+        return $this->hasMany(Shift::class);
+    }
+
+    /**
+     * Name shown in pickers and lists, e.g. "PI Industry [Srympex]".
+     */
+    protected function label(): Attribute
+    {
+        return Attribute::get(fn () => $this->parent ? "{$this->establishment_name} [{$this->parent->establishment_name}]" : $this->establishment_name);
     }
 }

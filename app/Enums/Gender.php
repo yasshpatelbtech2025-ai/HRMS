@@ -6,7 +6,7 @@ enum Gender: string
 {
     case Male = 'male';
     case Female = 'female';
-    case Other = 'other';
+    case Transgender = 'transgender';
 
     public function label(): string
     {

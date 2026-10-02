@@ -14,27 +14,29 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class EmployeeFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
             'company_id' => Company::factory(),
-            'employee_code' => 'EMP'.fake()->unique()->numerify('####'),
+            'employee_code' => fake()->unique()->numerify('####'),
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->phoneNumber(),
+            'phone' => fake()->numerify('9#########'),
             'gender' => fake()->randomElement(Gender::cases()),
             'date_of_birth' => fake()->dateTimeBetween('-55 years', '-20 years'),
             'date_of_joining' => fake()->dateTimeBetween('-5 years'),
-            'designation' => fake()->jobTitle(),
             'employment_type' => EmploymentType::FullTime,
             'status' => EmployeeStatus::Active,
-            'address' => fake()->address(),
+            'pay_frequency' => 'monthly',
+            'daily_hour' => 8,
+            'monthly_salary_calculation' => 'calendar_month',
+            'weekly_leave_day' => 'sunday',
         ];
+    }
+
+    public function separated(?string $on = null): static
+    {
+        return $this->state(['separation_date' => $on ?? today()->subDay()->toDateString()]);
     }
 }

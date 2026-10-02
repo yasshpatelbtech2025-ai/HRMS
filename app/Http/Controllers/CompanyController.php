@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use App\Support\TableExport;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,7 +14,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CompanyController extends Controller
 {
-    public const PER_PAGE = [10, 25, 50, 100];
+    use ListsRecords;
 
     /**
      * Offered in the State dropdown alongside any state already in use.
@@ -29,7 +31,7 @@ class CompanyController extends Controller
 
     public function index(Request $request): View
     {
-        $perPage = in_array($request->integer('per_page'), self::PER_PAGE) ? $request->integer('per_page') : self::PER_PAGE[0];
+        $perPage = $this->perPage($request);
 
         $companies = $this->filtered($request)->paginate($perPage)->withQueryString();
 
@@ -76,19 +78,13 @@ class CompanyController extends Controller
     {
         $companies = $this->filtered($request)->get();
 
-        return response()->streamDownload(function () use ($companies) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['Sl', 'Establishment Name', 'Organization size', 'Connected company', 'Address Line 1', 'Address Line 2', 'Village', 'State', 'District', 'Taluka']);
-
-            foreach ($companies as $i => $company) {
-                fputcsv($out, [
-                    $i + 1, $company->establishment_name, $company->employees_count, $company->parent?->establishment_name,
-                    $company->address_line_1, $company->address_line_2, $company->village, $company->state, $company->district, $company->taluka,
-                ]);
-            }
-
-            fclose($out);
-        }, 'companies.csv', ['Content-Type' => 'text/csv']);
+        return TableExport::download('csv', 'companies',
+            ['Sl', 'Establishment Name', 'Organization size', 'Connected company', 'Address Line 1', 'Address Line 2', 'Village', 'State', 'District', 'Taluka'],
+            $companies->map(fn (Company $company, int $i) => [
+                $i + 1, $company->establishment_name, $company->employees_count, $company->parent?->establishment_name,
+                $company->address_line_1, $company->address_line_2, $company->village, $company->state, $company->district, $company->taluka,
+            ]),
+        );
     }
 
     /**
@@ -101,12 +97,7 @@ class CompanyController extends Controller
 
         return Company::with('parent')
             ->withCount('employees')
-            ->when($request->filled('search'), function (Builder $query) use ($request) {
-                $like = '%'.str_replace(['%', '_'], ['\%', '\_'], mb_strtolower(trim($request->query('search')))).'%';
-                $query->where(fn (Builder $q) => $q
-                    ->whereRaw('lower(establishment_name) like ?', [$like])
-                    ->orWhereHas('parent', fn (Builder $p) => $p->whereRaw('lower(establishment_name) like ?', [$like])));
-            })
+            ->tap(fn (Builder $query) => $this->search($query, $request, ['establishment_name', 'parent.establishment_name']))
             ->when(
                 $request->query('sort') === 'size',
                 fn (Builder $q) => $q->orderBy('employees_count', $direction)->orderBy('establishment_name'),
