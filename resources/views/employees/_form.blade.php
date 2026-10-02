@@ -54,6 +54,36 @@
     <section class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
         <h3 class="text-base font-semibold text-gray-900">{{ __('Employment') }}</h3>
         <div class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {{-- The department list follows the chosen company. --}}
+            <div class="contents"
+                 x-data="{ companyId: @js((string) $field('company_id')), departmentId: @js((string) $field('department_id')), departments: @js($companies->mapWithKeys(fn ($c) => [$c->id => $c->departments->map->only('id', 'name')])) }">
+                <div>
+                    <x-input-label for="company_id" :value="__('Company')" />
+                    <select id="company_id" name="company_id" class="{{ $select }}" x-model="companyId" @change="departmentId = ''" required>
+                        <option value="">{{ __('Select a company') }}</option>
+                        @foreach ($companies as $company)
+                            <option value="{{ $company->id }}" @selected((string) $field('company_id') === (string) $company->id)>{{ $company->establishment_name }}</option>
+                        @endforeach
+                    </select>
+                    @if ($companies->isEmpty())
+                        <p class="mt-2 text-sm text-gray-500">{!! __('No companies yet. :link first.', ['link' => '<a href="'.route('company.create').'" class="font-medium text-brand-700 hover:text-brand-600">'.e(__('Add a company')).'</a>']) !!}</p>
+                    @endif
+                    <x-input-error class="mt-2" :messages="$errors->get('company_id')" />
+                </div>
+                <div>
+                    <x-input-label for="department_id" :value="__('Department')" />
+                    <select id="department_id" name="department_id" class="{{ $select }}" x-model="departmentId" :disabled="!companyId">
+                        <option value="">{{ __('No department') }}</option>
+                        <template x-for="department in departments[companyId] ?? []" :key="department.id">
+                            <option :value="String(department.id)" x-text="department.name" :selected="String(department.id) === departmentId"></option>
+                        </template>
+                    </select>
+                    <p class="mt-2 text-sm text-gray-500" x-show="companyId && !(departments[companyId] ?? []).length" style="display: none;">
+                        {{ __('This company has no departments yet. Add them from the company\'s edit page.') }}
+                    </p>
+                    <x-input-error class="mt-2" :messages="$errors->get('department_id')" />
+                </div>
+            </div>
             <div>
                 <x-input-label for="employee_code" :value="__('Employee code')" />
                 <x-text-input id="employee_code" name="employee_code" type="text" class="mt-1 block w-full" :value="$field('employee_code')" required />
@@ -63,11 +93,6 @@
                 <x-input-label for="date_of_joining" :value="__('Date of joining')" />
                 <x-text-input id="date_of_joining" name="date_of_joining" type="date" class="mt-1 block w-full" :value="$date('date_of_joining')" required />
                 <x-input-error class="mt-2" :messages="$errors->get('date_of_joining')" />
-            </div>
-            <div>
-                <x-input-label for="department" :value="__('Department')" />
-                <x-text-input id="department" name="department" type="text" class="mt-1 block w-full" :value="$field('department')" />
-                <x-input-error class="mt-2" :messages="$errors->get('department')" />
             </div>
             <div>
                 <x-input-label for="designation" :value="__('Designation')" />

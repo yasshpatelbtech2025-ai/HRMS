@@ -10,7 +10,8 @@
         __('Employment') => [
             __('Employee code') => $employee->employee_code,
             __('Date of joining') => $employee->date_of_joining->format('d M Y'),
-            __('Department') => $employee->department,
+            __('Company') => $employee->company?->establishment_name,
+            __('Department') => $employee->department?->name,
             __('Designation') => $employee->designation,
             __('Employment type') => __($employee->employment_type->label()),
         ],
@@ -28,7 +29,7 @@
                 </span>
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900">{{ $employee->full_name }}</h2>
-                    <p class="text-sm text-gray-500">{{ collect([$employee->designation, $employee->department])->filter()->implode(' · ') ?: $employee->employee_code }}</p>
+                    <p class="text-sm text-gray-500">{{ collect([$employee->designation, $employee->department?->name, $employee->company?->establishment_name])->filter()->implode(' · ') ?: $employee->employee_code }}</p>
                     <span class="mt-1 inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $employee->status->badgeClasses() }}">{{ __($employee->status->label()) }}</span>
                 </div>
             </div>

@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'employee_code', 'first_name', 'last_name', 'email', 'phone', 'gender', 'date_of_birth',
-    'date_of_joining', 'department', 'designation', 'employment_type', 'status', 'address',
+    'company_id', 'department_id', 'employee_code', 'first_name', 'last_name', 'email', 'phone', 'gender',
+    'date_of_birth', 'date_of_joining', 'designation', 'employment_type', 'status', 'address',
 ])]
 class Employee extends Model
 {
@@ -36,6 +37,16 @@ class Employee extends Model
             'employment_type' => EmploymentType::class,
             'status' => EmployeeStatus::class,
         ];
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class)->withTrashed();
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
     protected function fullName(): Attribute

@@ -14,10 +14,20 @@
                         <option value="{{ $status->value }}" @selected(($filters['status'] ?? '') === $status->value)>{{ __($status->label()) }}</option>
                     @endforeach
                 </select>
-                <select name="department" aria-label="{{ __('Department') }}" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <select name="company_id" aria-label="{{ __('Company') }}" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">{{ __('All companies') }}</option>
+                    @foreach ($companies as $company)
+                        <option value="{{ $company->id }}" @selected(($filters['company_id'] ?? '') == $company->id)>{{ $company->establishment_name }}</option>
+                    @endforeach
+                </select>
+                <select name="department_id" aria-label="{{ __('Department') }}" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">{{ __('All departments') }}</option>
-                    @foreach ($departments as $department)
-                        <option value="{{ $department }}" @selected(($filters['department'] ?? '') === $department)>{{ $department }}</option>
+                    @foreach ($companies->filter(fn ($c) => $c->departments->isNotEmpty()) as $company)
+                        <optgroup label="{{ $company->establishment_name }}">
+                            @foreach ($company->departments as $department)
+                                <option value="{{ $department->id }}" @selected(($filters['department_id'] ?? '') == $department->id)>{{ $department->name }}</option>
+                            @endforeach
+                        </optgroup>
                     @endforeach
                 </select>
                 <x-secondary-button type="submit">{{ __('Filter') }}</x-secondary-button>
@@ -40,7 +50,7 @@
                             <tr>
                                 <th scope="col" class="px-4 py-3">{{ __('Employee') }}</th>
                                 <th scope="col" class="px-4 py-3">{{ __('Code') }}</th>
-                                <th scope="col" class="px-4 py-3">{{ __('Department') }}</th>
+                                <th scope="col" class="px-4 py-3">{{ __('Company / department') }}</th>
                                 <th scope="col" class="px-4 py-3">{{ __('Designation') }}</th>
                                 <th scope="col" class="px-4 py-3">{{ __('Joined') }}</th>
                                 <th scope="col" class="px-4 py-3">{{ __('Status') }}</th>
@@ -54,7 +64,10 @@
                                         <div class="text-gray-500">{{ $employee->email }}</div>
                                     </td>
                                     <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $employee->employee_code }}</td>
-                                    <td class="px-4 py-3 text-gray-700">{{ $employee->department ?? '—' }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-gray-900">{{ $employee->company?->establishment_name ?? '—' }}</div>
+                                        <div class="text-gray-500">{{ $employee->department?->name ?? __('No department') }}</div>
+                                    </td>
                                     <td class="px-4 py-3 text-gray-700">{{ $employee->designation ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $employee->date_of_joining->format('d M Y') }}</td>
                                     <td class="px-4 py-3">

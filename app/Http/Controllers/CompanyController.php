@@ -38,7 +38,7 @@ class CompanyController extends Controller
     public function edit(Company $company): View
     {
         return view('companies.edit', [
-            'company' => $company,
+            'company' => $company->load('departments')->loadCount('employees'),
             'parents' => Company::whereKeyNot($company->id)->orderBy('establishment_name')->get(['id', 'establishment_name']),
         ]);
     }
@@ -54,6 +54,10 @@ class CompanyController extends Controller
     {
         if ($company->children()->exists()) {
             return back()->with('error', __('This company has connected companies. Reassign or delete them first.'));
+        }
+
+        if ($company->employees()->exists()) {
+            return back()->with('error', __('This company has employees. Move or remove them first.'));
         }
 
         $company->delete();

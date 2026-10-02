@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Company;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -11,16 +13,24 @@ class EmployeeTest extends TestCase
 {
     use RefreshDatabase;
 
+    private Company $company;
+
+    private Department $department;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->actingAs(User::factory()->create());
+        $this->company = Company::factory()->create(['establishment_name' => 'Acme Textiles']);
+        $this->department = Department::factory()->for($this->company)->create(['name' => 'Finance']);
     }
 
     private function payload(array $overrides = []): array
     {
         return array_merge([
+            'company_id' => $this->company->id,
+            'department_id' => $this->department->id,
             'employee_code' => 'EMP0100',
             'first_name' => 'Asha',
             'last_name' => 'Mehta',
@@ -29,7 +39,6 @@ class EmployeeTest extends TestCase
             'gender' => 'female',
             'date_of_birth' => '1994-05-12',
             'date_of_joining' => '2026-09-01',
-            'department' => 'Finance',
             'designation' => 'Accountant',
             'employment_type' => 'full_time',
             'status' => 'active',
@@ -55,14 +64,16 @@ class EmployeeTest extends TestCase
         $this->get(route('employees.index'))->assertOk()->assertSeeText($employee->full_name);
     }
 
-    public function test_index_filters_by_search_status_and_department(): void
+    public function test_index_filters_by_search_status_company_and_department(): void
     {
-        Employee::factory()->create(['first_name' => 'Ravi', 'department' => 'Sales', 'status' => 'active']);
-        Employee::factory()->create(['first_name' => 'Neha', 'department' => 'HR', 'status' => 'inactive']);
+        $other = Company::factory()->create();
+        Employee::factory()->for($this->company)->for($this->department)->create(['first_name' => 'Ravi', 'status' => 'active']);
+        Employee::factory()->for($other)->create(['first_name' => 'Neha', 'status' => 'inactive']);
 
         $this->get(route('employees.index', ['search' => 'rav']))->assertSeeText('Ravi')->assertDontSeeText('Neha');
         $this->get(route('employees.index', ['status' => 'inactive']))->assertSeeText('Neha')->assertDontSeeText('Ravi');
-        $this->get(route('employees.index', ['department' => 'Sales']))->assertSeeText('Ravi')->assertDontSeeText('Neha');
+        $this->get(route('employees.index', ['company_id' => $other->id]))->assertSeeText('Neha')->assertDontSeeText('Ravi');
+        $this->get(route('employees.index', ['department_id' => $this->department->id]))->assertSeeText('Ravi')->assertDontSeeText('Neha');
     }
 
     public function test_create_form_suggests_next_code(): void
@@ -79,6 +90,31 @@ class EmployeeTest extends TestCase
         $this->assertSame('asha@example.com', $employee->email);
         $this->assertSame('EMP0100', $employee->employee_code);
         $this->assertSame('2026-09-01', $employee->date_of_joining->toDateString());
+        $this->assertTrue($employee->company->is($this->company));
+        $this->assertTrue($employee->department->is($this->department));
+    }
+
+    public function test_company_is_required_and_department_must_belong_to_it(): void
+    {
+        $foreign = Department::factory()->create();
+
+        $this->post(route('employees.store'), $this->payload(['company_id' => '']))->assertSessionHasErrors('company_id');
+        $this->post(route('employees.store'), $this->payload(['department_id' => $foreign->id]))->assertSessionHasErrors('department_id');
+        $this->post(route('employees.store'), $this->payload(['department_id' => '']))->assertSessionHasNoErrors();
+
+        $this->assertNull(Employee::sole()->department_id);
+    }
+
+    public function test_archived_companies_cannot_be_chosen(): void
+    {
+        $this->company->delete();
+
+        $this->post(route('employees.store'), $this->payload(['department_id' => '']))->assertSessionHasErrors('company_id');
+    }
+
+    public function test_form_offers_companies_and_their_departments(): void
+    {
+        $this->get(route('employees.create'))->assertOk()->assertSeeText('Acme Textiles')->assertSee('Finance');
     }
 
     public function test_store_validates_required_and_unique_fields(): void
@@ -99,7 +135,7 @@ class EmployeeTest extends TestCase
     {
         $employee = Employee::factory()->create();
 
-        $this->get(route('employees.show', $employee))->assertOk()->assertSeeText($employee->employee_code);
+        $this->get(route('employees.show', $employee))->assertOk()->assertSeeText($employee->employee_code)->assertSeeText($employee->company->establishment_name);
         $this->get(route('employees.edit', $employee))->assertOk()->assertSee('value="'.$employee->email.'"', false);
     }
 

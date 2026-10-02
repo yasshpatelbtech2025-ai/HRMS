@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\EmployeeStatus;
 use App\Http\Requests\EmployeeRequest;
+use App\Models\Company;
 use App\Models\Employee;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,13 +19,15 @@ class EmployeeController extends Controller
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
             'status' => ['nullable', Rule::enum(EmployeeStatus::class)],
-            'department' => ['nullable', 'string', 'max:100'],
+            'company_id' => ['nullable', 'integer'],
+            'department_id' => ['nullable', 'integer'],
         ]);
 
-        $employees = Employee::query()
+        $employees = Employee::with(['company', 'department'])
             ->search($filters['search'] ?? null)
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
-            ->when($filters['department'] ?? null, fn ($q, $department) => $q->where('department', $department))
+            ->when($filters['company_id'] ?? null, fn ($q, $id) => $q->where('company_id', $id))
+            ->when($filters['department_id'] ?? null, fn ($q, $id) => $q->where('department_id', $id))
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->paginate(15)
@@ -32,7 +36,7 @@ class EmployeeController extends Controller
         return view('employees.index', [
             'employees' => $employees,
             'filters' => $filters,
-            'departments' => Employee::whereNotNull('department')->distinct()->orderBy('department')->pluck('department'),
+            'companies' => $this->companiesWithDepartments(),
         ]);
     }
 
@@ -43,6 +47,7 @@ class EmployeeController extends Controller
                 'employee_code' => Employee::nextCode(),
                 'date_of_joining' => today(),
             ]),
+            'companies' => $this->companiesWithDepartments(),
         ]);
     }
 
@@ -55,12 +60,15 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee): View
     {
-        return view('employees.show', ['employee' => $employee]);
+        return view('employees.show', ['employee' => $employee->load(['company', 'department'])]);
     }
 
     public function edit(Employee $employee): View
     {
-        return view('employees.edit', ['employee' => $employee]);
+        return view('employees.edit', [
+            'employee' => $employee,
+            'companies' => $this->companiesWithDepartments(),
+        ]);
     }
 
     public function update(EmployeeRequest $request, Employee $employee): RedirectResponse
@@ -75,5 +83,13 @@ class EmployeeController extends Controller
         $employee->delete();
 
         return redirect()->route('employees.index')->with('status', __('Employee removed.'));
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    private function companiesWithDepartments(): Collection
+    {
+        return Company::with('departments:id,company_id,name')->orderBy('establishment_name')->get(['id', 'establishment_name']);
     }
 }

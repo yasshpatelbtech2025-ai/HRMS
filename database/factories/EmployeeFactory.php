@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\EmployeeStatus;
 use App\Enums\EmploymentType;
 use App\Enums\Gender;
+use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,6 +22,7 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => Company::factory(),
             'employee_code' => 'EMP'.fake()->unique()->numerify('####'),
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
@@ -29,7 +31,6 @@ class EmployeeFactory extends Factory
             'gender' => fake()->randomElement(Gender::cases()),
             'date_of_birth' => fake()->dateTimeBetween('-55 years', '-20 years'),
             'date_of_joining' => fake()->dateTimeBetween('-5 years'),
-            'department' => fake()->randomElement(['Engineering', 'Finance', 'HR', 'Operations', 'Sales']),
             'designation' => fake()->jobTitle(),
             'employment_type' => EmploymentType::FullTime,
             'status' => EmployeeStatus::Active,
