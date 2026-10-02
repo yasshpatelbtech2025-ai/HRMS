@@ -12,7 +12,19 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Funnel Display', 'Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                brand: {
+                    50: '#f6f3ff',
+                    100: '#ede8ff',
+                    200: '#ddd4ff',
+                    300: '#c3b4ff',
+                    400: '#a68cff',
+                    500: '#8a66f7',
+                    600: '#7448ea',
+                    700: '#6038cb',
+                },
             },
         },
     },

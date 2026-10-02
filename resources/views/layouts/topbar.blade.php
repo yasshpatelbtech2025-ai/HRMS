@@ -2,7 +2,7 @@
     <div class="flex items-center gap-3">
         <!-- Mobile sidebar toggle -->
         <button type="button" @click="sidebarOpen = true"
-                class="lg:hidden -ms-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                class="lg:hidden -ms-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500">
             <span class="sr-only">{{ __('Open sidebar') }}</span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
@@ -16,7 +16,7 @@
     <x-dropdown align="right" width="48">
         <x-slot name="trigger">
             <button class="inline-flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 focus:outline-none transition">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-white text-sm font-semibold">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white text-sm font-semibold">
                     {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                 </span>
                 <span class="hidden sm:block">{{ Auth::user()->name }}</span>
