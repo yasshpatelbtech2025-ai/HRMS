@@ -29,6 +29,8 @@ class EmployeeTest extends TestCase
 
     private Position $position;
 
+    private Shift $shift;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -39,6 +41,7 @@ class EmployeeTest extends TestCase
         $this->department = Department::factory()->for($this->company)->create(['name' => 'Utilities']);
         $this->subDepartment = SubDepartment::factory()->for($this->department)->create(['company_id' => $this->company->id, 'name' => 'Boiler']);
         $this->position = Position::factory()->for($this->company)->create(['name' => 'Operator']);
+        $this->shift = Shift::factory()->for($this->company)->rotational()->create();
     }
 
     /**
@@ -50,7 +53,7 @@ class EmployeeTest extends TestCase
             'first_name' => 'Firoz', 'middle_name' => 'Mohammed', 'last_name' => 'Shafi',
             'gender' => 'male', 'email' => 'firoz@example.com', 'phone' => '9516865130',
             'date_of_birth' => '2001-04-26', 'marital_status' => 'single', 'country' => 'India',
-            'company_id' => $this->company->id, 'shift' => 'Rotational Shift', 'date_of_joining' => '2026-07-01',
+            'company_id' => $this->company->id, 'shift_id' => $this->shift->id, 'date_of_joining' => '2026-07-01',
             'works_on_hazardous_process' => '1', 'can_punch_in_hybrid_mode' => '0',
             'department_id' => $this->department->id, 'sub_department_id' => $this->subDepartment->id,
             'position_id' => $this->position->id, 'working_place' => 'near_running_machinery', 'employment_type' => 'full_time',
@@ -97,8 +100,7 @@ class EmployeeTest extends TestCase
         $employee = Employee::sole();
         $this->assertSame('0001', $employee->employee_code);
         $this->assertSame('Firoz Mohammed Shafi', $employee->full_name);
-        $this->assertSame('Rotational Shift', $employee->shift->name);
-        $this->assertSame($this->company->id, $employee->shift->company_id);
+        $this->assertTrue($employee->shift->is($this->shift));
         $this->assertTrue($employee->works_on_hazardous_process);
         $this->assertSame('ABCDE1234F', $employee->pan_card_no);
         $this->assertSame('SBIN0001234', $employee->ifsc_code);
@@ -140,18 +142,18 @@ class EmployeeTest extends TestCase
             'email' => 'third@example.com', 'company_id' => $other->id, 'department_id' => $department->id,
             'sub_department_id' => SubDepartment::factory()->for($department)->create(['company_id' => $other->id])->id,
             'position_id' => Position::factory()->for($other)->create()->id,
+            'shift_id' => Shift::factory()->for($other)->create()->id,
         ]))->assertSessionHasNoErrors();
 
         $this->assertSame(['0001', '0002'], Employee::where('company_id', $this->company->id)->orderBy('id')->pluck('employee_code')->all());
         $this->assertSame('0001', Employee::where('company_id', $other->id)->value('employee_code'));
-        $this->assertSame(2, Shift::count(), 'Each company gets its own shift');
     }
 
     public function test_required_fields_and_company_scoped_choices_are_validated(): void
     {
         $this->post(route('employees.store'), [])->assertSessionHasErrors([
-            'first_name', 'last_name', 'gender', 'email', 'phone', 'date_of_birth', 'company_id', 'shift', 'date_of_joining',
-            'department_id', 'sub_department_id', 'position_id', 'working_place', 'pay_frequency', 'daily_hour',
+            'first_name', 'last_name', 'gender', 'email', 'phone', 'date_of_birth', 'company_id', 'shift_id', 'date_of_joining',
+            'department_id', 'sub_department_id', 'position_id', 'shift_id', 'working_place', 'pay_frequency', 'daily_hour',
             'monthly_salary_calculation', 'weekly_leave_day',
         ]);
 
@@ -159,9 +161,10 @@ class EmployeeTest extends TestCase
         $this->post(route('employees.store'), $this->payload([
             'department_id' => $otherDepartment->id,
             'position_id' => Position::factory()->create()->id,
+            'shift_id' => Shift::factory()->create()->id,
             'pan_card_no' => 'NOT-A-PAN',
             'salary' => ['basic' => ['monthly' => '']],
-        ]))->assertSessionHasErrors(['department_id', 'sub_department_id', 'position_id', 'pan_card_no', 'salary.basic.monthly']);
+        ]))->assertSessionHasErrors(['department_id', 'sub_department_id', 'position_id', 'shift_id', 'pan_card_no', 'salary.basic.monthly']);
 
         $this->post(route('employees.store'), $this->payload(['pay_frequency' => 'daily', 'salary' => ['basic' => ['monthly' => '']]]))
             ->assertSessionHasErrors('daily_rate')->assertSessionDoesntHaveErrors('salary.basic.monthly');
@@ -333,7 +336,7 @@ class EmployeeTest extends TestCase
         $row = fn (array $values) => implode(',', array_map(fn ($h) => $values[$h] ?? '', $headings));
         $good = [
             'First Name *' => 'Ravi', 'Last Name *' => 'Thakor', 'Gender *' => 'Male', 'Email *' => 'ravi@example.com', 'Phone *' => '9000000001',
-            'Date of Birth * (YYYY-MM-DD)' => '1999-01-01', 'Shift *' => 'General', 'Joining Date * (YYYY-MM-DD)' => '2026-01-01',
+            'Date of Birth * (YYYY-MM-DD)' => '1999-01-01', 'Shift *' => 'rotational shift', 'Joining Date * (YYYY-MM-DD)' => '2026-01-01',
             'Working on hazardous process * (Yes/No)' => 'No', 'Can Punch In Hybrid Mode * (Yes/No)' => 'Yes',
             'Department *' => 'utilities', 'Sub Department *' => 'Boiler', 'Designation *' => 'Operator',
             'Working Place *' => 'Worker operates automated equipment only', 'Employee Type *' => 'Full Time',

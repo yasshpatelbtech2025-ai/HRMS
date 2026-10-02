@@ -4,7 +4,6 @@ namespace App\Actions;
 
 use App\Models\Company;
 use App\Models\Employee;
-use App\Models\Shift;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -43,9 +42,8 @@ class SaveEmployee
             Company::whereKey($companyId)->lockForUpdate()->first();
 
             $employee->fill(Arr::except($data, [
-                'shift', 'addresses', 'qualifications', 'experiences', 'family', 'salary', 'photo_data', ...array_keys(self::FILES),
+                'addresses', 'qualifications', 'experiences', 'family', 'salary', 'photo_data', ...array_keys(self::FILES),
             ]));
-            $employee->shift_id = $this->shift($companyId, $data['shift'])->id;
 
             if (! $employee->exists || $employee->isDirty('company_id')) {
                 $employee->employee_code = Employee::nextCodeFor($companyId);
@@ -77,17 +75,6 @@ class SaveEmployee
         }
 
         return $employee->refresh();
-    }
-
-    /**
-     * The company's shift with this name, created if it doesn't exist yet.
-     */
-    private function shift(int $companyId, string $name): Shift
-    {
-        $name = trim($name);
-
-        return Shift::where('company_id', $companyId)->whereRaw('lower(name) = ?', [mb_strtolower($name)])->first()
-            ?? Shift::create(['company_id' => $companyId, 'name' => $name]);
     }
 
     private function store(Employee $employee, string $field, UploadedFile|string $file): string

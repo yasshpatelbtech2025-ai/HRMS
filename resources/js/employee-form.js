@@ -40,6 +40,7 @@ export function employeeForm(config) {
             if (!this.departments.some((d) => String(d.id) === String(this.department))) this.department = '';
             if (!this.positions.some((p) => String(p.id) === String(this.position))) this.position = '';
             if (!this.officers.some((o) => String(o.id) === String(this.officer))) this.officer = '';
+            if (!this.shifts.some((s) => String(s.id) === String(this.shift))) this.shift = '';
             this.departmentChanged();
         },
         departmentChanged() {

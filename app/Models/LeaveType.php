@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+#[Fillable(['company_id', 'name', 'code', 'days', 'is_paid'])]
+class LeaveType extends Model
+{
+    use HasFactory, HasUuids;
+
+    protected function casts(): array
+    {
+        return ['days' => 'decimal:1', 'is_paid' => 'boolean'];
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class)->withTrashed();
+    }
+}

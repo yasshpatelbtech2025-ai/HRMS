@@ -27,7 +27,7 @@
             'subDepartment' => (string) old('sub_department_id', $e->sub_department_id ?? ''),
             'position' => (string) old('position_id', $e->position_id ?? ''),
             'officer' => (string) old('reporting_officer_id', $e->reporting_officer_id ?? ''),
-            'shift' => old('shift', $e->shift?->name ?? ''),
+            'shift' => (string) old('shift_id', $e->shift_id ?? ''),
             'payFrequency' => old('pay_frequency', $e->pay_frequency ?? 'monthly'),
             'hourlyRate' => old('hourly_rate', $e->hourly_rate ?? ''),
             'dailyRate' => old('daily_rate', $e->daily_rate ?? ''),
@@ -98,20 +98,16 @@
         </x-form-section>
 
         {{-- 2. Employee details --}}
-        <x-form-section :title="__('Employee Details')" required :open="! $editing" :fields="['company_id', 'shift', 'date_of_joining', 'works_on_hazardous_process', 'can_punch_in_hybrid_mode', 'department_id', 'sub_department_id', 'position_id', 'working_place', 'employment_type', 'reporting_officer_id']">
+        <x-form-section :title="__('Employee Details')" required :open="! $editing" :fields="['company_id', 'shift_id', 'date_of_joining', 'works_on_hazardous_process', 'can_punch_in_hybrid_mode', 'department_id', 'sub_department_id', 'position_id', 'working_place', 'employment_type', 'reporting_officer_id']">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <x-select-field name="company_id" :label="__('Company')" required :placeholder="__('Select company')" x-model="company" x-on:change="companyChanged()">
                     @foreach ($companies as $company)
                         <option value="{{ $company->id }}">{{ $company->label }}</option>
                     @endforeach
                 </x-select-field>
-                <div>
-                    <x-field name="shift" :label="__('Shift')" required list="employee-shifts" x-model="shift" autocomplete="off"
-                             :hint="__('Pick one of the company\'s shifts or type a new one.')" />
-                    <datalist id="employee-shifts">
-                        <template x-for="s in shifts" :key="s.name"><option :value="s.name"></option></template>
-                    </datalist>
-                </div>
+                <x-select-field name="shift_id" :label="__('Shift')" required :placeholder="__('Select shift')" x-model="shift" x-bind:disabled="! company">
+                    <template x-for="s in shifts" :key="s.id"><option :value="s.id" x-text="s.name" :selected="String(s.id) === String(shift)"></option></template>
+                </x-select-field>
                 <x-field name="date_of_joining" type="date" :label="__('Joining Date')" required :value="$e->date_of_joining" />
                 <x-select-field name="works_on_hazardous_process" :label="__('Working on hazardous process')" required :value="$e->works_on_hazardous_process ?? false" :options="$yesNo" />
                 <x-select-field name="can_punch_in_hybrid_mode" :label="__('Can Punch In Hybrid Mode')" required :value="$e->can_punch_in_hybrid_mode ?? false" :options="$yesNo" />
@@ -133,6 +129,9 @@
             </div>
             <p class="mt-3 text-xs text-gray-500" x-show="company && ! departments.length">
                 {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-indigo-600 hover:underline">{{ __('Add them in the Department tab.') }}</a>
+            </p>
+            <p class="mt-1 text-xs text-gray-500" x-show="company && ! shifts.length">
+                {{ __('This company has no shifts yet.') }} <a href="{{ route('configs.index') }}" class="text-indigo-600 hover:underline">{{ __('Set them up in Configs › Attendance.') }}</a>
             </p>
             <p class="mt-1 text-xs text-gray-500" x-show="company && ! positions.length">
                 {{ __('This company has no designations yet.') }} <a href="{{ route('employees.positions') }}" class="text-indigo-600 hover:underline">{{ __('Add them in the Positions tab.') }}</a>

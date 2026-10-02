@@ -269,7 +269,7 @@ class EmployeeController extends Controller
                 ->orderBy('name')->get(['id', 'department_id', 'name']),
             'positions' => Position::where(fn ($q) => $q->where('is_active', true)->orWhere('id', $employee->position_id))
                 ->orderBy('name')->get(['id', 'company_id', 'name']),
-            'shifts' => Shift::orderBy('name')->get(['company_id', 'name']),
+            'shifts' => Shift::orderBy('type')->orderBy('slot')->get(['id', 'company_id', 'name']),
             'officers' => Employee::current()->when($employee->exists, fn ($q) => $q->whereKeyNot($employee->id))
                 ->orderBy('employee_code')->get(['id', 'company_id', 'employee_code', 'first_name', 'middle_name', 'last_name']),
             'states' => collect(CompanyController::STATES)->merge($places('state'))->unique(fn ($v) => mb_strtolower($v))->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),

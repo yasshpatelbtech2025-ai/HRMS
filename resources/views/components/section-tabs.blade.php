@@ -1,24 +1,30 @@
-@props(['section'])
+{{--
+    The tab bar for a sidebar section (config/navigation.php), or with
+    `nested`, the tabs inside one of its tabs (config/subnavigation.php).
+--}}
+@props(['section', 'nested' => false])
 
 @php
-    $tabs = collect(config("navigation.{$section}", []))
-        ->mapWithKeys(fn ($label, $key) => [$section.'.'.($key === '' ? 'index' : $key) => $label]);
+    $tabs = collect($nested ? config('subnavigation')[$section] ?? [] : config("navigation.{$section}", []))
+        ->mapWithKeys(fn ($label, $key) => [($key === '' ? ($nested ? $section : "{$section}.index") : "{$section}.{$key}") => $label]);
 
     // A tab is active on its own route and the routes beneath it (e.g.
     // employees.departments.*); anything else in the section belongs to the
     // landing tab (e.g. employees.create, employees.edit).
-    $activeTab = $tabs->keys()->first(fn ($name) => request()->routeIs($name, "{$name}.*"))
-        ?? $section.'.index';
+    $landing = $nested ? $section : "{$section}.index";
+    $activeTab = $tabs->keys()->reject(fn ($name) => $name === $landing)->first(fn ($name) => request()->routeIs($name, "{$name}.*"))
+        ?? $landing;
 @endphp
 
 @if ($tabs->count() > 1)
-    <nav class="mb-6 -mx-1 overflow-x-auto print:hidden" aria-label="{{ __('Section') }}">
-        <ul class="flex w-max gap-1 rounded-lg bg-white p-1 shadow-sm ring-1 ring-gray-200">
+    <nav class="{{ $nested ? 'mb-4' : 'mb-6' }} -mx-1 overflow-x-auto print:hidden" aria-label="{{ $nested ? __('Sub-section') : __('Section') }}">
+        <ul class="flex w-max gap-1 rounded-lg p-1 {{ $nested ? 'bg-gray-100' : 'bg-white shadow-sm ring-1 ring-gray-200' }}">
             @foreach ($tabs as $name => $label)
                 @php($active = $name === $activeTab)
                 <li>
                     <a href="{{ route($name) }}" @if ($active) aria-current="page" @endif
-                       class="block whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition {{ $active ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                       class="block whitespace-nowrap rounded-md font-medium transition {{ $nested ? 'px-3 py-1.5 text-sm' : 'px-4 py-2 text-sm' }}
+                              {{ $active ? ($nested ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-900 text-white') : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
                         {{ __($label) }}
                     </a>
                 </li>

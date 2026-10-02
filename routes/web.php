@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Attendance\CompanyHolidayController;
+use App\Http\Controllers\Attendance\HolidayController;
+use App\Http\Controllers\Attendance\LeaveTypeController;
+use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
@@ -74,6 +78,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('letters/{letter}', 'letter')->name('employees.letter');
         });
     });
+
+    Route::prefix('attendance/leave')->group(function () {
+        // Leaves and Leave balance arrive with leave applications.
+        Route::view('/', 'attendance.leave.placeholder', ['title' => 'Leaves'])->name('attendance.leave');
+        Route::view('balance', 'attendance.leave.placeholder', ['title' => 'Leave balance'])->name('attendance.leave.balance');
+
+        Route::controller(LeaveTypeController::class)->prefix('types')->group(function () {
+            Route::get('/', 'index')->name('attendance.leave.types');
+            Route::post('/', 'store')->name('attendance.leave.types.store');
+            Route::put('{leaveType}', 'update')->name('attendance.leave.types.update');
+            Route::delete('{leaveType}', 'destroy')->name('attendance.leave.types.destroy');
+        });
+
+        Route::controller(HolidayController::class)->prefix('holiday-list')->group(function () {
+            Route::get('/', 'index')->name('attendance.leave.holiday-list');
+            Route::post('/', 'store')->name('attendance.leave.holiday-list.store');
+            Route::put('{holiday}', 'update')->name('attendance.leave.holiday-list.update');
+            Route::delete('{holiday}', 'destroy')->name('attendance.leave.holiday-list.destroy');
+        });
+
+        Route::controller(CompanyHolidayController::class)->prefix('holidays')->group(function () {
+            Route::get('/', 'index')->name('attendance.leave.holidays');
+            Route::post('/', 'store')->name('attendance.leave.holidays.store');
+            Route::delete('{company}/{holiday}', 'destroy')->name('attendance.leave.holidays.destroy');
+        });
+    });
+
+    Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
+    Route::put('configs/attendance/{company}', [AttendanceSettingController::class, 'update'])->name('configs.attendance.update');
 
     // Every other section tab renders a placeholder page until its module is built.
     // Names given with ->name() aren't indexed until the lookups are refreshed.

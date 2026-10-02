@@ -162,7 +162,7 @@ class EmployeeImport
             'alternate_phone' => $row['alternate_phone'] ?? null,
             'date_of_birth' => $row['date_of_birth'] ?? null,
             'country' => 'India',
-            'shift' => $row['shift'] ?? null,
+            'shift_id' => $this->company->shifts()->whereRaw('lower(name) = ?', [mb_strtolower($row['shift'] ?? '')])->value('id'),
             'date_of_joining' => $row['date_of_joining'] ?? null,
             'works_on_hazardous_process' => $yesNo($row['works_on_hazardous_process'] ?? null),
             'can_punch_in_hybrid_mode' => $yesNo($row['can_punch_in_hybrid_mode'] ?? null),

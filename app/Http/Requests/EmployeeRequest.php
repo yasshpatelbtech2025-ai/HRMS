@@ -58,7 +58,7 @@ class EmployeeRequest extends FormRequest
 
             // Employee details
             'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
-            'shift' => ['required', 'string', 'max:255'],
+            'shift_id' => ['required', 'integer', Rule::exists('shifts', 'id')->where('company_id', $companyId)],
             'date_of_joining' => ['required', 'date'],
             'works_on_hazardous_process' => ['required', 'boolean'],
             'can_punch_in_hybrid_mode' => ['required', 'boolean'],
@@ -159,6 +159,7 @@ class EmployeeRequest extends FormRequest
         return [
             'company_id' => 'company',
             'department_id' => 'department',
+            'shift_id' => 'shift',
             'sub_department_id' => 'sub department',
             'position_id' => 'designation',
             'reporting_officer_id' => 'reporting officer',
