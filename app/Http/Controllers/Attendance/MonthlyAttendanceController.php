@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Attendance;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\CompOffUse;
 use App\Models\Employee;
 use App\Models\LeaveApplication;
 use App\Models\SubDepartment;
+use App\Services\Attendance\DayPunches;
 use App\Services\Attendance\MonthlyAttendance;
-use App\Services\Attendance\PunchProcessor;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -27,7 +26,7 @@ use Illuminate\View\View;
  */
 class MonthlyAttendanceController extends Controller
 {
-    public function __construct(private MonthlyAttendance $attendance, private PunchProcessor $processor) {}
+    public function __construct(private MonthlyAttendance $attendance, private DayPunches $punches) {}
 
     public function index(Request $request): View
     {
@@ -75,22 +74,7 @@ class MonthlyAttendanceController extends Controller
         $in = CarbonImmutable::parse($data['in_time'])->startOfMinute();
         $out = CarbonImmutable::parse($data['out_time'])->startOfMinute();
 
-        if ($in->diffInHours($out) > 20) {
-            throw ValidationException::withMessages(['out_time' => __('A shift cannot be longer than 20 hours.')]);
-        }
-
-        DB::transaction(function () use ($employee, $data, $in, $out) {
-            $this->clearDay($employee, $data['date']);
-
-            foreach ([Attendance::IN => $in, Attendance::OUT => $out] as $type => $time) {
-                $employee->attendances()->create([
-                    'company_id' => $employee->company_id, 'punched_at' => $time, 'work_date' => $data['date'],
-                    'type' => $type, 'source' => 'manual', 'shift_id' => $employee->shift_id,
-                ]);
-            }
-
-            $this->processor->process($employee, $in, $out);
-        });
+        $this->punches->replace($employee, $data['date'], $in, $out);
 
         return back()->with('status', __(':name marked present on :date.', ['name' => $employee->full_name, 'date' => $data['date']]));
     }
@@ -142,7 +126,7 @@ class MonthlyAttendanceController extends Controller
         }
 
         DB::transaction(function () use ($employee, $data) {
-            $this->clearDay($employee, $data['date']);
+            $this->punches->clear($employee, $data['date']);
             CompOffUse::firstOrCreate(['employee_id' => $employee->id, 'work_date' => $data['date']]);
         });
 
@@ -168,7 +152,7 @@ class MonthlyAttendanceController extends Controller
         }
 
         DB::transaction(function () use ($employee, $data, $leave) {
-            $this->clearDay($employee, $data['date']);
+            $this->punches->clear($employee, $data['date']);
             $leave?->delete();
             CompOffUse::where('employee_id', $employee->id)->whereDate('work_date', $data['date'])->delete();
         });
@@ -186,17 +170,6 @@ class MonthlyAttendanceController extends Controller
             ->where(fn ($q) => $q->whereNull('separation_date')->orWhereDate('separation_date', '>=', $month->startOfMonth()))
             ->with(['shift', 'position', 'subDepartment'])
             ->orderBy('employee_code');
-    }
-
-    private function clearDay(Employee $employee, string $date): void
-    {
-        $punches = $employee->attendances()->whereDate('work_date', $date)->get();
-
-        if ($punches->contains('is_locked', true)) {
-            throw ValidationException::withMessages(['date' => __("This day's attendance is locked. Unlock it in Attendance raw data first.")]);
-        }
-
-        $punches->each->delete();
     }
 
     private function month(Request $request): CarbonImmutable

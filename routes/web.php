@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Attendance\AttendanceRequestController;
 use App\Http\Controllers\Attendance\CompanyHolidayController;
 use App\Http\Controllers\Attendance\EmployeeReportController;
 use App\Http\Controllers\Attendance\HolidayController;
+use App\Http\Controllers\Attendance\LeaveBalanceController;
+use App\Http\Controllers\Attendance\LeaveController;
 use App\Http\Controllers\Attendance\LeaveTypeController;
 use App\Http\Controllers\Attendance\MissingPunchController;
 use App\Http\Controllers\Attendance\MonthlyAttendanceController;
@@ -92,6 +95,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('monthly/coff', 'useCompOff')->name('attendance.monthly.coff');
         Route::post('monthly/reset', 'reset')->name('attendance.monthly.reset');
     });
+    Route::controller(AttendanceRequestController::class)->prefix('attendance/requests')->group(function () {
+        Route::get('/', 'index')->name('attendance.requests');
+        Route::post('/', 'store')->name('attendance.requests.store');
+        Route::put('{attendanceRequest}/approve', 'approve')->name('attendance.requests.approve');
+        Route::put('{attendanceRequest}/reject', 'reject')->name('attendance.requests.reject');
+        Route::delete('{attendanceRequest}', 'destroy')->name('attendance.requests.destroy');
+    });
     Route::get('attendance/missing-punch', [MissingPunchController::class, 'index'])->name('attendance.missing-punch');
     Route::get('attendance/shifts', [ShiftManagementController::class, 'index'])->name('attendance.shifts');
     Route::post('attendance/shifts/{company}', [ShiftManagementController::class, 'store'])->name('attendance.shifts.store');
@@ -111,9 +121,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('attendance/smart', [SmartAttendanceController::class, 'store'])->name('attendance.smart.store');
 
     Route::prefix('attendance/leave')->group(function () {
-        // Leaves and Leave balance arrive with leave applications.
-        Route::view('/', 'attendance.leave.placeholder', ['title' => 'Leaves'])->name('attendance.leave');
-        Route::view('balance', 'attendance.leave.placeholder', ['title' => 'Leave balance'])->name('attendance.leave.balance');
+        Route::controller(LeaveController::class)->group(function () {
+            Route::get('/', 'index')->name('attendance.leave');
+            Route::post('/', 'store')->name('attendance.leave.store');
+            Route::get('export/{format}', 'export')->name('attendance.leave.export');
+            Route::put('{leave}/approve', 'approve')->whereUuid('leave')->name('attendance.leave.approve');
+            Route::put('{leave}/reject', 'reject')->whereUuid('leave')->name('attendance.leave.reject');
+            Route::delete('{leave}', 'destroy')->whereUuid('leave')->name('attendance.leave.destroy');
+            Route::get('{leave}/hard-copy', 'hardCopy')->whereUuid('leave')->name('attendance.leave.hard-copy');
+        });
+
+        Route::controller(LeaveBalanceController::class)->prefix('balance')->group(function () {
+            Route::get('/', 'index')->name('attendance.leave.balance');
+            Route::get('export', 'export')->name('attendance.leave.balance.export');
+            Route::put('{employee}/{leaveType}', 'update')->name('attendance.leave.balance.update');
+        });
 
         Route::controller(LeaveTypeController::class)->prefix('types')->group(function () {
             Route::get('/', 'index')->name('attendance.leave.types');
