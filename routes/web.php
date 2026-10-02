@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,12 +18,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::resource('company', CompanyController::class)->except('show');
+    Route::get('employees/separated', [EmployeeController::class, 'separated'])->name('employees.separated');
+    Route::resource('employees', EmployeeController::class)->except('show');
+    Route::resource('departments', DepartmentController::class)->except('show');
+    Route::resource('positions', PositionController::class)->except('show');
 
     // Sections still to be built render a placeholder page; each is replaced
     // by its real controller as the module lands.
     foreach ([
         'attendance' => 'Attendance',
-        'employees' => 'Employee',
         'compliance' => 'Compliance',
         'documents' => 'Documents',
         'payroll' => 'Payroll',

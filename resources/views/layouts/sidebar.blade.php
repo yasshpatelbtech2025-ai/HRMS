@@ -14,7 +14,7 @@
         ['Dashboard', 'dashboard', 'dashboard', 'home'],
         ['Company', 'company.index', 'company*', 'building'],
         ['Attendance', 'attendance.index', 'attendance*', 'clock'],
-        ['Employee', 'employees.index', 'employees*', 'users'],
+        ['Employee', 'employees.index', ['employees.*', 'departments.*', 'positions.*'], 'users'],
         ['Compliance', 'compliance.index', 'compliance*', 'scale'],
         ['Documents', 'documents.index', 'documents*', 'document'],
         ['Payroll', 'payroll.index', 'payroll*', 'card'],
@@ -41,7 +41,7 @@
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         @foreach ($nav as [$label, $route, $pattern, $icon])
-            <x-sidebar-link :href="route($route)" :active="request()->routeIs($pattern)">
+            <x-sidebar-link :href="route($route)" :active="request()->routeIs(...(array) $pattern)">
                 <x-slot name="icon">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$icon] }}" /></svg>
                 </x-slot>
