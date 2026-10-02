@@ -31,5 +31,12 @@ for ext in pgsql pdo_pgsql; do
     )
 done
 
-printf 'extension=pgsql\nextension=pdo_pgsql\n' > "$SCAN_DIR/20-pgsql.ini"
+# The scan directory may not exist yet and may be root-owned.
+INI_LINES=$'extension=pgsql\nextension=pdo_pgsql\n'
+if mkdir -p "$SCAN_DIR" 2>/dev/null && printf '%s' "$INI_LINES" > "$SCAN_DIR/20-pgsql.ini" 2>/dev/null; then
+    :
+else
+    sudo mkdir -p "$SCAN_DIR"
+    printf '%s' "$INI_LINES" | sudo tee "$SCAN_DIR/20-pgsql.ini" >/dev/null
+fi
 php -m | grep -E '^(pgsql|pdo_pgsql)$'
