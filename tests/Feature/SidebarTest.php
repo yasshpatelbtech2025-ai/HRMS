@@ -22,17 +22,24 @@ class SidebarTest extends TestCase
             ->assertSee('Today absents')->assertSee('Today leave');
     }
 
-    public function test_module_pages_load_for_authenticated_users(): void
+    public function test_every_section_tab_loads_and_shows_its_sibling_tabs(): void
     {
         $user = User::factory()->create();
 
-        foreach (['company', 'attendance', 'employees', 'compliance', 'documents', 'payroll', 'reports', 'configs'] as $uri) {
-            $this->actingAs($user)->get("/{$uri}")->assertOk();
+        foreach (config('navigation') as $section => $tabs) {
+            foreach (array_keys($tabs) as $key) {
+                $response = $this->actingAs($user)->get(route($section.'.'.($key === '' ? 'index' : $key)))->assertOk();
+
+                if (count($tabs) > 1) {
+                    $response->assertSeeInOrder(array_values($tabs));
+                }
+            }
         }
     }
 
-    public function test_module_pages_require_login(): void
+    public function test_section_pages_require_login(): void
     {
         $this->get('/company')->assertRedirect('/login');
+        $this->get('/payroll/loans')->assertRedirect('/login');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,19 +10,19 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Placeholder pages until each module is built.
 Route::middleware(['auth', 'verified'])->group(function () {
-    foreach ([
-        'company' => 'Company',
-        'attendance' => 'Attendance',
-        'employees' => 'Employee',
-        'compliance' => 'Compliance',
-        'documents' => 'Documents',
-        'payroll' => 'Payroll',
-        'reports' => 'Reports',
-        'configs' => 'Configs',
-    ] as $uri => $title) {
-        Route::view($uri, 'placeholder', ['title' => $title])->name($uri);
+    Route::get('company/export', [CompanyController::class, 'export'])->name('company.export');
+    Route::resource('company', CompanyController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    // Every other section tab renders a placeholder page until its module is built.
+    foreach (config('navigation') as $section => $tabs) {
+        foreach ($tabs as $key => $label) {
+            $name = $section.'.'.($key === '' ? 'index' : $key);
+
+            if (! Route::has($name)) {
+                Route::view(trim("{$section}/{$key}", '/'), 'placeholder', ['title' => $label, 'section' => $section])->name($name);
+            }
+        }
     }
 });
 
