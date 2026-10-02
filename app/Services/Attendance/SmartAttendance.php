@@ -37,11 +37,9 @@ class SmartAttendance
         $holidays = $this->calendar->holidays($employee->company_id, $first, $last);
         $punched = $employee->attendances()->whereDate('work_date', '>=', $first)->whereDate('work_date', '<=', $last)
             ->pluck('work_date')->map->toDateString()->flip();
-        $code = array_key_first($shift->timings);
-        $timing = $shift->timings[$code];
         $filled = 0;
 
-        DB::transaction(function () use ($employee, $shift, $first, $last, $holidays, $punched, $code, $timing, &$filled) {
+        DB::transaction(function () use ($employee, $shift, $first, $last, $holidays, $punched, &$filled) {
             for ($day = $first; $day->lte($last); $day = $day->addDay()) {
                 $date = $day->toDateString();
 
@@ -49,6 +47,11 @@ class SmartAttendance
                     || ! $this->calendar->isEmployed($employee, $day) || $this->calendar->isWeeklyOff($employee, $day)) {
                     continue;
                 }
+
+                // The rostered shift part when the employee is on a roster, else the shift's first part.
+                $rostered = $this->calendar->rosterCode($employee, $day);
+                $code = isset($shift->timings[$rostered]) ? $rostered : array_key_first($shift->timings);
+                $timing = $shift->timings[$code];
 
                 $in = $day->setTimeFromTimeString($timing['start']);
                 $out = $day->setTimeFromTimeString($timing['end']);

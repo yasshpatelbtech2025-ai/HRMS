@@ -7,6 +7,7 @@ use App\Http\Controllers\Attendance\LeaveTypeController;
 use App\Http\Controllers\Attendance\MissingPunchController;
 use App\Http\Controllers\Attendance\MonthlyAttendanceController;
 use App\Http\Controllers\Attendance\RawDataController;
+use App\Http\Controllers\Attendance\ShiftManagementController;
 use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
@@ -92,6 +93,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('monthly/reset', 'reset')->name('attendance.monthly.reset');
     });
     Route::get('attendance/missing-punch', [MissingPunchController::class, 'index'])->name('attendance.missing-punch');
+    Route::get('attendance/shifts', [ShiftManagementController::class, 'index'])->name('attendance.shifts');
+    Route::post('attendance/shifts/{company}', [ShiftManagementController::class, 'store'])->name('attendance.shifts.store');
     Route::get('attendance/employee-report', [EmployeeReportController::class, 'index'])->name('attendance.employee-report');
 
     Route::controller(RawDataController::class)->prefix('attendance/raw-data')->group(function () {
