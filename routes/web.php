@@ -3,6 +3,8 @@
 use App\Http\Controllers\Attendance\CompanyHolidayController;
 use App\Http\Controllers\Attendance\HolidayController;
 use App\Http\Controllers\Attendance\LeaveTypeController;
+use App\Http\Controllers\Attendance\RawDataController;
+use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
@@ -78,6 +80,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('letters/{letter}', 'letter')->name('employees.letter');
         });
     });
+
+    Route::controller(RawDataController::class)->prefix('attendance/raw-data')->group(function () {
+        Route::get('/', 'index')->name('attendance.raw-data');
+        Route::post('/', 'store')->name('attendance.raw-data.store');
+        Route::post('correct', 'correct')->name('attendance.raw-data.correct');
+        Route::get('export/{format}', 'export')->name('attendance.raw-data.export');
+        Route::patch('{attendance}', 'update')->name('attendance.raw-data.update');
+        Route::delete('{attendance}', 'destroy')->name('attendance.raw-data.destroy');
+        Route::patch('{attendance}/lock', 'toggleLock')->name('attendance.raw-data.lock');
+    });
+
+    Route::get('attendance/smart', [SmartAttendanceController::class, 'index'])->name('attendance.smart');
+    Route::post('attendance/smart', [SmartAttendanceController::class, 'store'])->name('attendance.smart.store');
 
     Route::prefix('attendance/leave')->group(function () {
         // Leaves and Leave balance arrive with leave applications.
