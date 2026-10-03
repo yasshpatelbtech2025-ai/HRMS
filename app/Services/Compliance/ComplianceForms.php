@@ -1,0 +1,336 @@
+<?php
+
+namespace App\Services\Compliance;
+
+use App\Models\Company;
+use App\Models\ComplianceFormValue;
+use App\Models\ComplianceRegisterEntry;
+use App\Models\Employee;
+use App\Models\EmployeeAddress;
+use App\Models\Loan;
+use App\Models\Payslip;
+use App\Models\SalaryAdvance;
+use App\Models\SalarySheet;
+use App\Services\Attendance\MonthlyAttendance;
+use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+
+/**
+ * Builds the data for each statutory form on Compliance › Forms from the
+ * HRMS records: employees, attendance, payslips, advances and loans, plus
+ * rows and fields typed into the forms themselves.
+ */
+class ComplianceForms
+{
+    public function __construct(private MonthlyAttendance $attendance) {}
+
+    /**
+     * @return array<string, mixed> data for the form's view
+     */
+    public function build(string $view, Company $company, Request $request): array
+    {
+        $company->loadMissing('parent');
+        $base = [
+            'company' => $company,
+            'contractor' => $company->parent?->establishment_name ?? $company->establishment_name,
+            'address' => $this->companyAddress($company),
+        ];
+
+        return $base + match ($view) {
+            'form-a' => $this->formA($company, $this->month($request)),
+            'form-b', 'form-17' => $this->wages($company, $this->month($request)),
+            'form-c' => $this->formC($company, $this->month($request)),
+            'form-d', 'form-16' => $this->muster($company, $this->month($request)),
+            'form-18' => $this->muster($company, $this->month($request)) + $this->wages($company, $this->month($request)),
+            'form-14', 'gratuity-form-f' => $this->employeePicker($company, $request, $view),
+            'form-13' => ['employees' => $this->employees($company)->get()],
+            'form-20', 'form-21' => $this->entries($company, $view, $this->month($request)),
+            'form-22' => $this->advances($company, $this->month($request)),
+            'form-23' => $this->overtime($company, $this->month($request)),
+            'form-25' => $this->halfYearly($company, $request),
+            'bonus-form-d' => $this->bonus($company, $request),
+            default => abort(404),
+        };
+    }
+
+    public function month(Request $request): CarbonImmutable
+    {
+        $month = $request->query('month');
+
+        return is_string($month) && preg_match('/^\d{4}-\d{2}$/', $month)
+            ? CarbonImmutable::createFromFormat('!Y-m', $month)
+            : CarbonImmutable::today()->subMonthNoOverflow()->startOfMonth();
+    }
+
+    /** Father's or husband's name, from the employee's family details. */
+    public static function guardian(Employee $employee): ?string
+    {
+        $family = $employee->familyMembers->keyBy('relation');
+
+        return $family['father']->full_name ?? $family['spouse']->full_name ?? null;
+    }
+
+    public static function address(?EmployeeAddress $address): string
+    {
+        return $address ? collect([$address->address_line_1, $address->address_line_2, $address->village, $address->taluka, $address->district, $address->state])->filter()->implode(', ') : '';
+    }
+
+    public static function mask(?string $value): string
+    {
+        return $value ? str_repeat('X', max(0, strlen($value) - 4)).substr($value, -4) : '';
+    }
+
+    private function companyAddress(Company $company): string
+    {
+        return collect([$company->address_line_1, $company->address_line_2, $company->village, $company->taluka, $company->district, $company->state])->filter()->implode(', ');
+    }
+
+    private function employees(Company $company)
+    {
+        return Employee::where('company_id', $company->id)
+            ->with(['position', 'subDepartment', 'familyMembers', 'addresses', 'qualifications', 'shift', 'salaryElements'])
+            ->orderBy('employee_code');
+    }
+
+    /** Employees who worked any part of the month. */
+    private function employedIn(Company $company, CarbonImmutable $month): Collection
+    {
+        return $this->employees($company)
+            ->where(fn ($q) => $q->whereNull('date_of_joining')->orWhereDate('date_of_joining', '<=', $month->endOfMonth()))
+            ->where(fn ($q) => $q->whereNull('separation_date')->orWhereDate('separation_date', '>=', $month))
+            ->get();
+    }
+
+    private function formA(Company $company, CarbonImmutable $month): array
+    {
+        return ['month' => $month, 'employees' => $this->employedIn($company, $month)];
+    }
+
+    /**
+     * Daily status grid and day totals (Form D, 16, 18).
+     */
+    private function muster(Company $company, CarbonImmutable $month): array
+    {
+        $employees = $this->employedIn($company, $month);
+
+        return ['month' => $month, 'employees' => $employees, 'grid' => $this->attendance->forMonth($employees, $month)];
+    }
+
+    /**
+     * Payslip figures for the month (Form B, 17, 18).
+     */
+    private function wages(Company $company, CarbonImmutable $month): array
+    {
+        $employees = $this->employedIn($company, $month);
+        $sheet = SalarySheet::where('company_id', $company->id)->whereDate('month', $month)->first();
+        $payslips = $sheet ? $sheet->payslips()->get()->keyBy('employee_id') : collect();
+
+        $wages = $employees->mapWithKeys(function (Employee $e) use ($payslips) {
+            /** @var Payslip|null $p */
+            $p = $payslips->get($e->id);
+            $statutory = ['pf', 'esi', 'pt', 'lwf', 'vpf'];
+            $deductions = collect($p?->deductions ?? []);
+            $earnings = collect($p?->earnings ?? []);
+
+            return [$e->id => $p ? [
+                'days' => $p->attendance['paid_days'],
+                'ot_hours' => $p->attendance['ot_hours'],
+                'basic' => (float) ($earnings->firstWhere('key', 'basic')['amount'] ?? 0),
+                'da' => (float) ($earnings->firstWhere('key', 'da')['amount'] ?? 0),
+                'overtime' => (float) ($earnings->firstWhere('key', 'overtime')['amount'] ?? 0),
+                'other' => round($earnings->whereNotIn('key', ['basic', 'da', 'overtime'])->sum('amount'), 2),
+                'gross' => (float) $p->gross_earnings,
+                'statutory' => round($deductions->whereIn('key', $statutory)->sum('amount'), 2),
+                'other_deductions' => round($deductions->whereNotIn('key', $statutory)->sum('amount'), 2),
+                'deductions' => (float) $p->total_deductions,
+                'net' => (float) $p->net_pay,
+            ] : null];
+        });
+
+        return ['month' => $month, 'employees' => $employees, 'wages' => $wages, 'sheet' => $sheet];
+    }
+
+    /**
+     * Form C: advances and loan installments for the month, plus rows typed in.
+     */
+    private function formC(Company $company, CarbonImmutable $month): array
+    {
+        $rows = collect();
+
+        foreach (SalaryAdvance::where('company_id', $company->id)->whereDate('salary_month', $month)->with('employee')->get() as $a) {
+            $rows->push(['employee' => $a->employee, 'type' => 'Advance', 'particular' => __('Salary advance'), 'date' => $a->advance_date->format('d-m-Y'),
+                'amount' => (float) $a->amount, 'show_cause' => '', 'heard_by' => '', 'installments' => 1,
+                'first' => $a->salary_month->format('m/Y'), 'last' => $a->salary_month->format('m/Y'),
+                'recovered' => (float) $a->released_amount >= (float) $a->amount ? $a->salary_month->endOfMonth()->format('d-m-Y') : '', 'remarks' => '']);
+        }
+
+        foreach (Loan::where('company_id', $company->id)->where('is_active', true)->with('employee')->get() as $loan) {
+            if ($loan->installmentFor($month) <= 0) {
+                continue;
+            }
+            $last = $loan->repayment_start->addMonths($loan->installment_period - 1);
+            $rows->push(['employee' => $loan->employee, 'type' => 'Loans', 'particular' => $loan->loan_no.($loan->details ? ' — '.$loan->details : ''),
+                'date' => $loan->approved_date->format('d-m-Y'), 'amount' => (float) $loan->repayment_amount, 'show_cause' => '', 'heard_by' => '',
+                'installments' => $loan->installment_period, 'first' => $loan->repayment_start->format('m/Y'), 'last' => $last->format('m/Y'),
+                'recovered' => $loan->isRepaid() ? $last->endOfMonth()->format('d-m-Y') : '', 'remarks' => '']);
+        }
+
+        return ['month' => $month, 'rows' => $rows] + $this->entries($company, 'form-c', $month);
+    }
+
+    /**
+     * Rows typed into a register for the month, and employees to pick from.
+     */
+    private function entries(Company $company, string $form, CarbonImmutable $month): array
+    {
+        return [
+            'month' => $month,
+            'entries' => ComplianceRegisterEntry::where('company_id', $company->id)->where('form', $form)->whereDate('month', $month)
+                ->with(['employee.position', 'employee.familyMembers'])->orderBy('id')->get(),
+            'employeeOptions' => $this->employedIn($company, $month),
+        ];
+    }
+
+    private function advances(Company $company, CarbonImmutable $month): array
+    {
+        return [
+            'month' => $month,
+            'advances' => SalaryAdvance::where('company_id', $company->id)
+                ->where(fn ($q) => $q->whereDate('salary_month', $month)
+                    ->orWhere(fn ($w) => $w->whereDate('advance_date', '>=', $month)->whereDate('advance_date', '<=', $month->endOfMonth())))
+                ->with(['employee.position', 'employee.familyMembers', 'employee.salaryElements'])->orderBy('advance_date')->get(),
+        ];
+    }
+
+    /**
+     * Form 23: overtime worked by day, priced as on the payslip when there is one.
+     */
+    private function overtime(Company $company, CarbonImmutable $month): array
+    {
+        $employees = $this->employedIn($company, $month);
+        $grid = $this->attendance->forMonth($employees, $month);
+        $sheet = SalarySheet::where('company_id', $company->id)->whereDate('month', $month)->first();
+        $payslips = $sheet ? $sheet->payslips()->get()->keyBy('employee_id') : collect();
+        $rows = [];
+
+        foreach ($employees as $e) {
+            $days = collect($grid[$e->id]['days'])->filter(fn ($d) => $d['ot'] > 0);
+            if ($days->isEmpty()) {
+                continue;
+            }
+
+            $hours = round($days->sum('ot'), 2);
+            $basic = (float) ($e->salaryElements->firstWhere('element', 'basic')->monthly ?? 0);
+            $dailyHours = (float) ($e->daily_hour ?: 8);
+            $normal = match ($e->pay_frequency) {
+                'hourly' => (float) $e->hourly_rate,
+                'daily' => ($basic ?: (float) $e->daily_rate) / $dailyHours,
+                default => $basic / $month->daysInMonth / $dailyHours,
+            };
+            $multiplier = ($e->shift?->ot_rate ?? 'regular') === 'double' ? 2 : 1;
+            $earnings = $payslips->has($e->id) ? $payslips[$e->id]->amount('earnings', 'overtime') : round($hours * $normal * $multiplier, 2);
+
+            $rows[] = [
+                'employee' => $e,
+                'dates' => $days->map(fn ($d) => $d['date']->format('jS').' -- '.rtrim(rtrim(number_format($d['ot'], 2), '0'), '.').' hrs')->implode(', '),
+                'hours' => $hours,
+                'normal' => round($normal, 2),
+                'rate' => round($normal * $multiplier, 2),
+                'earnings' => $earnings,
+                'paid_on' => $sheet?->paid_date?->format('d-m-Y'),
+            ];
+        }
+
+        return ['month' => $month, 'rows' => $rows];
+    }
+
+    /**
+     * Form 25 (Factories Act half-yearly return): days worked, mandays and
+     * average daily workers by age group and sex, hazardous-process workers.
+     */
+    private function halfYearly(Company $company, Request $request): array
+    {
+        $year = $request->integer('year', (int) date('Y'));
+        $half = $request->query('month') === 'december' ? 'december' : 'june';
+        $from = CarbonImmutable::create($year, $half === 'june' ? 1 : 7, 1);
+        $to = $from->addMonths(5)->endOfMonth()->startOfDay();
+        $employees = $this->employees($company)
+            ->where(fn ($q) => $q->whereNull('date_of_joining')->orWhereDate('date_of_joining', '<=', $to))
+            ->where(fn ($q) => $q->whereNull('separation_date')->orWhereDate('separation_date', '>=', $from))
+            ->get();
+
+        $data = $this->attendance->forRange($employees, $from, $to->min(CarbonImmutable::today()));
+        $mandays = ['adult_men' => 0, 'adult_women' => 0, 'adolescent_men' => 0, 'adolescent_women' => 0, 'boys' => 0, 'girls' => 0];
+        $workingDays = [];
+
+        foreach ($employees as $e) {
+            $age = $e->date_of_birth ? $e->date_of_birth->diffInYears($to) : 30;
+            $female = $e->gender?->value === 'female';
+            $group = match (true) {
+                $age < 15 => $female ? 'girls' : 'boys',
+                $age < 18 => $female ? 'adolescent_women' : 'adolescent_men',
+                default => $female ? 'adult_women' : 'adult_men',
+            };
+
+            foreach ($data[$e->id]['days'] as $date => $day) {
+                if (in_array($day['status'], ['P', 'HD'], true)) {
+                    $mandays[$group]++; // half a shift or more counts as full attendance
+                    $workingDays[$date] = true;
+                }
+            }
+        }
+
+        $days = count($workingDays);
+
+        return [
+            'year' => $year,
+            'half' => $half,
+            'periodEnd' => $to,
+            'workingDays' => $days,
+            'mandays' => $mandays,
+            'average' => array_map(fn ($n) => $days ? round($n / $days) : 0, $mandays),
+            'hazardous' => $employees->where('works_on_hazardous_process', true)->count(),
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'form-25', 'period' => $to->format('Y-m')]),
+        ];
+    }
+
+    /**
+     * Payment of Bonus Act Form D for an accounting year (April to March).
+     */
+    private function bonus(Company $company, Request $request): array
+    {
+        $start = $request->integer('year', (int) (date('n') >= 4 ? date('Y') - 1 : date('Y') - 1));
+        $from = CarbonImmutable::create($start, 4, 1);
+        $to = CarbonImmutable::create($start + 1, 3, 31);
+
+        $payslips = Payslip::where('company_id', $company->id)->whereDate('month', '>=', $from)->whereDate('month', '<=', $to)->get();
+        $bonus = $payslips->sum(fn (Payslip $p) => $p->amount('earnings', 'bonus'));
+
+        return [
+            'startYear' => $start,
+            'yearEnd' => $to,
+            'totalEmployees' => $payslips->pluck('employee_id')->unique()->count(),
+            'benefited' => $payslips->filter(fn (Payslip $p) => $p->amount('earnings', 'bonus') > 0)->pluck('employee_id')->unique()->count(),
+            'bonusPaid' => round($bonus, 2),
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'bonus-form-d', 'period' => $start.'-'.($start + 1)]),
+        ];
+    }
+
+    /**
+     * Forms for one employee (Form 14, Gratuity Form F).
+     */
+    private function employeePicker(Company $company, Request $request, string $view): array
+    {
+        $employees = $this->employees($company)->get();
+        $employee = $employees->firstWhere('uuid', $request->query('employee')) ?? $employees->first();
+
+        return [
+            'employees' => $employees,
+            'employee' => $employee,
+            'values' => $employee && $view === 'gratuity-form-f'
+                ? ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'gratuity-form-f', 'period' => 'employee:'.$employee->id])
+                : null,
+        ];
+    }
+}

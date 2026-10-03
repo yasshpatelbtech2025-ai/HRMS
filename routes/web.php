@@ -14,6 +14,7 @@ use App\Http\Controllers\Attendance\ShiftManagementController;
 use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
@@ -234,6 +235,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('{slot}', 'show')->name('documents.show');
         Route::post('{slot}/upload', 'upload')->name('documents.upload');
         Route::put('{slot}/assign', 'assign')->name('documents.assign');
+    });
+
+    Route::controller(ComplianceController::class)->prefix('compliance')->group(function () {
+        Route::get('/', 'index')->name('compliance.index');
+        Route::get('forms/{company}/{form}', 'show')->name('compliance.forms.show');
+        Route::post('forms/{company}/{form}/entries', 'storeEntries')->name('compliance.forms.entries');
+        Route::post('forms/{company}/{form}/values', 'storeValues')->name('compliance.forms.values');
+        Route::get('forms/{company}/{form}/signed-copy/{period}', 'signedCopy')->name('compliance.forms.signed-copy');
+        Route::delete('entries/{entry}', 'destroyEntry')->name('compliance.entries.destroy');
     });
 
     Route::get('reports', [ReportController::class, 'sheet'])->name('reports.index');
