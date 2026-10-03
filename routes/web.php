@@ -17,6 +17,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\IdCardController;
+use App\Http\Controllers\PayrollSettingController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SeparationController;
@@ -160,6 +161,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
     Route::put('configs/attendance/{company}', [AttendanceSettingController::class, 'update'])->name('configs.attendance.update');
+
+    Route::controller(PayrollSettingController::class)->prefix('configs/payroll')->group(function () {
+        Route::get('/', 'index')->name('configs.payroll');
+        Route::put('{company}', 'update')->whereUuid('company')->name('configs.payroll.update');
+        Route::post('rules', 'storeRule')->name('configs.payroll.rules.store');
+        Route::put('rules/{rule}', 'updateRule')->name('configs.payroll.rules.update');
+        Route::delete('rules/{rule}', 'destroyRule')->name('configs.payroll.rules.destroy');
+    });
 
     // Every other section tab renders a placeholder page until its module is built.
     // Names given with ->name() aren't indexed until the lookups are refreshed.

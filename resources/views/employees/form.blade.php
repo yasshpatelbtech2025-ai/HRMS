@@ -40,7 +40,7 @@
             'deductionsShown' => collect($deductionLabels)->keys()->filter($hasAmount)->values(),
         ];
         $lookups = [
-            'companies' => $companies->map(fn ($c) => ['id' => $c->id, 'employees_count' => $c->employees_count]),
+            'companies' => $companies->map(fn ($c) => ['id' => $c->id, 'employees_count' => $c->employees_count, 'structure' => $c->payrollSetting?->salary_structure ?? 'old']),
             'departments' => $departments,
             'subDepartments' => $subDepartments,
             'positions' => $positions,

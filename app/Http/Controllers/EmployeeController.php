@@ -263,7 +263,7 @@ class EmployeeController extends Controller
 
         return [
             'employee' => $employee,
-            'companies' => Company::with('parent')->withCount('employees')->orderBy('establishment_name')->get(),
+            'companies' => Company::with(['parent', 'payrollSetting'])->withCount('employees')->orderBy('establishment_name')->get(),
             'departments' => Department::orderBy('name')->get(['id', 'company_id', 'name']),
             'subDepartments' => SubDepartment::where(fn ($q) => $q->where('is_active', true)->orWhere('id', $employee->sub_department_id))
                 ->orderBy('name')->get(['id', 'department_id', 'name']),

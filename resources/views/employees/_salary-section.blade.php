@@ -33,7 +33,7 @@
                 <div x-show="picking" x-transition class="absolute z-20 mt-1 w-72 rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5" style="display: none;">
                     @foreach ($labels as $key => $label)
                         @continue($key === 'basic')
-                        <label class="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+                        <label class="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50" x-show="offered(@js($key))">
                             <input type="checkbox" :checked="{{ $list }}.includes(@js($key))" x-on:change="toggleElement(@js($list), @js($key))" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                             {{ $label }}
                         </label>
@@ -79,6 +79,9 @@
                             </tr>
                         @endforeach
                         @if ($list === 'grossShown')
+                            <tr x-show="basicTooLow" style="display: none;">
+                                <td colspan="3" class="px-3 py-2 text-xs font-medium text-red-600">{{ __('Basic Salary must be greater than 50% of Gross Salary (this company uses the New Structure).') }}</td>
+                            </tr>
                             <tr class="bg-gray-50 font-semibold text-gray-900">
                                 <td class="px-3 py-2">{{ __('Gross (monthly)') }}</td>
                                 <td class="px-3 py-2" x-text="money(grossMonthly)"></td>

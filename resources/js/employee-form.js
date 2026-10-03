@@ -6,6 +6,9 @@
  * photoCapture: choose or take the profile photo, compressed in the browser.
  */
 
+// Gross elements a "New Structure" company (Configs › Payroll) may use.
+const NEW_STRUCTURE_ELEMENTS = ['basic', 'allowance', 'bonus'];
+
 const ADDRESS_FIELDS = ['address_line_1', 'address_line_2', 'village', 'district', 'taluka', 'state'];
 
 const round2 = (value) => Math.round(value * 100) / 100;
@@ -42,6 +45,9 @@ export function employeeForm(config) {
             if (!this.officers.some((o) => String(o.id) === String(this.officer))) this.officer = '';
             if (!this.shifts.some((s) => String(s.id) === String(this.shift))) this.shift = '';
             this.departmentChanged();
+            if (this.newStructure) {
+                this.grossShown.filter((e) => !NEW_STRUCTURE_ELEMENTS.includes(e)).forEach((e) => this.toggleElement('grossShown', e));
+            }
         },
         departmentChanged() {
             if (!this.subDepartments.some((s) => String(s.id) === String(this.subDepartment))) this.subDepartment = '';
@@ -72,6 +78,17 @@ export function employeeForm(config) {
         },
 
         // Salary structure ------------------------------------------------
+
+        get newStructure() {
+            return this.lookups.companies.find((c) => String(c.id) === String(this.company))?.structure === 'new';
+        },
+        offered(element) {
+            return !this.newStructure || NEW_STRUCTURE_ELEMENTS.includes(element) || element in this.deductionLabels;
+        },
+        // New Structure: basic must be at least half of gross, i.e. not below the allowance.
+        get basicTooLow() {
+            return this.newStructure && num(this.salary.basic?.monthly) < num(this.salary.allowance?.monthly);
+        },
 
         isShown(element) {
             return element === 'basic' || this.grossShown.includes(element) || this.deductionsShown.includes(element);

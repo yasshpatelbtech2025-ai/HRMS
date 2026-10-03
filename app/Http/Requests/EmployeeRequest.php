@@ -4,8 +4,10 @@ namespace App\Http\Requests;
 
 use App\Enums\EmploymentType;
 use App\Enums\Gender;
+use App\Models\PayrollSetting;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * The Add / Edit employee form. Field names follow the old HRMS form;
@@ -152,6 +154,31 @@ class EmployeeRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    /**
+     * A "New Structure" company (Configs › Payroll) only pays basic,
+     * allowance and bonus, with basic at least half of gross.
+     */
+    public function after(): array
+    {
+        return [function (Validator $validator) {
+            $structure = PayrollSetting::where('company_id', $this->integer('company_id'))->value('salary_structure');
+
+            if ($structure !== 'new') {
+                return;
+            }
+
+            foreach (array_diff(array_keys(config('employee.gross_elements')), ['basic', 'allowance', 'bonus']) as $element) {
+                if ((float) $this->input("salary.{$element}.monthly") > 0 || (float) $this->input("salary.{$element}.yearly") > 0) {
+                    $validator->errors()->add("salary.{$element}.monthly", __('This company uses the New Structure, which only has Basic, Allowance and Bonus.'));
+                }
+            }
+
+            if ((float) $this->input('salary.basic.monthly') < (float) $this->input('salary.allowance.monthly')) {
+                $validator->errors()->add('salary.basic.monthly', __('Basic Salary must be greater than 50% of Gross Salary.'));
+            }
+        }];
     }
 
     public function attributes(): array

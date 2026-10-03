@@ -45,7 +45,8 @@ class EmployeeImportController extends Controller
         $emails = [];
 
         foreach ($rows as $number => $data) {
-            $validator = Validator::make($data, (new EmployeeRequest)->merge($data)->rules(), [], (new EmployeeRequest)->attributes());
+            $rules = (new EmployeeRequest)->merge($data);
+            $validator = Validator::make($data, $rules->rules(), [], $rules->attributes())->after($rules->after());
             $messages = $validator->errors()->all();
 
             if (filled($data['email']) && in_array(mb_strtolower($data['email']), $emails, true)) {
