@@ -19,8 +19,10 @@ use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\Payroll\CurrentSalaryController;
 use App\Http\Controllers\Payroll\LoanController;
+use App\Http\Controllers\Payroll\PayslipController;
 use App\Http\Controllers\Payroll\SalaryAdjustmentController;
 use App\Http\Controllers\Payroll\SalaryAdvanceController;
+use App\Http\Controllers\Payroll\SalaryGenerateController;
 use App\Http\Controllers\Payroll\SalaryRevisionController;
 use App\Http\Controllers\PayrollSettingController;
 use App\Http\Controllers\PositionController;
@@ -165,6 +167,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('payroll')->group(function () {
+        Route::controller(SalaryGenerateController::class)->group(function () {
+            Route::get('/', 'index')->name('payroll.index');
+            Route::post('/', 'store')->name('payroll.generate');
+            Route::get('approval/{sheet}', 'approval')->name('payroll.approval');
+            Route::get('chart/{sheet}', 'chartPage')->name('payroll.chart');
+            Route::get('chart/{sheet}/export', 'export')->name('payroll.chart.export');
+            Route::put('approval/{sheet}', 'approve')->name('payroll.approve');
+            Route::put('approval/{sheet}/undo', 'unapprove')->name('payroll.unapprove');
+            Route::put('sheets/{sheet}/paid-date', 'paidDate')->name('payroll.paid-date');
+            Route::delete('sheets/{sheet}', 'destroy')->name('payroll.destroy');
+        });
+
+        Route::controller(PayslipController::class)->group(function () {
+            Route::get('salaries', 'index')->name('payroll.salaries');
+            Route::get('payslips/{payslip}', 'show')->name('payroll.payslips.show');
+            Route::put('payslips/{payslip}/regenerate', 'regenerate')->name('payroll.payslips.regenerate');
+        });
+
         Route::controller(SalaryAdvanceController::class)->prefix('advances')->group(function () {
             Route::get('/', 'index')->name('payroll.advances');
             Route::post('/', 'store')->name('payroll.advances.store');

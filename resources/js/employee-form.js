@@ -118,12 +118,13 @@ export function employeeForm(config) {
         },
 
         /**
-         * Employee-side statutory deductions, using the old system's rules:
-         * PF 12% of basic up to ₹15,000 (capped at ₹3,000) for organisations
-         * over 20; ESI 0.75% of gross up to ₹21,000 for organisations over 10;
-         * Prof Tax ₹200 from ₹12,000 for organisations over 20; LWF ₹6 a year
-         * for organisations over 10. Daily and hourly rates are converted to a
-         * month of 30 days (8 hours a day for hourly).
+         * Employee-side statutory deductions, as Payroll works them out: PF
+         * 12% of basic when basic is ₹15,000 or less, for organisations over
+         * 20; ESI 0.75% of gross when gross is ₹21,000 or less, organisations
+         * over 10; Prof Tax ₹200 when gross is ₹12,000 or more, organisations
+         * over 20; LWF ₹6 in June and December, organisations over 10. Daily
+         * and hourly rates are converted to a month of 30 days (8 hours a day
+         * for hourly).
          */
         get statutory() {
             const company = this.lookups.companies.find((c) => String(c.id) === String(this.company));
@@ -141,10 +142,10 @@ export function employeeForm(config) {
                 gross = this.grossMonthly;
             }
 
-            const pf = size > 20 && basis <= 15000 ? Math.min((basis * 12 * 0.12) / 12, 3000) : 0;
-            const esi = size > 10 && gross <= 21000 ? (gross * 0.0075) / 12 : 0;
-            const pt = size > 20 && basis >= 12000 ? 200 : 0;
-            const lwf = size > 10 ? 6 : 0;
+            const pf = size > 20 && basis <= 15000 ? Math.round(basis * 0.12) : 0;
+            const esi = size > 10 && gross <= 21000 ? Math.ceil(gross * 0.0075) : 0;
+            const pt = size > 20 && gross >= 12000 ? 200 : 0;
+            const lwf = size > 10 ? 12 : 0; // ₹6 in June and December
 
             return [
                 { label: 'PF', monthly: pf, yearly: pf * 12 },

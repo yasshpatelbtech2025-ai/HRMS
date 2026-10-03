@@ -109,7 +109,7 @@ class MonthlyAttendance
             'shift' => $shift?->name, 'code' => $in?->shift_code ?? $out?->shift_code,
             'missing' => $punches->contains('is_missing', true), 'locked' => $punches->contains('is_locked', true),
             'late' => false, 'offDayWork' => false, 'holiday' => $holiday, 'weeklyOff' => $weeklyOff,
-            'leave' => $leave?->leaveType?->code, 'inId' => $in?->uuid, 'outId' => $out?->uuid,
+            'leave' => $leave?->leaveType?->code, 'leavePaid' => (bool) $leave?->leaveType?->is_paid, 'inId' => $in?->uuid, 'outId' => $out?->uuid,
         ];
 
         if ($day->gt($today) || ! $this->calendar->isEmployed($employee, $day)) {
