@@ -66,8 +66,13 @@
 </table>
 @unless ($printing)
     <p class="small" style="color: #555;">
+        @if ($bonusSheet)
+            Days worked, basic + DA and bonus come from the yearly bonus sheet for this year (Payroll › Bonus){{ $bonusSheet->isApproved() ? ', with the amount and date paid' : ', still a draft' }}.
+        @else
         Days worked, salary (basic + DA) and bonus come from the payslips for {{ $yearStart->format('M Y') }} – {{ $yearEnd->format('M Y') }}. Bonus payable is the bonus paid monthly through payroll;
         when none was, it is the employee's Bonus % (8.33%, the statutory minimum, when none is set) of that salary. Columns 12 and 13 are worked out when you save.
+        For the yearly bonus, work it out in Payroll › Bonus.
+        @endif
     </p>
 @endunless
 @include('compliance.forms.sheets._save', ['period' => $period])

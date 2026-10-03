@@ -21,6 +21,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\IdCardController;
+use App\Http\Controllers\Payroll\BonusController;
 use App\Http\Controllers\Payroll\CurrentSalaryController;
 use App\Http\Controllers\Payroll\LoanController;
 use App\Http\Controllers\Payroll\PayslipController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Payroll\SalaryAdjustmentController;
 use App\Http\Controllers\Payroll\SalaryAdvanceController;
 use App\Http\Controllers\Payroll\SalaryGenerateController;
 use App\Http\Controllers\Payroll\SalaryRevisionController;
+use App\Http\Controllers\Payroll\TdsController;
 use App\Http\Controllers\PayrollSettingController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
@@ -227,6 +229,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('current', [CurrentSalaryController::class, 'index'])->name('payroll.current');
         Route::get('current/export/{format}', [CurrentSalaryController::class, 'export'])->name('payroll.current.export');
+
+        Route::controller(TdsController::class)->prefix('tds')->group(function () {
+            Route::get('/', 'index')->name('payroll.tds');
+            Route::get('export/{format}', 'export')->whereIn('format', ['csv', 'xlsx'])->name('payroll.tds.export');
+            Route::post('{employee}', 'setMonthly')->name('payroll.tds.override');
+        });
+
+        Route::controller(BonusController::class)->prefix('bonus')->group(function () {
+            Route::get('/', 'index')->name('payroll.bonus');
+            Route::post('/', 'generate')->name('payroll.bonus.generate');
+            Route::put('{sheet}', 'update')->name('payroll.bonus.update');
+            Route::post('{sheet}/approve', 'approve')->name('payroll.bonus.approve');
+            Route::post('{sheet}/unapprove', 'unapprove')->name('payroll.bonus.unapprove');
+            Route::delete('{sheet}', 'destroy')->name('payroll.bonus.destroy');
+            Route::get('{sheet}/export/{format}', 'export')->whereIn('format', ['csv', 'xlsx'])->name('payroll.bonus.export');
+        });
     });
 
     Route::controller(DocumentController::class)->prefix('documents')->group(function () {

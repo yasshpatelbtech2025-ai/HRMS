@@ -125,6 +125,11 @@ class Employee extends Model
         return $this->hasMany(Attendance::class);
     }
 
+    public function payslips(): HasMany
+    {
+        return $this->hasMany(Payslip::class);
+    }
+
     protected function fullName(): Attribute
     {
         return Attribute::get(fn () => collect([$this->first_name, $this->middle_name, $this->last_name])->filter()->implode(' '));

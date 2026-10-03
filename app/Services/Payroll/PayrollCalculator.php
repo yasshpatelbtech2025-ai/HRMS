@@ -39,11 +39,14 @@ use Carbon\CarbonImmutable;
  *        over 10 (all ₹18 by the employer when it pays the employee's share)
  *   VPF % of earned basic, notice period recovery, salary advances due,
  *   loan installments and salary adjustments.
+ *   TDS when the company deducts tax (Configs › Payroll): see IncomeTax.
  */
 class PayrollCalculator
 {
     /** Gross elements paid in full rather than pro-rated. */
     private const FIXED_ELEMENTS = ['performance_bonus', 'joining_bonus'];
+
+    public function __construct(private IncomeTax $incomeTax) {}
 
     /**
      * @param  array{days: array<string, array>, totals: array<string, float>}  $attendance  from MonthlyAttendance
@@ -202,6 +205,16 @@ class PayrollCalculator
 
         foreach ($adjustments->where('type', 'deduction') as $adjustment) {
             $deductions[] = $this->line("adjustment:{$adjustment->uuid}", $adjustment->title, (float) $adjustment->amount);
+        }
+
+        // TDS: the year's estimated tax still due, spread over the months left (or the amount set in Payroll › TDS).
+        if ($setting->tax_deduction) {
+            $tds = $this->incomeTax->project($employee, $month, [
+                'gross' => $gross, 'pt' => $this->sum($deductions, ['pt']), 'pf' => $this->sum($deductions, ['pf', 'vpf']),
+            ])['monthly_tds'];
+            if ($tds > 0) {
+                $deductions[] = $this->line('tds', 'TDS (INCOME TAX)', $tds);
+            }
         }
 
         $deductionTotal = round(array_sum(array_column($deductions, 'amount')), 2);

@@ -56,6 +56,8 @@ return [
         'revisions' => 'Salary revision',
         'current' => 'Current Salary',
         'loans' => 'Loan',
+        'tds' => 'TDS',
+        'bonus' => 'Bonus',
     ],
 
     'reports' => [

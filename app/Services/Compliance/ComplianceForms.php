@@ -3,6 +3,7 @@
 namespace App\Services\Compliance;
 
 use App\Models\Attendance;
+use App\Models\BonusSheet;
 use App\Models\Company;
 use App\Models\ComplianceFormValue;
 use App\Models\ComplianceRegisterEntry;
@@ -325,13 +326,16 @@ class ComplianceForms
 
         $payslips = Payslip::where('company_id', $company->id)->whereDate('month', '>=', $from)->whereDate('month', '<=', $to)->get();
         $bonus = $payslips->sum(fn (Payslip $p) => $p->amount('earnings', 'bonus'));
+        $sheet = BonusSheet::where('company_id', $company->id)->where('fy', $start)->where('status', 'approved')->with('entries')->first();
+        $yearly = $sheet?->entries->where('amount', '>', 0) ?? collect();
 
         return [
             'startYear' => $start,
             'yearEnd' => $to,
             'totalEmployees' => $payslips->pluck('employee_id')->unique()->count(),
-            'benefited' => $payslips->filter(fn (Payslip $p) => $p->amount('earnings', 'bonus') > 0)->pluck('employee_id')->unique()->count(),
-            'bonusPaid' => round($bonus, 2),
+            'benefited' => $payslips->filter(fn (Payslip $p) => $p->amount('earnings', 'bonus') > 0)->pluck('employee_id')->merge($yearly->pluck('employee_id'))->unique()->count(),
+            'bonusPaid' => round($bonus + $yearly->sum('amount'), 2),
+            'bonusPaidOn' => $sheet?->paid_on,
             'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'bonus-form-d', 'period' => $start.'-'.($start + 1)]),
         ];
     }
@@ -507,8 +511,22 @@ class ComplianceForms
             ->where(fn ($q) => $q->whereNull('separation_date')->orWhereDate('separation_date', '>=', $from))
             ->get();
 
-        $rows = $employees->map(function (Employee $e) use ($payslips, $from) {
+        // A yearly bonus sheet (Payroll › Bonus), when there is one, gives the bonus; an approved one also what was paid and when.
+        $sheet = BonusSheet::where('company_id', $company->id)->where('fy', $start)->with('entries')->first();
+        $entries = $sheet?->entries->keyBy('employee_id') ?? collect();
+
+        $rows = $employees->map(function (Employee $e) use ($payslips, $from, $entries) {
             $slips = $payslips[$e->id] ?? collect();
+            if ($entry = $entries[$e->id] ?? null) {
+                return [
+                    'employee' => $e,
+                    'over15' => $e->date_of_birth ? $e->date_of_birth->diffInYears($from) >= 15 : null,
+                    'days' => $entry->days_worked,
+                    'salary' => $entry->salary,
+                    'payable' => $entry->amount,
+                    'rate' => null,
+                ];
+            }
             $salary = round($slips->sum(fn (Payslip $p) => $p->amount('earnings', 'basic') + $p->amount('earnings', 'da')), 2);
             $paidMonthly = round($slips->sum(fn (Payslip $p) => $p->amount('earnings', 'bonus')), 2);
             $rate = (float) ($e->salaryElements->firstWhere('element', 'bonus')?->monthly ?: 8.33);
@@ -529,8 +547,26 @@ class ComplianceForms
             'yearEnd' => $to,
             'workingDays' => Attendance::where('company_id', $company->id)->whereDate('work_date', '>=', $from)->whereDate('work_date', '<=', $to)->distinct()->count('work_date'),
             'rows' => $rows,
-            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'bonus-form-c', 'period' => $start.'-'.($start + 1)]),
+            'values' => $this->withPaidBonus(ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'bonus-form-c', 'period' => $start.'-'.($start + 1)]), $sheet),
+            'bonusSheet' => $sheet,
         ];
+    }
+
+    /**
+     * Fill Form C's amount paid and date paid from an approved bonus sheet
+     * where nothing has been typed in.
+     */
+    private function withPaidBonus(ComplianceFormValue $values, ?BonusSheet $sheet): ComplianceFormValue
+    {
+        if ($sheet?->isApproved()) {
+            $paid = $sheet->entries->filter(fn ($e) => $e->amount > 0)->flatMap(fn ($e) => [
+                $e->employee_id.'_paid' => (string) $e->amount,
+                $e->employee_id.'_paid_on' => $sheet->paid_on?->toDateString(),
+            ]);
+            $values->data = array_merge(array_filter($paid->all()), $values->data ?? []);
+        }
+
+        return $values;
     }
 
     /**

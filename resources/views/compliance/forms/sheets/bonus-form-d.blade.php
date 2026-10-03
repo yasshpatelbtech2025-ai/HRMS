@@ -33,7 +33,7 @@
     </tr>
 </table>
 @if ($bonusPaid > 0 && ! $printing)
-    <p class="small">{{ __('Payroll shows :amount paid as monthly bonus to :count employee(s) in this accounting year.', ['amount' => number_format($bonusPaid, 2), 'count' => $benefited]) }}</p>
+    <p class="small">{{ __('Payroll shows :amount paid as bonus (monthly with salary and the approved yearly bonus sheet) to :count employee(s) in this accounting year:paid.', ['amount' => number_format($bonusPaid, 2), 'count' => $benefited, 'paid' => $bonusPaidOn ? ' — yearly bonus paid on '.$bonusPaidOn->format('d-m-Y') : '']) }}</p>
 @endif
 <p style="text-align: right; margin-top: 40px;">Signature of the Employer or his agent.</p>
 @include('compliance.forms.sheets._save', ['period' => $period])
