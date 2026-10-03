@@ -53,9 +53,9 @@ class SalaryAdjustmentController extends Controller
         return back()->with('status', __('Salary adjustment deleted.'));
     }
 
-    public function export(Request $request): StreamedResponse
+    public function export(Request $request, string $format): StreamedResponse
     {
-        return TableExport::download('csv', 'salary-adjustments',
+        return TableExport::download($format, 'salary-adjustments',
             ['Sl', 'Employee name', 'Title', 'Amount', 'Salary month', 'Adjustment type'],
             $this->filtered($request)->get()->map(fn (SalaryAdjustment $a, int $i) => [
                 $i + 1, $a->employee->full_name, $a->title, $a->amount, $a->salary_month->format('Y-m'), SalaryAdjustment::TYPES[$a->type],

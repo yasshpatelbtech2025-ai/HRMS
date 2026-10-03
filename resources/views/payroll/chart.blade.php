@@ -8,6 +8,7 @@
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <a href="{{ route('payroll.index') }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Back to salary list') }}</a>
         <div class="flex flex-wrap gap-2">
+            <a href="{{ route('payroll.chart.export', [$sheet, 'format' => 'csv']) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
             <a href="{{ route('payroll.chart.export', $sheet) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
             <button type="button" onclick="window.print()" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Print') }}</button>
             @if ($approval)

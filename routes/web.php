@@ -173,6 +173,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('approval/{sheet}', 'approval')->name('payroll.approval');
             Route::get('chart/{sheet}', 'chartPage')->name('payroll.chart');
             Route::get('chart/{sheet}/export', 'export')->name('payroll.chart.export');
+            Route::get('export/{format}', 'exportList')->name('payroll.export');
             Route::put('approval/{sheet}', 'approve')->name('payroll.approve');
             Route::put('approval/{sheet}/undo', 'unapprove')->name('payroll.unapprove');
             Route::put('sheets/{sheet}/paid-date', 'paidDate')->name('payroll.paid-date');
@@ -181,6 +182,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::controller(PayslipController::class)->group(function () {
             Route::get('salaries', 'index')->name('payroll.salaries');
+            Route::get('salaries/export/{format}', 'export')->name('payroll.salaries.export');
             Route::get('payslips/{payslip}', 'show')->name('payroll.payslips.show');
             Route::put('payslips/{payslip}/regenerate', 'regenerate')->name('payroll.payslips.regenerate');
         });
@@ -188,7 +190,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(SalaryAdvanceController::class)->prefix('advances')->group(function () {
             Route::get('/', 'index')->name('payroll.advances');
             Route::post('/', 'store')->name('payroll.advances.store');
-            Route::get('export', 'export')->name('payroll.advances.export');
+            Route::get('export/{format}', 'export')->name('payroll.advances.export');
             Route::put('{advance}', 'update')->name('payroll.advances.update');
             Route::delete('{advance}', 'destroy')->name('payroll.advances.destroy');
             Route::get('{advance}/attachment', 'attachment')->name('payroll.advances.attachment');
@@ -197,7 +199,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(SalaryAdjustmentController::class)->prefix('adjustments')->group(function () {
             Route::get('/', 'index')->name('payroll.adjustments');
             Route::post('/', 'store')->name('payroll.adjustments.store');
-            Route::get('export', 'export')->name('payroll.adjustments.export');
+            Route::get('export/{format}', 'export')->name('payroll.adjustments.export');
             Route::put('{adjustment}', 'update')->name('payroll.adjustments.update');
             Route::delete('{adjustment}', 'destroy')->name('payroll.adjustments.destroy');
         });
@@ -213,6 +215,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::controller(SalaryRevisionController::class)->prefix('revisions')->group(function () {
             Route::get('/', 'index')->name('payroll.revisions');
+            Route::get('export/{format}', 'export')->name('payroll.revisions.export');
             Route::get('create/{employee}', 'create')->name('payroll.revisions.create');
             Route::post('create/{employee}', 'store')->name('payroll.revisions.store');
             Route::put('{revision}/apply', 'apply')->name('payroll.revisions.apply');
@@ -220,6 +223,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
         Route::get('current', [CurrentSalaryController::class, 'index'])->name('payroll.current');
+        Route::get('current/export/{format}', [CurrentSalaryController::class, 'export'])->name('payroll.current.export');
     });
 
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');

@@ -11,7 +11,10 @@
             <x-add-button modal="create-advance">{{ __('Add salary advance') }}</x-add-button>
         </div>
 
-        <x-list-toolbar :action="route('payroll.advances')" :per-page="$perPage" :exports="[__('CSV') => route('payroll.advances.export', request()->only('search'))]" />
+        <x-list-toolbar :action="route('payroll.advances')" :per-page="$perPage" :exports="[
+            __('CSV') => route('payroll.advances.export', ['format' => 'csv'] + request()->only('search')),
+            __('Excel') => route('payroll.advances.export', ['format' => 'xlsx'] + request()->only('search')),
+        ]" />
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">

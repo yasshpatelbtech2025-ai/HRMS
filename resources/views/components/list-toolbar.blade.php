@@ -2,7 +2,7 @@
     "Show N entries", export buttons and search box above a list table.
     Keeps the current sort and filters when the page size or search changes.
 --}}
-@props(['action', 'perPage', 'exports' => [], 'print' => false, 'allowAll' => false])
+@props(['action', 'perPage', 'exports' => [], 'print' => false, 'allowAll' => false, 'copy' => false])
 
 <form method="GET" action="{{ $action }}"
       class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-sm print:hidden">
@@ -26,6 +26,22 @@
     </label>
 
     <div class="flex flex-wrap items-center gap-2">
+        @if ($copy)
+            {{-- Copies this page's table as tab-separated text (pastes straight into Excel), without the Action column. --}}
+            <button type="button" x-data="{ copied: false }"
+                    x-on:click="
+                        const table = $el.closest('.rounded-lg').querySelector('table');
+                        const head = table.tHead.rows[table.tHead.rows.length - 1].cells;
+                        const skip = [...head].map(c => c.innerText.trim() === 'Action');
+                        const text = [...table.rows].filter(r => r.cells.length === skip.length)
+                            .map(r => [...r.cells].filter((c, i) => ! skip[i]).map(c => c.innerText.replace(/\s+/g, ' ').trim()).join('\t'))
+                            .join('\n');
+                        navigator.clipboard.writeText(text).then(() => { copied = true; setTimeout(() => copied = false, 2000) });
+                    "
+                    class="rounded-md border border-gray-300 bg-white px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-50">
+                <span x-text="copied ? @js(__('Copied')) : @js(__('Copy'))">{{ __('Copy') }}</span>
+            </button>
+        @endif
         @foreach ($exports as $label => $url)
             <a href="{{ $url }}" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-50">{{ $label }}</a>
         @endforeach

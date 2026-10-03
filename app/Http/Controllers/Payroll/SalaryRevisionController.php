@@ -7,11 +7,13 @@ use App\Models\Employee;
 use App\Models\PayrollSetting;
 use App\Models\SalaryRevision;
 use App\Services\Payroll\SalaryRevisions;
+use App\Support\TableExport;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Payroll › Salary revision: change an employee's salary structure from an
@@ -35,6 +37,21 @@ class SalaryRevisionController extends Controller
                 ->when($employee, fn ($q) => $q->where('employee_id', $employee->id))
                 ->latest('effective_from')->latest('id')->paginate(25)->withQueryString(),
         ]);
+    }
+
+    public function export(Request $request, string $format): StreamedResponse
+    {
+        return TableExport::download($format, 'salary-revisions',
+            ['Employee id', 'Name of employee', 'Revised date', 'Effective from', 'Revised salary (yearly)', 'Revised percentage %', 'Status'],
+            SalaryRevision::with('employee')
+                ->when($request->filled('employee'), fn ($q) => $q->whereHas('employee', fn ($e) => $e->where('uuid', $request->query('employee'))))
+                ->latest('effective_from')->latest('id')->get()
+                ->map(fn (SalaryRevision $r) => [
+                    $r->employee->employee_code, $r->employee->full_name, $r->revised_on->toDateString(), $r->effective_from->format('Y-m'),
+                    $r->revised_yearly, $r->percentage(), ucfirst($r->status),
+                ]),
+            'Salary revision list',
+        );
     }
 
     public function create(Employee $employee): View

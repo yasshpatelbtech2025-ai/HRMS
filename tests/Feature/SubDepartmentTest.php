@@ -102,6 +102,6 @@ class SubDepartmentTest extends TestCase
         $xlsx = $this->get(route('employees.departments.export', ['format' => 'xlsx']))->assertOk();
         $this->assertStringStartsWith('PK', $xlsx->streamedContent());
 
-        $this->get(route('employees.departments.export', ['format' => 'pdf']))->assertNotFound();
+        $this->get(route('employees.departments.export', ['format' => 'docx']))->assertNotFound();
     }
 }

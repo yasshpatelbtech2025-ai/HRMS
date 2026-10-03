@@ -63,7 +63,7 @@ class PayrollInputsTest extends TestCase
             ->assertSessionHasNoErrors();
         $this->assertEquals(4000, $advance->fresh()->amount);
 
-        $this->assertStringContainsString('Gopal Bhat', $this->get(route('payroll.advances.export'))->streamedContent());
+        $this->assertStringContainsString('Gopal Bhat', $this->get(route('payroll.advances.export', 'csv'))->streamedContent());
         $this->delete(route('payroll.advances.destroy', $advance))->assertSessionHas('status');
         $this->assertModelMissing($advance);
     }

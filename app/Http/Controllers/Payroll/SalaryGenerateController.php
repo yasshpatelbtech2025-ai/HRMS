@@ -34,6 +34,19 @@ class SalaryGenerateController extends Controller
         ]);
     }
 
+    public function exportList(string $format): StreamedResponse
+    {
+        return TableExport::download($format, 'salary-list',
+            ['Sl', 'Company name', 'Salary name', 'Generate date', 'Generate by', 'Status', 'Approved date', 'Approved by', 'Paid date'],
+            SalarySheet::with(['company.parent', 'generator', 'approver'])->orderByDesc('month')->orderByDesc('generated_at')->get()
+                ->map(fn (SalarySheet $s, int $i) => [
+                    $i + 1, $s->company->label, $s->month->format('Y-m'), $s->generated_at->format('d-m-Y'), $s->generator?->name,
+                    $s->isApproved() ? 'Approved' : 'Not approved', $s->approved_at?->format('d-m-Y'), $s->approver?->name, $s->paid_date?->format('d-m-Y'),
+                ]),
+            'Salary list',
+        );
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -108,12 +121,12 @@ class SalaryGenerateController extends Controller
         return redirect()->route('payroll.index')->with('status', __('Salary sheet deleted.'));
     }
 
-    public function export(SalarySheet $sheet): StreamedResponse
+    public function export(Request $request, SalarySheet $sheet): StreamedResponse
     {
         $chart = $this->chart($sheet);
         $headings = ['Sl', 'Employee id', 'Employee name', 'Paid days', 'LOP', 'OT hrs', ...$chart['earnings'], 'Gross', ...$chart['deductions'], 'Total deductions', 'Net pay', ...$chart['employer']];
 
-        return TableExport::download('xlsx', 'salary-'.$sheet->month->format('Y-m').'-'.Str::slug($sheet->company->establishment_name), $headings,
+        return TableExport::download($request->query('format') === 'csv' ? 'csv' : 'xlsx', 'salary-'.$sheet->month->format('Y-m').'-'.Str::slug($sheet->company->establishment_name), $headings,
             $chart['rows']->values()->map(fn ($row, $i) => [
                 $i + 1, $row['code'], $row['name'], $row['paid_days'], $row['lop'], $row['ot'],
                 ...array_map(fn ($l) => $row['earnings'][$l] ?? 0, $chart['earnings']), $row['gross'],

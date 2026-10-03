@@ -23,7 +23,10 @@
         @if (! $employees)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
         @else
-            <x-list-toolbar :action="route('payroll.current')" :per-page="$perPage" allow-all print />
+            <x-list-toolbar :action="route('payroll.current')" :per-page="$perPage" allow-all print :exports="[
+                __('CSV') => route('payroll.current.export', ['format' => 'csv', 'company' => $company->uuid]),
+                __('Excel') => route('payroll.current.export', ['format' => 'xlsx', 'company' => $company->uuid]),
+            ]" />
 
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">

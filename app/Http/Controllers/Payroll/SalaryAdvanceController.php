@@ -68,9 +68,9 @@ class SalaryAdvanceController extends Controller
         return $disk->response($advance->attachment_path);
     }
 
-    public function export(Request $request): StreamedResponse
+    public function export(Request $request, string $format): StreamedResponse
     {
-        return TableExport::download('csv', 'salary-advances',
+        return TableExport::download($format, 'salary-advances',
             ['Sl', 'Employee name', 'Amount', 'Release amount', 'Salary month', 'Advance date', 'Status'],
             $this->filtered($request)->get()->map(fn (SalaryAdvance $a, int $i) => [
                 $i + 1, $a->employee->full_name, $a->amount, $a->released_amount, $a->salary_month->format('Y-m'), $a->advance_date->toDateString(), $a->is_active ? 'Active' : 'Inactive',

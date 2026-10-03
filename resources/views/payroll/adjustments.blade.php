@@ -9,7 +9,10 @@
             <x-add-button modal="create-adjustment">{{ __('Add adjustment') }}</x-add-button>
         </div>
 
-        <x-list-toolbar :action="route('payroll.adjustments')" :per-page="$perPage" :exports="[__('CSV') => route('payroll.adjustments.export', request()->only('search'))]" />
+        <x-list-toolbar :action="route('payroll.adjustments')" :per-page="$perPage" :exports="[
+            __('CSV') => route('payroll.adjustments.export', ['format' => 'csv'] + request()->only('search')),
+            __('Excel') => route('payroll.adjustments.export', ['format' => 'xlsx'] + request()->only('search')),
+        ]" />
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
