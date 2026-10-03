@@ -14,6 +14,7 @@ use App\Http\Controllers\Attendance\ShiftManagementController;
 use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\FirmController;
 use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\ComplianceTaskController;
 use App\Http\Controllers\DashboardController;
@@ -44,6 +45,13 @@ Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verif
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('company/export', [CompanyController::class, 'export'])->name('company.export');
+    // Before the company resource, so "firm" is not taken for a company.
+    Route::controller(FirmController::class)->prefix('company/firm')->group(function () {
+        Route::get('/', 'show')->name('company.firm');
+        Route::put('/', 'update')->name('company.firm.update');
+        Route::get('image/{image}', 'image')->name('company.firm.image');
+        Route::post('test-mail', 'testMail')->name('company.firm.test-mail');
+    });
     Route::resource('company', CompanyController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::controller(SubDepartmentController::class)->prefix('employees/departments')->group(function () {
