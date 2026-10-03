@@ -64,8 +64,8 @@ class IdCardFormats
         $background = $landscape ? "horizontal-{$side}" : $side;
 
         return new HtmlString(sprintf(
-            '<div class="%s"><div class="%s"><img src="%s" class="%s" alt="">%s</div></div>',
-            $landscape ? 'horizontal-identity-card' : 'identity-card', $card, asset("images/id-cards/{$format['id']}-{$side}.svg"), $background, $html,
+            '<div class="%s"><div class="%s"><img src="%s" class="%s" alt="" loading="lazy">%s</div></div>',
+            $landscape ? 'horizontal-identity-card' : 'identity-card', $card, asset("images/id-cards/{$format['id']}-{$side}.jpg"), $background, $html,
         ));
     }
 
