@@ -75,6 +75,8 @@ class ComplianceFormsTest extends TestCase
             ->assertSee(route('employees.id-cards'), false);
 
         $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'wc']))
+            ->assertOk()->assertSeeInOrder(['WC ACT 1923', 'coming soon', 'WC ACT 1923 forms are coming soon.']);
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'esic']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
