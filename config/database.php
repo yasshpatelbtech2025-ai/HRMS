@@ -97,6 +97,13 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // A remote database is far away: reusing the connection between
+            // requests avoids reconnecting (TLS + auth) every time, and
+            // emulated prepares send each query in one round trip, not two.
+            'options' => extension_loaded('pdo_pgsql') ? [
+                PDO::ATTR_PERSISTENT => (bool) env('DB_PERSISTENT', false),
+                PDO::ATTR_EMULATE_PREPARES => (bool) env('DB_EMULATE_PREPARES', false),
+            ] : [],
         ],
 
         'sqlsrv' => [
