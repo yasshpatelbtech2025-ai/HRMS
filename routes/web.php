@@ -14,6 +14,7 @@ use App\Http\Controllers\Attendance\ShiftManagementController;
 use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\IdCardController;
@@ -33,9 +34,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('company/export', [CompanyController::class, 'export'])->name('company.export');
