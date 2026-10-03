@@ -17,6 +17,11 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\IdCardController;
+use App\Http\Controllers\Payroll\CurrentSalaryController;
+use App\Http\Controllers\Payroll\LoanController;
+use App\Http\Controllers\Payroll\SalaryAdjustmentController;
+use App\Http\Controllers\Payroll\SalaryAdvanceController;
+use App\Http\Controllers\Payroll\SalaryRevisionController;
 use App\Http\Controllers\PayrollSettingController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
@@ -157,6 +162,44 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', 'store')->name('attendance.leave.holidays.store');
             Route::delete('{company}/{holiday}', 'destroy')->name('attendance.leave.holidays.destroy');
         });
+    });
+
+    Route::prefix('payroll')->group(function () {
+        Route::controller(SalaryAdvanceController::class)->prefix('advances')->group(function () {
+            Route::get('/', 'index')->name('payroll.advances');
+            Route::post('/', 'store')->name('payroll.advances.store');
+            Route::get('export', 'export')->name('payroll.advances.export');
+            Route::put('{advance}', 'update')->name('payroll.advances.update');
+            Route::delete('{advance}', 'destroy')->name('payroll.advances.destroy');
+            Route::get('{advance}/attachment', 'attachment')->name('payroll.advances.attachment');
+        });
+
+        Route::controller(SalaryAdjustmentController::class)->prefix('adjustments')->group(function () {
+            Route::get('/', 'index')->name('payroll.adjustments');
+            Route::post('/', 'store')->name('payroll.adjustments.store');
+            Route::get('export', 'export')->name('payroll.adjustments.export');
+            Route::put('{adjustment}', 'update')->name('payroll.adjustments.update');
+            Route::delete('{adjustment}', 'destroy')->name('payroll.adjustments.destroy');
+        });
+
+        Route::controller(LoanController::class)->prefix('loans')->group(function () {
+            Route::get('/', 'index')->name('payroll.loans');
+            Route::post('/', 'store')->name('payroll.loans.store');
+            Route::get('export/{format}', 'export')->name('payroll.loans.export');
+            Route::put('{loan}', 'update')->name('payroll.loans.update');
+            Route::delete('{loan}', 'destroy')->name('payroll.loans.destroy');
+            Route::get('{loan}/attachment', 'attachment')->name('payroll.loans.attachment');
+        });
+
+        Route::controller(SalaryRevisionController::class)->prefix('revisions')->group(function () {
+            Route::get('/', 'index')->name('payroll.revisions');
+            Route::get('create/{employee}', 'create')->name('payroll.revisions.create');
+            Route::post('create/{employee}', 'store')->name('payroll.revisions.store');
+            Route::put('{revision}/apply', 'apply')->name('payroll.revisions.apply');
+            Route::put('{revision}/cancel', 'cancel')->name('payroll.revisions.cancel');
+        });
+
+        Route::get('current', [CurrentSalaryController::class, 'index'])->name('payroll.current');
     });
 
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
