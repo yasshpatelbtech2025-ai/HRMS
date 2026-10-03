@@ -8,8 +8,9 @@
         <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('app.name', 'HRMS') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -18,7 +19,7 @@
         <div x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="min-h-screen">
             @include('layouts.sidebar')
 
-            <div class="lg:ps-64 print:ps-0 flex flex-col min-h-screen">
+            <div class="lg:ps-[260px] print:ps-0 flex flex-col min-h-screen">
                 @include('layouts.topbar')
 
                 <!-- Page Content -->

@@ -4,7 +4,7 @@
 
 <!-- Sidebar -->
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-       class="fixed inset-y-0 start-0 z-40 w-64 flex flex-col print:hidden bg-gray-900 text-gray-300 transform transition-transform duration-200 ease-in-out lg:translate-x-0">
+       class="fixed inset-y-0 start-0 z-40 w-[260px] flex flex-col print:hidden bg-gray-900 text-gray-300 transform transition-transform duration-200 ease-in-out lg:translate-x-0">
     <!-- Brand -->
     <div class="flex items-center gap-3 h-16 px-6 border-b border-gray-800">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">

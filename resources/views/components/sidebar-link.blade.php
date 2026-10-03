@@ -1,9 +1,10 @@
 @props(['active' => false, 'icon' => null])
 
 @php
+// Sized as in the old HRMS: 16px semibold items with roomy padding.
 $classes = $active
-            ? 'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-gray-800 text-white'
-            : 'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition';
+            ? 'flex items-center gap-4 px-2.5 py-[15px] rounded-[5px] text-base font-semibold bg-gray-800 text-white'
+            : 'flex items-center gap-4 px-2.5 py-[15px] rounded-[5px] text-base font-semibold text-gray-400 hover:bg-gray-800 hover:text-white transition';
 @endphp
 
 <a {{ $attributes->merge(['class' => $classes]) }} @if ($active) aria-current="page" @endif>

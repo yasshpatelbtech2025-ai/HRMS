@@ -13,7 +13,7 @@
 @endphp
 
 <div>
-    <label for="{{ $id }}" class="block text-sm font-medium text-gray-700">
+    <label for="{{ $id }}" class="block text-[15px] font-bold text-gray-700">
         {{ $label }} @if ($required)<span class="text-red-600">*</span>@endif
     </label>
     <input id="{{ $id }}" name="{{ $inputName }}" type="{{ $type }}" @if ($type !== 'file') value="{{ $current instanceof \DateTimeInterface ? $current->format('Y-m-d') : $current }}" @endif

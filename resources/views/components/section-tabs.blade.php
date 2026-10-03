@@ -23,7 +23,7 @@
                 @php $active = $name === $activeTab; @endphp
                 <li>
                     <a href="{{ route($name) }}" @if ($active) aria-current="page" @endif
-                       class="block whitespace-nowrap rounded-md font-medium transition {{ $nested ? 'px-3 py-1.5 text-sm' : 'px-4 py-2 text-sm' }}
+                       class="block whitespace-nowrap rounded-md font-medium transition {{ $nested ? 'px-2.5 py-[5px] text-[15px]' : 'px-2.5 py-[5px] text-[15px]' }}
                               {{ $active ? ($nested ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-900 text-white') : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
                         {{ __($label) }}
                     </a>

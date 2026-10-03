@@ -1,3 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Typography and sizing matched to the old HRMS (colours stay our own):
+ * Funnel Display at 15px, 28px bold page titles, uppercase 14px table
+ * headings over 15px cells with 12px padding, 15px form controls and
+ * round 40px row-action buttons. Statutory forms (.sheet), the attendance
+ * and roster grids (text-xs tables) and print keep their compact layout.
+ */
+@layer base {
+    body {
+        font-size: 15px;
+        color: #070707;
+    }
+}
+
+/* Page titles. */
+main h2.text-2xl {
+    font-size: 28px;
+    line-height: 1.25;
+}
+
+/* List tables. */
+main table.text-sm > thead th {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    white-space: nowrap;
+}
+
+main table.text-sm > tbody td {
+    font-size: 15px;
+    padding: 12px;
+    vertical-align: middle;
+}
+
+/* Form controls (not inside statutory forms or grids). */
+main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):not(.sheet *, table.text-xs *) {
+    font-size: 15px;
+}
+
+main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):not(.sheet *, table *) {
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+/* Row action buttons: 40px white circles with a soft shadow. */
+main table.text-sm > tbody td :is(a, button).rounded-md.p-2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+main table.text-sm > tbody td :is(a, button).rounded-md.p-2:hover {
+    transform: scale(1.05);
+}
+
+@media print {
+    main table.text-sm > thead th,
+    main table.text-sm > tbody td {
+        padding: 6px;
+        font-size: 11px;
+    }
+}
