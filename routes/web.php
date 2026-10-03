@@ -15,6 +15,7 @@ use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ComplianceController;
+use App\Http\Controllers\ComplianceTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
@@ -235,6 +236,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('{slot}', 'show')->name('documents.show');
         Route::post('{slot}/upload', 'upload')->name('documents.upload');
         Route::put('{slot}/assign', 'assign')->name('documents.assign');
+    });
+
+    Route::controller(ComplianceTaskController::class)->prefix('compliance/to-do')->group(function () {
+        Route::get('/', 'index')->name('compliance.to-do');
+        Route::post('/', 'store')->name('compliance.tasks.store');
+        Route::patch('{task}', 'update')->name('compliance.tasks.update');
+        Route::post('{task}/complete', 'complete')->name('compliance.tasks.complete');
+        Route::post('{task}/reopen', 'reopen')->name('compliance.tasks.reopen');
+        Route::delete('{task}', 'destroy')->name('compliance.tasks.destroy');
     });
 
     Route::controller(ComplianceController::class)->prefix('compliance')->group(function () {

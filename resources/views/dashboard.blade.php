@@ -134,8 +134,47 @@
         </section>
     </div>
 
-    <section class="mt-6 rounded-lg border border-dashed border-gray-300 bg-white px-5 py-6 text-sm text-gray-500">
-        <h2 class="text-base font-semibold text-gray-900">{{ __('Compliance Health') }}</h2>
-        <p class="mt-1">{{ __('Compliance health, pending and overdue compliances and the timeline appear here once the Compliance module is built.') }}</p>
+    @php
+        $health = $compliance['health'];
+        $tone = $health >= 90 ? ['text-[#0ca30c]', 'bg-[#0ca30c]'] : ($health >= 60 ? ['text-[#b07a00]', 'bg-[#fab219]'] : ['text-[#d03b3b]', 'bg-[#d03b3b]']);
+    @endphp
+    <section class="mt-6 rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 px-5 py-4">
+            <h2 class="text-base font-semibold text-gray-900">{{ __('Compliance Health') }}</h2>
+            <a href="{{ route('compliance.to-do') }}" class="text-sm font-semibold text-indigo-600 hover:underline">{{ __('Open To Do List') }}</a>
+        </div>
+        <div class="grid grid-cols-1 gap-6 px-5 py-5 lg:grid-cols-3">
+            <div>
+                <p class="text-sm text-gray-500">{{ __('Tasks past their due date that are done') }}</p>
+                <p class="mt-1 text-4xl font-semibold {{ $tone[0] }}">{{ $health }}%</p>
+                <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100" role="img" aria-label="{{ $health }}%"><div class="h-full rounded-full {{ $tone[1] }}" style="width: {{ $health }}%"></div></div>
+                <dl class="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+                    @foreach (['overdue' => [__('Overdue'), 'text-[#d03b3b]'], 'week' => [__('This week'), 'text-[#b07a00]'], 'upcoming' => [__('Upcoming'), 'text-gray-900']] as $key => [$label, $color])
+                        <a href="{{ route('compliance.to-do', ['status' => $key]) }}" class="rounded-md bg-gray-50 px-2 py-2 hover:bg-gray-100">
+                            <dd class="text-xl font-semibold {{ $color }}">{{ $compliance['counts'][$key] }}</dd>
+                            <dt class="text-xs text-gray-500">{{ $label }}</dt>
+                        </a>
+                    @endforeach
+                </dl>
+            </div>
+            <div class="lg:col-span-2">
+                <p class="text-sm font-medium text-gray-700">{{ __('Needs attention') }}</p>
+                <ul class="mt-2 divide-y divide-gray-100 rounded-md ring-1 ring-gray-100">
+                    @forelse ($compliance['urgent'] as $task)
+                        <li class="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ $task->title }}</p>
+                                <p class="text-xs text-gray-500">{{ $task->employee ? $task->employee->full_name.' · ' : '' }}{{ $task->company->establishment_name }}</p>
+                            </div>
+                            <span class="shrink-0 text-xs font-medium {{ $task->status() === 'overdue' ? 'text-[#d03b3b]' : 'text-[#b07a00]' }}">
+                                {{ $task->status() === 'overdue' ? __('Overdue since :date', ['date' => $task->due_on->format('d M')]) : __('Due :date', ['date' => $task->due_on->format('d M')]) }}
+                            </span>
+                        </li>
+                    @empty
+                        <li class="px-3 py-6 text-center text-sm text-gray-500">{{ __('Nothing overdue or due this week.') }}</li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
     </section>
 </x-app-layout>

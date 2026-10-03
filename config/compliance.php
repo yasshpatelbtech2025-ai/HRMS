@@ -117,6 +117,27 @@ return [
         ],
     ],
 
+    /*
+    | To Do List task types, created automatically for each company:
+    | "employee" ones once per current employee (due 15 days after they are
+    | added), "monthly" ones for each of the last three months (due on the
+    | given day of the next month; PF, ESIC and PT only when payroll deducted
+    | them) and "half-yearly" ones when anyone works on a hazardous process.
+    */
+    'tasks' => [
+        'form-33' => ['title' => 'Fitness Certificate of New Employment (Form 33) Maintain', 'category' => 'EHS', 'department' => 'Factory Act', 'every' => 'employee'],
+        'id-card' => ['title' => 'I-Card (Identity Card)', 'category' => 'HR', 'department' => 'Document', 'every' => 'employee'],
+        'police-verification' => ['title' => 'Police Verification', 'category' => 'HR', 'department' => 'Police Verification', 'every' => 'employee'],
+        'salary' => ['title' => 'Salary Generate (Payment Of Wage)', 'category' => 'Payroll', 'department' => 'General', 'every' => 'monthly', 'due_day' => 7],
+        'pf-return' => ['title' => 'PF Return', 'category' => 'Payroll', 'department' => 'PF', 'every' => 'monthly', 'due_day' => 15, 'deduction' => 'pf'],
+        'esic' => ['title' => 'ESIC Contributions', 'category' => 'Payroll', 'department' => 'ESIC', 'every' => 'monthly', 'due_day' => 15, 'deduction' => 'esi'],
+        'pt-return' => ['title' => 'PT Return (Form 5)', 'category' => 'Payroll', 'department' => 'PT', 'every' => 'monthly', 'due_day' => 15, 'deduction' => 'pt'],
+        'health-register' => ['title' => 'Health Register (Half-Yearly) (Form 32) Maintain', 'category' => 'EHS', 'department' => 'Factory Act', 'every' => 'half-yearly'],
+    ],
+
+    'task_departments' => ['General', 'PF', 'ESIC', 'PT', 'Factory Act', 'GPCB', 'Document', 'Police Verification'],
+    'task_categories' => ['HR', 'EHS', 'Payroll', 'Legal', 'Other'],
+
     // Medical examination forms (Factory Act), all built from MedicalExamination records.
     'examination_views' => ['form-5', 'form-27a', 'form-30', 'form-32'],
 
