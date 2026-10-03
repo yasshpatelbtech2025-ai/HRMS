@@ -13,7 +13,7 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary revision list') }}</h2>
             <form method="GET" action="{{ route('payroll.revisions') }}" class="flex flex-wrap items-center gap-2"
                   x-data="{ employee: @js($employee?->uuid ?? '') }">
-                <select name="employee" x-model="employee" onchange="this.form.submit()" class="min-w-72 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" aria-label="{{ __('Employee') }}">
+                <select name="employee" x-model="employee" onchange="this.form.submit()" class="min-w-72 rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Employee') }}">
                     <option value="">{{ __('Select employee') }}</option>
                     @foreach ($employees as $option)
                         <option value="{{ $option->uuid }}">{{ $option->employee_code }} - {{ $option->full_name }}</option>
@@ -69,7 +69,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="px-5 py-10 text-center text-gray-500">{{ __('Empty data') }}</td></tr>
+                        <x-empty-state colspan="8" icon="inbox">{{ __('No salary revisions yet.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

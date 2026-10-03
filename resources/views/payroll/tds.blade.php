@@ -5,7 +5,7 @@
 
     @php
         $money = fn ($n) => number_format((float) $n, 2);
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $exportQuery = ['company' => $company?->uuid, 'fy' => $fy];
     @endphp
 
@@ -77,13 +77,13 @@
                                            class="{{ $select }} w-28 py-1" aria-label="{{ __('Monthly TDS for :name', ['name' => $e->full_name]) }}">
                                     <button class="rounded-md bg-gray-800 px-2 py-1 text-xs font-semibold text-white hover:bg-gray-900">{{ __('Set') }}</button>
                                 </form>
-                                <p class="mt-1 text-xs {{ $r['override'] ? 'font-medium text-indigo-700' : 'text-gray-500' }}">
+                                <p class="mt-1 text-xs {{ $r['override'] ? 'font-medium text-brand-700' : 'text-gray-500' }}">
                                     {{ $r['override'] ? __('Set by hand (estimate :amount) — clear and Set to estimate again', ['amount' => $money($r['estimate'])]) : __('Estimated · :months month(s) left', ['months' => $r['months_left']]) }}
                                 </p>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="px-5 py-10 text-center text-gray-500">{{ $company ? __('No employees for this year.') : __('Add a company first.') }}</td></tr>
+                        <x-empty-state colspan="8" icon="inbox">{{ $company ? __('No employees for this year.') : __('Add a company first.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

@@ -43,7 +43,7 @@
                             <td class="px-4 py-3">{{ $advance->advance_date->toDateString() }}</td>
                             <td class="px-4 py-3">
                                 @if ($advance->attachment_path)
-                                    <a href="{{ route('payroll.advances.attachment', $advance) }}" target="_blank" class="text-indigo-600 hover:underline">{{ __('View') }}</a>
+                                    <a href="{{ route('payroll.advances.attachment', $advance) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('View') }}</a>
                                 @else
                                     —
                                 @endif
@@ -57,7 +57,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="px-5 py-10 text-center text-gray-500">{{ __('No salary advances.') }}</td></tr>
+                        <x-empty-state colspan="9" icon="inbox">{{ __('No salary advances.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

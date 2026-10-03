@@ -6,7 +6,7 @@
     <x-section-tabs section="company" />
 
     @php
-        $input = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $input = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $label = 'block text-[15px] font-bold text-gray-700';
         $val = fn (string $field) => old($field, $firm->{$field} instanceof \DateTimeInterface ? $firm->{$field}->format('Y-m-d') : $firm->{$field});
         $blankPerson = array_fill_keys(array_keys(Firm::PERSON_FIELDS), '') + ['is_primary' => false, 'is_factory_manager' => false];
@@ -71,7 +71,7 @@
                     @endforeach
                     <label class="flex items-center gap-2 pt-7 text-sm font-medium text-gray-700">
                         <input type="hidden" name="is_factory_registered" value="0">
-                        <input type="checkbox" name="is_factory_registered" value="1" @checked(old('is_factory_registered', $firm->is_factory_registered)) class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <input type="checkbox" name="is_factory_registered" value="1" @checked(old('is_factory_registered', $firm->is_factory_registered)) class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                         {{ __('Is factory registered under the Factory Act') }}
                     </label>
                 </div>
@@ -113,9 +113,9 @@
                             <p class="font-semibold text-gray-900" x-text="`{{ __('Owner') }} ${i + 1}` + ((owner.first_name || owner.last_name) ? ` — ${owner.first_name} ${owner.last_name}` : '')"></p>
                             <div class="flex flex-wrap items-center gap-4 text-sm">
                                 <label class="flex items-center gap-2"><input type="hidden" :name="`owners[${i}][is_primary]`" :value="owner.is_primary ? 1 : 0">
-                                    <input type="checkbox" x-model="owner.is_primary" class="rounded border-gray-300 text-indigo-600"> {{ __('Is Primary') }}</label>
+                                    <input type="checkbox" x-model="owner.is_primary" class="rounded border-gray-300 text-brand-600"> {{ __('Is Primary') }}</label>
                                 <label class="flex items-center gap-2"><input type="hidden" :name="`owners[${i}][is_factory_manager]`" :value="owner.is_factory_manager ? 1 : 0">
-                                    <input type="checkbox" x-model="owner.is_factory_manager" class="rounded border-gray-300 text-indigo-600"> {{ __('Is factory manager') }}</label>
+                                    <input type="checkbox" x-model="owner.is_factory_manager" class="rounded border-gray-300 text-brand-600"> {{ __('Is factory manager') }}</label>
                                 <button type="button" x-on:click="owners.splice(i, 1)" x-show="owners.length > 1" class="text-sm font-medium text-red-600 hover:underline">{{ __('Remove') }}</button>
                             </div>
                         </div>

@@ -3,16 +3,92 @@
 @tailwind utilities;
 
 /*
- * Typography and sizing matched to the old HRMS (colours stay our own):
- * Funnel Display at 15px, 28px bold page titles, uppercase 14px table
- * headings over 15px cells with 12px padding, 15px form controls and
- * round 40px row-action buttons. Statutory forms (.sheet), the attendance
- * and roster grids (text-xs tables) and print keep their compact layout.
+ * Global styles on top of the design tokens (tailwind.config.js).
+ * Typography and sizing follow the old HRMS: Funnel Display at 15px, 28px
+ * bold page titles, uppercase 14px table headings over 15px cells with
+ * 12px padding, 15px form controls and round 40px row-action buttons.
+ * Statutory forms (.sheet), the attendance and roster grids (text-xs
+ * tables) and print keep their compact layout.
  */
 @layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
     body {
         font-size: 15px;
-        color: #070707;
+        color: #101828;
+        background-color: #f4f6f8;
+    }
+
+    /* One visible focus style for keyboard users, in the brand colour. */
+    :focus-visible {
+        outline: 2px solid theme('colors.brand.500');
+        outline-offset: 2px;
+    }
+
+    a,
+    button,
+    [role='button'],
+    input,
+    select,
+    textarea {
+        transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+        transition-duration: 150ms;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Scroll boxes contain their absolutely positioned content (e.g. the
+       screen-reader labels on row actions), so a wide table scrolls inside
+       its card instead of widening the whole page on phones. */
+    .overflow-x-auto,
+    .overflow-auto {
+        position: relative;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 1ms !important;
+            transition-duration: 1ms !important;
+        }
+    }
+}
+
+@layer components {
+    /* A spinner for buttons and loading areas (inherits the text colour). */
+    .spinner {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 9999px;
+        animation: spin 0.7s linear infinite;
+    }
+
+    /* A grey placeholder with a light sweep while content loads. */
+    .skeleton {
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+        background-color: theme('colors.gray.200');
+    }
+
+    .skeleton::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6), transparent);
+        animation: shimmer 1.4s infinite;
+    }
+
+    /* A submit button while its form is being sent (resources/js/loading.js). */
+    [data-loading] {
+        pointer-events: none;
+        opacity: 0.75;
     }
 }
 
@@ -20,13 +96,16 @@
 main h2.text-2xl {
     font-size: 28px;
     line-height: 1.25;
+    letter-spacing: -0.01em;
 }
 
 /* List tables. */
 main table.text-sm > thead th {
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: theme('colors.gray.600');
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.04em;
     padding: 12px;
     white-space: nowrap;
 }
@@ -43,8 +122,12 @@ main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidd
 }
 
 main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):not(.sheet *, table *) {
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 8px;
+}
+
+main select:not(.sheet *, table.text-xs *) {
+    border-radius: 8px;
 }
 
 /* Row action buttons: 40px white circles with a soft shadow. */
@@ -56,15 +139,37 @@ main table.text-sm > tbody td :is(a, button).rounded-md.p-2 {
     align-items: center;
     justify-content: center;
     background-color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.1);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 main table.text-sm > tbody td :is(a, button).rounded-md.p-2:hover {
-    transform: scale(1.05);
+    transform: scale(1.06);
+    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.14);
+}
+
+/* Table rows lift slightly on hover. */
+main table.text-sm > tbody > tr {
+    transition: background-color 150ms ease;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 @media print {
+    body {
+        background: #fff;
+    }
+
     main table.text-sm > thead th,
     main table.text-sm > tbody td {
         padding: 6px;

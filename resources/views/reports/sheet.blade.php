@@ -3,7 +3,7 @@
 
     <x-section-tabs section="reports" />
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500'; @endphp
+    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">

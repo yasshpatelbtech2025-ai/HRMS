@@ -4,7 +4,7 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $styles = [
             'P' => 'bg-green-100 text-green-800 border-green-200',
             'HD' => 'bg-violet-100 text-violet-800 border-violet-200',
@@ -217,7 +217,7 @@
                             @endforeach
                         </select>
                         @if ($leaveTypes->isEmpty())
-                            <p class="mt-1 text-xs text-gray-500">{{ __('This company has no leave types.') }} <a href="{{ route('attendance.leave.types') }}" class="text-indigo-600 hover:underline">{{ __('Add them first.') }}</a></p>
+                            <p class="mt-1 text-xs text-gray-500">{{ __('This company has no leave types.') }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a></p>
                         @endif
                     </x-form-row>
                     <x-form-row :label="__('From date')" for="grid-leave-start" required :messages="$errors->get('start_date')">

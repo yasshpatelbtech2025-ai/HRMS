@@ -45,7 +45,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-5 py-10 text-center text-gray-500">{{ __('No salary adjustments.') }}</td></tr>
+                        <x-empty-state colspan="7" icon="inbox">{{ __('No salary adjustments.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

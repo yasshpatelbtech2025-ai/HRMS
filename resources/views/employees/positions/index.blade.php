@@ -40,11 +40,14 @@
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="px-5 py-10 text-center text-gray-500">
-                                {{ request('search') ? __('No positions match your search.') : __('No positions yet.') }}
-                            </td>
-                        </tr>
+                        @if (request('search'))
+                            <x-empty-state colspan="5" icon="search" :title="__('No positions match your search.')">{{ __('Try a different name.') }}</x-empty-state>
+                        @else
+                            <x-empty-state colspan="5" icon="users" :title="__('No positions yet')">
+                                {{ __('Positions are the designations employees hold.') }}
+                                <x-slot name="action"><x-add-button modal="create-position">{{ __('Add position') }}</x-add-button></x-slot>
+                            </x-empty-state>
+                        @endif
                     @endforelse
                 </tbody>
             </table>

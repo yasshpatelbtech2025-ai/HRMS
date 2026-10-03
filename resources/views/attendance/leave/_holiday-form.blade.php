@@ -4,7 +4,7 @@
     $mine = old('_modal') === $modal;
     $value = fn (string $field) => $mine ? old($field) : ($holiday->{$field} instanceof \DateTimeInterface ? $holiday->{$field}->toDateString() : $holiday->{$field});
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
-    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
 @endphp
 
 <form method="POST" action="{{ $editing ? route('attendance.leave.holiday-list.update', $holiday) : route('attendance.leave.holiday-list.store') }}">

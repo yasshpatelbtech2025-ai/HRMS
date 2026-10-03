@@ -8,7 +8,7 @@
     $mine = old('_modal') === $modal;
     $value = fn (string $field, $model) => $mine ? old($field) : $model;
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
-    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
 @endphp
 
 <form method="POST" action="{{ $editing ? route('payroll.loans.update', $loan) : route('payroll.loans.store') }}" enctype="multipart/form-data"

@@ -11,19 +11,19 @@
             'upcoming' => ['label' => __('Upcoming'), 'badge' => 'bg-sky-100 text-sky-800', 'accent' => 'bg-sky-500'],
             'completed' => ['label' => __('Completed'), 'badge' => 'bg-green-100 text-green-800', 'accent' => 'bg-[#0ca30c]'],
         ];
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $filter = fn (array $change) => route('compliance.to-do', array_filter(array_merge(request()->only(['company', 'status', 'department', 'type']), $change)));
     @endphp
 
     {{-- Stat cards: click one to filter by it. --}}
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <a href="{{ $filter(['status' => 'all']) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === 'all' ? 'ring-indigo-300' : 'ring-gray-200' }} hover:ring-gray-300">
-            <span class="absolute inset-y-0 start-0 w-1 bg-indigo-500"></span>
+        <a href="{{ $filter(['status' => 'all']) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === 'all' ? 'ring-brand-300' : 'ring-gray-200' }} hover:ring-gray-300">
+            <span class="absolute inset-y-0 start-0 w-1 bg-brand-500"></span>
             <p class="text-sm font-medium text-gray-500">{{ __('Total tasks') }}</p>
             <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $stats['total'] }}</p>
         </a>
         @foreach (['overdue', 'week', 'completed', 'upcoming'] as $key)
-            <a href="{{ $filter(['status' => $key]) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === $key ? 'ring-indigo-300' : 'ring-gray-200' }} hover:ring-gray-300">
+            <a href="{{ $filter(['status' => $key]) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === $key ? 'ring-brand-300' : 'ring-gray-200' }} hover:ring-gray-300">
                 <span class="absolute inset-y-0 start-0 w-1 {{ $statuses[$key]['accent'] }}"></span>
                 <p class="text-sm font-medium text-gray-500">{{ $statuses[$key]['label'] }}</p>
                 <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $stats[$key] }}</p>
@@ -101,7 +101,7 @@
                                     @if ($task->notes)<p class="text-xs text-gray-500">{{ $task->notes }}</p>@endif
                                     <div class="mt-1 flex flex-wrap items-center gap-1 -ms-2">
                                         @if ($link)
-                                            <a href="{{ $link }}" class="rounded-md px-2 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-50">{{ __('Open') }}</a>
+                                            <a href="{{ $link }}" class="rounded-md px-2 py-1 text-xs font-semibold text-brand-600 hover:bg-brand-50">{{ __('Open') }}</a>
                                         @endif
                                         <form method="POST" action="{{ route($task->completed_at ? 'compliance.tasks.reopen' : 'compliance.tasks.complete', $task) }}">
                                             @csrf
@@ -142,7 +142,7 @@
                         @endforeach
                     </tbody>
                 @empty
-                    <tbody><tr><td colspan="8" class="px-5 py-10 text-center text-gray-500">{{ ($status !== 'all' || request()->hasAny(['department', 'type'])) ? __('No tasks match these filters.') : __('Nothing is due. Tasks appear here as employees join and months close.') }}</td></tr></tbody>
+                    <tbody><x-empty-state colspan="8" icon="search">{{ ($status !== 'all' || request()->hasAny(['department', 'type'])) ? __('No tasks match these filters.') : __('Nothing is due. Tasks appear here as employees join and months close.') }}</x-empty-state></tbody>
                 @endforelse
             </table>
         </div>

@@ -4,7 +4,7 @@
     @include('compliance.forms._styles')
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $btn = 'rounded-md px-3 py-2 text-sm font-semibold';
         $query = request()->except('output');
         $examView = in_array($view, config('compliance.examination_views'), true);
@@ -60,7 +60,7 @@
                 <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'xlsx']) }}" class="{{ $btn }} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
                 <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'csv']) }}" class="{{ $btn }} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
             @endisset
-            <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'print']) }}" target="_blank" class="{{ $btn }} bg-indigo-600 text-white hover:bg-indigo-700">{{ __('Print') }}</a>
+            <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'print']) }}" target="_blank" class="{{ $btn }} bg-brand-600 text-white hover:bg-brand-700">{{ __('Print') }}</a>
             @unless ($noPdf)
                 <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'pdf']) }}" class="{{ $btn }} bg-gray-800 text-white hover:bg-gray-900">{{ __('Download PDF') }}</a>
             @endunless

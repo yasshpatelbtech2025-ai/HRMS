@@ -3,7 +3,7 @@
 
     <x-section-tabs section="attendance" />
 
-    @php($select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500')
+    @php($select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500')
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
@@ -49,11 +49,11 @@
                             <td class="px-5 py-3">{{ $punch->shift?->name ?? '--' }}</td>
                             <td class="px-5 py-3 font-mono">{{ $punch->shift_code ?? '--' }}</td>
                             <td class="px-5 py-3 print:hidden">
-                                <a href="{{ route('attendance.raw-data', ['employee' => $punch->employee->uuid, 'month' => $punch->work_date->format('Y-m')]) }}" class="text-sm font-medium text-indigo-600 hover:underline">{{ __('Fix') }}</a>
+                                <a href="{{ route('attendance.raw-data', ['employee' => $punch->employee->uuid, 'month' => $punch->work_date->format('Y-m')]) }}" class="text-sm font-medium text-brand-600 hover:underline">{{ __('Fix') }}</a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="px-5 py-10 text-center text-gray-500">{{ $company ? __('No missing punches in :month.', ['month' => $month->format('F Y')]) : __('Add a company first.') }}</td></tr>
+                        <x-empty-state colspan="9" icon="inbox">{{ $company ? __('No missing punches in :month.', ['month' => $month->format('F Y')]) : __('Add a company first.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

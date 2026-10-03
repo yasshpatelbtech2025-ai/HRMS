@@ -4,7 +4,7 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $exportQuery = ['employee' => $employee?->uuid, 'month' => $month->format('Y-m')];
     @endphp
 
@@ -15,7 +15,7 @@
                 <div class="flex flex-wrap gap-2 print:hidden">
                     <x-add-button modal="add-raw-data">{{ __('Add attendance data') }}</x-add-button>
                     <button type="button" x-data x-on:click="$dispatch('open-modal', 'correct-raw-data')"
-                            class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700">
+                            class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
                         {{ __('Attendance data correction') }}
                     </button>
                 </div>
@@ -119,7 +119,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="11" class="px-5 py-10 text-center text-gray-500">{{ __('No punches for :name in :month.', ['name' => $employee->full_name, 'month' => $month->format('F Y')]) }}</td></tr>
+                            <x-empty-state colspan="11" icon="inbox">{{ __('No punches for :name in :month.', ['name' => $employee->full_name, 'month' => $month->format('F Y')]) }}</x-empty-state>
                         @endforelse
                     </tbody>
                 </table>

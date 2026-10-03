@@ -3,7 +3,7 @@
 
     @php
         $cards = [
-            ['label' => __('Total employee'), 'value' => $stats['total'], 'accent' => 'bg-indigo-500', 'href' => route('employees.index')],
+            ['label' => __('Total employee'), 'value' => $stats['total'], 'accent' => 'bg-brand-500', 'href' => route('employees.index')],
             ['label' => __('Today presents'), 'value' => $stats['present'], 'accent' => 'bg-[#0ca30c]', 'href' => route('attendance.index')],
             ['label' => __('Today absents'), 'value' => $stats['absent'], 'accent' => 'bg-[#d03b3b]', 'href' => route('attendance.index')],
             ['label' => __('Today leave'), 'value' => $stats['leave'], 'accent' => 'bg-[#fab219]', 'href' => route('attendance.leave')],
@@ -35,7 +35,7 @@
                     <h2 class="text-base font-semibold text-gray-900">{{ __('Daily attendance statistic (department wise)') }}</h2>
                     <p class="text-xs text-gray-500">{{ $today->format('l, d M Y') }}</p>
                 </div>
-                <button type="button" x-on:click="table = ! table" class="text-xs font-medium text-indigo-600 hover:underline" x-text="table ? @js(__('Show chart')) : @js(__('Show table'))"></button>
+                <button type="button" x-on:click="table = ! table" class="text-xs font-medium text-brand-600 hover:underline" x-text="table ? @js(__('Show chart')) : @js(__('Show table'))"></button>
             </div>
 
             @if ($departments->isEmpty())
@@ -98,9 +98,9 @@
                 <h2 class="text-base font-semibold text-gray-900">{{ __('Requests') }}</h2>
                 <div class="flex gap-1" role="tablist">
                     <button type="button" role="tab" :aria-selected="tab === 'attendance'" x-on:click="tab = 'attendance'"
-                            class="rounded-md border px-2 py-1 text-xs font-medium" :class="tab === 'attendance' ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-indigo-300 text-indigo-700'">{{ __('Attendance') }}</button>
+                            class="rounded-md border px-2 py-1 text-xs font-medium" :class="tab === 'attendance' ? 'border-brand-600 bg-brand-600 text-white' : 'border-brand-300 text-brand-700'">{{ __('Attendance') }}</button>
                     <button type="button" role="tab" :aria-selected="tab === 'leave'" x-on:click="tab = 'leave'"
-                            class="rounded-md border px-2 py-1 text-xs font-medium" :class="tab === 'leave' ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-indigo-300 text-indigo-700'">{{ __('Leave') }}</button>
+                            class="rounded-md border px-2 py-1 text-xs font-medium" :class="tab === 'leave' ? 'border-brand-600 bg-brand-600 text-white' : 'border-brand-300 text-brand-700'">{{ __('Leave') }}</button>
                 </div>
             </div>
 
@@ -115,7 +115,7 @@
                         <li class="px-5 py-6 text-center text-sm text-gray-500">{{ __('No attendance requests found.') }}</li>
                     @endforelse
                 </ul>
-                <a href="{{ route('attendance.requests', ['status' => 'pending']) }}" class="block border-t border-gray-100 px-5 py-3 text-center text-sm font-semibold text-indigo-600 hover:bg-gray-50">{{ __('See All Attendance Requests') }}</a>
+                <a href="{{ route('attendance.requests', ['status' => 'pending']) }}" class="block border-t border-gray-100 px-5 py-3 text-center text-sm font-semibold text-brand-600 hover:bg-gray-50">{{ __('See All Attendance Requests') }}</a>
             </div>
 
             <div x-show="tab === 'leave'" style="display: none;">
@@ -129,7 +129,7 @@
                         <li class="px-5 py-6 text-center text-sm text-gray-500">{{ __('No leave requests found.') }}</li>
                     @endforelse
                 </ul>
-                <a href="{{ route('attendance.leave', ['status' => 'pending']) }}" class="block border-t border-gray-100 px-5 py-3 text-center text-sm font-semibold text-indigo-600 hover:bg-gray-50">{{ __('See All Leave Requests') }}</a>
+                <a href="{{ route('attendance.leave', ['status' => 'pending']) }}" class="block border-t border-gray-100 px-5 py-3 text-center text-sm font-semibold text-brand-600 hover:bg-gray-50">{{ __('See All Leave Requests') }}</a>
             </div>
         </section>
     </div>
@@ -141,7 +141,7 @@
     <section class="mt-6 rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 px-5 py-4">
             <h2 class="text-base font-semibold text-gray-900">{{ __('Compliance Health') }}</h2>
-            <a href="{{ route('compliance.to-do') }}" class="text-sm font-semibold text-indigo-600 hover:underline">{{ __('Open To Do List') }}</a>
+            <a href="{{ route('compliance.to-do') }}" class="text-sm font-semibold text-brand-600 hover:underline">{{ __('Open To Do List') }}</a>
         </div>
         <div class="grid grid-cols-1 gap-6 px-5 py-5 lg:grid-cols-3">
             <div>

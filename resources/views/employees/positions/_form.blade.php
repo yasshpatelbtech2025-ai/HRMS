@@ -26,7 +26,7 @@
         @unless ($editing)
             <x-form-row :label="__('Company')" for="{{ $modal }}-company_id" required :messages="$error('company_id')">
                 <select id="{{ $modal }}-company_id" name="company_id" required
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
                     <option value="">{{ __('Select company') }}</option>
                     @foreach ($companies as $company)
                         <option value="{{ $company->id }}" @selected((string) $value('company_id') === (string) $company->id)>{{ $company->establishment_name }}</option>
@@ -45,8 +45,8 @@
 
         <x-form-row :label="__('Is active')" required :messages="$error('is_active')">
             <div class="flex gap-6 pt-2 text-sm text-gray-700">
-                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="1" @checked($active === '1') class="text-indigo-600 focus:ring-indigo-500"> {{ __('Active') }}</label>
-                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="0" @checked($active === '0') class="text-indigo-600 focus:ring-indigo-500"> {{ __('Inactive') }}</label>
+                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="1" @checked($active === '1') class="text-brand-600 focus:ring-brand-500"> {{ __('Active') }}</label>
+                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="0" @checked($active === '0') class="text-brand-600 focus:ring-brand-500"> {{ __('Inactive') }}</label>
             </div>
         </x-form-row>
     </div>

@@ -12,7 +12,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Current Salary List') }}</h2>
             <form method="GET" action="{{ route('payroll.current') }}">
-                <select name="company" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" aria-label="{{ __('Company') }}">
+                <select name="company" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Company') }}">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach
@@ -56,7 +56,7 @@
                                 <td class="px-4 py-3 font-semibold">{{ $money($ctc) }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="10" class="px-5 py-10 text-center text-gray-500">{{ __('No current employees.') }}</td></tr>
+                            <x-empty-state colspan="10" icon="inbox">{{ __('No current employees.') }}</x-empty-state>
                         @endforelse
                     </tbody>
                 </table>

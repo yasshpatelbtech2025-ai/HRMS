@@ -5,7 +5,7 @@
 
     @php
         $money = fn ($n) => number_format((float) $n, 2);
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $approved = $sheet?->isApproved();
     @endphp
 
@@ -132,7 +132,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="8" class="px-5 py-10 text-center text-gray-500">{{ __('No salary was generated in this accounting year.') }}</td></tr>
+                                    <x-empty-state colspan="8" icon="inbox">{{ __('No salary was generated in this accounting year.') }}</x-empty-state>
                                 @endforelse
                             </tbody>
                             @if ($sheet->entries->isNotEmpty())

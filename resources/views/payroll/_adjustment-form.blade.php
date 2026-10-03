@@ -3,7 +3,7 @@
     $editing = $adjustment->exists;
     $mine = old('_modal') === $modal;
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
-    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
 @endphp
 
 <form method="POST" action="{{ $editing ? route('payroll.adjustments.update', $adjustment) : route('payroll.adjustments.store') }}">

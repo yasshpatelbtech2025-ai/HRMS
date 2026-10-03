@@ -5,7 +5,7 @@
         <div class="flex flex-wrap items-center gap-3">
             <input type="file" name="doc" accept=".pdf,.jpg,.jpeg,.png" style="width: auto; border: none;">
             @if ($values->signed_copy_path)
-                <a href="{{ route('compliance.forms.signed-copy', [$company, $values->form, $period]) }}" target="_blank" class="text-sm text-indigo-600 hover:underline">{{ $values->signed_copy_name }}</a>
+                <a href="{{ route('compliance.forms.signed-copy', [$company, $values->form, $period]) }}" target="_blank" class="text-sm text-brand-600 hover:underline">{{ $values->signed_copy_name }}</a>
             @endif
             <button class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Save') }}</button>
         </div>

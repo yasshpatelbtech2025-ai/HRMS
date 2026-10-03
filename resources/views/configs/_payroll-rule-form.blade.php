@@ -4,8 +4,8 @@
     $mine = old('_modal') === $modal;
     $value = fn (string $field) => $mine ? old($field) : (is_bool($rule->{$field}) ? (int) $rule->{$field} : $rule->{$field});
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
-    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
-    $radio = 'text-indigo-600 focus:ring-indigo-500';
+    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
+    $radio = 'text-brand-600 focus:ring-brand-500';
 @endphp
 
 <form method="POST" action="{{ $editing ? route('configs.payroll.rules.update', $rule) : route('configs.payroll.rules.store') }}"

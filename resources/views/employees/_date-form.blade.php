@@ -24,7 +24,7 @@
         @isset($candidates)
             <x-form-row :label="__('Employee')" for="{{ $modal }}-employee" required :messages="$error('employee')">
                 <select id="{{ $modal }}-employee" name="employee" required
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
                     <option value="">{{ __('Select employee') }}</option>
                     @foreach ($candidates as $candidate)
                         <option value="{{ $candidate->uuid }}" @selected($mine && old('employee') === $candidate->uuid)>

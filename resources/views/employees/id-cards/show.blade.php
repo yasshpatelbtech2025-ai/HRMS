@@ -16,7 +16,7 @@
                     <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Mark as assigned today') }}</button>
                 </form>
             @endif
-            <button type="button" onclick="window.print()" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Print Id Card') }}</button>
+            <button type="button" onclick="window.print()" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Print Id Card') }}</button>
         </div>
     </div>
 
@@ -33,6 +33,6 @@
         </div>
     </div>
     <p class="mt-4 text-center text-xs text-gray-500 print:hidden">
-        {{ __('Design :id.', ['id' => $format['id']]) }} <a href="{{ route('company.id-card-formats') }}" class="text-indigo-600 hover:underline">{{ __('Change the design') }}</a>
+        {{ __('Design :id.', ['id' => $format['id']]) }} <a href="{{ route('company.id-card-formats') }}" class="text-brand-600 hover:underline">{{ __('Change the design') }}</a>
     </p>
 </x-app-layout>

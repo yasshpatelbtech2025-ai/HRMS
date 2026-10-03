@@ -15,7 +15,13 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-gray-100">
+    <body class="font-sans antialiased">
+        {{-- Shown while the next page loads (resources/js/loading.js). --}}
+        <div id="page-progress" class="hidden fixed inset-x-0 top-0 z-[70] h-0.5 overflow-hidden bg-brand-100 print:hidden" aria-hidden="true">
+            <div class="h-full w-2/5 animate-progress-indeterminate rounded-full bg-brand-500"></div>
+        </div>
+        <x-toasts />
+
         <div x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="min-h-screen">
             @include('layouts.sidebar')
 
@@ -24,13 +30,6 @@
 
                 <!-- Page Content -->
                 <main class="flex-1 p-4 sm:p-6 lg:p-8">
-                    @if (session('status'))
-                        <div role="status" class="mb-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 ring-1 ring-green-200 print:hidden">{{ session('status') }}</div>
-                    @endif
-                    @if (session('error'))
-                        <div role="alert" class="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200 print:hidden">{{ session('error') }}</div>
-                    @endif
-
                     {{ $slot }}
                 </main>
             </div>

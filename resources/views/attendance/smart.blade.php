@@ -3,7 +3,7 @@
 
     <x-section-tabs section="attendance" />
 
-    @php($input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500')
+    @php($input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500')
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="border-b border-gray-200 px-5 py-4">
@@ -33,13 +33,13 @@
                 <div class="rounded-md border border-gray-300">
                     <label class="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-sm font-medium text-gray-700" x-show="listed.length">
                         <input type="checkbox" x-on:change="toggleAll($event.target.checked)" :checked="listed.length && selected.length === listed.length"
-                               class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                               class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                         {{ __('All employees') }}
                     </label>
                     <div class="max-h-64 overflow-y-auto p-1">
                         <template x-for="e in listed" :key="e.uuid">
                             <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-gray-700 hover:bg-gray-50">
-                                <input type="checkbox" name="employees[]" :value="e.uuid" x-model="selected" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" name="employees[]" :value="e.uuid" x-model="selected" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                 <span x-text="e.label"></span>
                                 <span x-show="! e.hasShift" class="text-xs text-amber-700">({{ __('no shift — will be skipped') }})</span>
                             </label>

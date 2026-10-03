@@ -3,7 +3,7 @@
 
     <x-section-tabs section="payroll" />
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500'; @endphp
+    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
@@ -64,7 +64,7 @@
                                 <div class="flex flex-wrap items-center gap-1">
                                     <a href="{{ route('payroll.approval', $sheet) }}" class="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700">{{ __('Salary Approval') }}</a>
                                     @if ($sheet->isApproved())
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold text-white hover:bg-indigo-700">{{ __('Add Paid Date') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Add Paid Date') }}</button>
                                     @endif
                                     <a href="{{ route('payroll.chart', $sheet) }}" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">{{ __('Employee Salary Chart') }}</a>
                                     @unless ($sheet->isApproved())
@@ -97,7 +97,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="10" class="px-5 py-10 text-center text-gray-500">{{ __('No salary generated yet.') }}</td></tr>
+                        <x-empty-state colspan="10" icon="inbox">{{ __('No salary generated yet.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

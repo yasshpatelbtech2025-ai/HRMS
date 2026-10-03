@@ -42,7 +42,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-5 py-10 text-center text-gray-500">{{ request('search') ? __('No leave types match your search.') : __('No leave types yet.') }}</td></tr>
+                        <x-empty-state colspan="6" icon="search">{{ request('search') ? __('No leave types match your search.') : __('No leave types yet.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

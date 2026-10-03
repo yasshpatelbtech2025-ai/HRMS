@@ -4,7 +4,7 @@
     <x-section-tabs section="configs" />
 
     @php
-        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $yesNo = ['0' => __('No'), '1' => __('Yes')];
         $value = fn (string $field) => old($field, is_bool($setting?->{$field}) ? (int) $setting->{$field} : $setting?->{$field});
         $questions = [
@@ -39,7 +39,7 @@
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">
-                {{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-indigo-600 hover:underline">{{ __('Go to Company') }}</a>
+                {{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a>
             </p>
         @else
             <form method="POST" action="{{ route('configs.payroll.update', $company) }}" class="space-y-6 px-5 py-6">
@@ -109,7 +109,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="px-5 py-8 text-center text-gray-500">{{ __('No payroll rules yet. Use "Create setting" to add a variable bonus.') }}</td></tr>
+                                <x-empty-state colspan="7" icon="inbox">{{ __('No payroll rules yet. Use "Create setting" to add a variable bonus.') }}</x-empty-state>
                             @endforelse
                         </tbody>
                     </table>

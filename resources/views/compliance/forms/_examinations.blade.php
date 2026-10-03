@@ -18,22 +18,22 @@
                 @php $current = $employee?->is($e); @endphp
                 <li>
                     <button type="button" x-on:click="open = open === @js($e->uuid) ? null : @js($e->uuid)"
-                            class="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-semibold {{ $current ? 'bg-indigo-50 text-indigo-900' : 'bg-gray-50 text-gray-800 hover:bg-gray-100' }}">
+                            class="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-semibold {{ $current ? 'bg-brand-50 text-brand-900' : 'bg-gray-50 text-gray-800 hover:bg-gray-100' }}">
                         <span>{{ $e->employee_code }} - {{ $e->full_name }}</span>
                         <span class="shrink-0 rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-500 ring-1 ring-gray-200">{{ $e->examinations->count() }}</span>
                     </button>
                     <ul x-show="open === @js($e->uuid)" @unless ($current) style="display: none;" @endunless>
                         @forelse ($e->examinations as $x)
                             <li>
-                                <a href="{{ $link($e, $x) }}" class="block px-6 py-2 text-sm {{ $examination?->is($x) ? 'bg-indigo-600 font-semibold text-white' : 'text-gray-700 hover:bg-gray-50' }}">
+                                <a href="{{ $link($e, $x) }}" class="block px-6 py-2 text-sm {{ $examination?->is($x) ? 'bg-brand-600 font-semibold text-white' : 'text-gray-700 hover:bg-gray-50' }}">
                                     {{ __('Examination') }} : {{ $x->examined_on->format('d-m-Y') }}
-                                    @if ($x->result)<span class="ms-1 text-xs {{ $examination?->is($x) ? 'text-indigo-100' : ($x->result === 'fit' ? 'text-emerald-600' : 'text-red-600') }}">({{ ucfirst($x->result) }})</span>@endif
+                                    @if ($x->result)<span class="ms-1 text-xs {{ $examination?->is($x) ? 'text-brand-100' : ($x->result === 'fit' ? 'text-emerald-600' : 'text-red-600') }}">({{ ucfirst($x->result) }})</span>@endif
                                 </a>
                             </li>
                         @empty
                             <li class="px-6 py-2 text-sm text-gray-500">
                                 {{ __('No examinations yet.') }}
-                                <a href="{{ $link($e) }}" class="text-indigo-600 hover:underline">{{ __('Open blank form') }}</a>
+                                <a href="{{ $link($e) }}" class="text-brand-600 hover:underline">{{ __('Open blank form') }}</a>
                             </li>
                         @endforelse
                     </ul>
@@ -52,7 +52,7 @@
                     @if ($examination)
                         &middot; {{ __('Examination on :date', ['date' => $examination->examined_on->format('d-m-Y')]) }}
                         @if ($examination->signed_copy_path)
-                            &middot; <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="text-indigo-600 hover:underline">{{ __('Signed copy') }}</a>
+                            &middot; <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('Signed copy') }}</a>
                         @endif
                     @else
                         &middot; <span class="text-amber-700">{{ __('No examination recorded — the form prints blank.') }}</span>

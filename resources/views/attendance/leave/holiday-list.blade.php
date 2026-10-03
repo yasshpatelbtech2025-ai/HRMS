@@ -10,7 +10,7 @@
             <div class="flex items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave.holiday-list') }}">
                     <label for="holiday-year" class="sr-only">{{ __('Year') }}</label>
-                    <select id="holiday-year" name="year" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select id="holiday-year" name="year" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                         @foreach (range((int) date('Y') + 1, 2020) as $option)
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
@@ -54,7 +54,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-5 py-10 text-center text-gray-500">{{ __('No holidays in :year yet.', ['year' => $year]) }}</td></tr>
+                        <x-empty-state colspan="7" icon="inbox">{{ __('No holidays in :year yet.', ['year' => $year]) }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

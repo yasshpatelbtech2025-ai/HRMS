@@ -35,7 +35,7 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($files as $file)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-5 py-3"><a href="{{ route('documents.file', $file) }}" target="_blank" class="font-medium text-indigo-600 hover:underline">{{ $file->original_name }}</a></td>
+                            <td class="px-5 py-3"><a href="{{ route('documents.file', $file) }}" target="_blank" class="font-medium text-brand-600 hover:underline">{{ $file->original_name }}</a></td>
                             <td class="px-5 py-3">{{ number_format($file->size / 1024, 0) }} KB</td>
                             <td class="px-5 py-3">{{ $file->created_at->format('d M Y H:i') }}</td>
                             <td class="px-5 py-3">{{ $file->uploader?->name ?? '—' }}</td>
@@ -48,7 +48,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-5 py-10 text-center text-gray-500">{{ __('No files uploaded yet.') }}</td></tr>
+                        <x-empty-state colspan="5" icon="inbox">{{ __('No files uploaded yet.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

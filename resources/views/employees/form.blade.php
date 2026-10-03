@@ -48,8 +48,8 @@
             'officers' => $officers->map(fn ($o) => ['id' => $o->id, 'company_id' => $o->company_id, 'label' => "{$o->employee_code} - {$o->full_name}"]),
         ];
         $yesNo = ['1' => __('Yes'), '0' => __('No')];
-        $select = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
-        $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -128,13 +128,13 @@
                 </x-select-field>
             </div>
             <p class="mt-3 text-xs text-gray-500" x-show="company && ! departments.length">
-                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-indigo-600 hover:underline">{{ __('Add them in the Department tab.') }}</a>
+                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-brand-600 hover:underline">{{ __('Add them in the Department tab.') }}</a>
             </p>
             <p class="mt-1 text-xs text-gray-500" x-show="company && ! shifts.length">
-                {{ __('This company has no shifts yet.') }} <a href="{{ route('configs.index') }}" class="text-indigo-600 hover:underline">{{ __('Set them up in Configs › Attendance.') }}</a>
+                {{ __('This company has no shifts yet.') }} <a href="{{ route('configs.index') }}" class="text-brand-600 hover:underline">{{ __('Set them up in Configs › Attendance.') }}</a>
             </p>
             <p class="mt-1 text-xs text-gray-500" x-show="company && ! positions.length">
-                {{ __('This company has no designations yet.') }} <a href="{{ route('employees.positions') }}" class="text-indigo-600 hover:underline">{{ __('Add them in the Positions tab.') }}</a>
+                {{ __('This company has no designations yet.') }} <a href="{{ route('employees.positions') }}" class="text-brand-600 hover:underline">{{ __('Add them in the Positions tab.') }}</a>
             </p>
         </x-form-section>
 
@@ -147,7 +147,7 @@
                         @if ($type === 'permanent')
                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                 <input type="hidden" name="permanent_address_is_present" value="0">
-                                <input type="checkbox" name="permanent_address_is_present" value="1" x-model="permanentSame" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" name="permanent_address_is_present" value="1" x-model="permanentSame" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                 {{ __('Present Address Is Permanent Address') }}
                             </label>
                         @endif
@@ -168,7 +168,7 @@
                     <div>
                         <x-field :name="$field" type="file" :label="__($label)" accept=".pdf,.jpg,.jpeg,.png" :hint="__('PDF, JPG or PNG, up to 5 MB.')" />
                         @if ($e->{$field.'_path'})
-                            <a href="{{ route('employees.file', [$e, $field]) }}" target="_blank" class="text-xs text-indigo-600 hover:underline">{{ __('View current file') }}</a>
+                            <a href="{{ route('employees.file', [$e, $field]) }}" target="_blank" class="text-xs text-brand-600 hover:underline">{{ __('View current file') }}</a>
                         @endif
                     </div>
                 @endforeach
@@ -189,7 +189,7 @@
                                 <input type="file" accept="image/*" class="sr-only" x-on:change="chooseFile($event)">
                             </label>
                             <button type="button" x-show="! stream" x-on:click="openCamera()" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Open Camera') }}</button>
-                            <button type="button" x-show="stream" x-on:click="capture()" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Capture') }}</button>
+                            <button type="button" x-show="stream" x-on:click="capture()" class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Capture') }}</button>
                             <button type="button" x-show="data" x-on:click="openCamera()" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Retake') }}</button>
                             <button type="button" x-show="data || stream" x-on:click="clear()" class="rounded-md px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</button>
                         </div>
@@ -214,7 +214,7 @@
                 <div>
                     <x-field name="bank_passbook" type="file" :label="__('Bank Passbook (attachment)')" accept=".pdf,.jpg,.jpeg,.png" :hint="__('PDF, JPG or PNG, up to 5 MB.')" />
                     @if ($e->bank_passbook_path)
-                        <a href="{{ route('employees.file', [$e, 'bank_passbook']) }}" target="_blank" class="text-xs text-indigo-600 hover:underline">{{ __('View current file') }}</a>
+                        <a href="{{ route('employees.file', [$e, 'bank_passbook']) }}" target="_blank" class="text-xs text-brand-600 hover:underline">{{ __('View current file') }}</a>
                     @endif
                 </div>
                 <x-field name="micr_code" :label="__('MICR Code')" :value="$e->micr_code" inputmode="numeric" maxlength="9" />
@@ -235,8 +235,8 @@
                 <fieldset>
                     <legend class="block text-sm font-medium text-gray-700">{{ __('Is Disable') }}</legend>
                     <div class="mt-2 flex gap-6 text-sm text-gray-700">
-                        <label class="inline-flex items-center gap-2"><input type="radio" name="is_disabled" value="1" x-model="disabled" class="text-indigo-600 focus:ring-indigo-500"> {{ __('Yes') }}</label>
-                        <label class="inline-flex items-center gap-2"><input type="radio" name="is_disabled" value="0" x-model="disabled" class="text-indigo-600 focus:ring-indigo-500"> {{ __('No') }}</label>
+                        <label class="inline-flex items-center gap-2"><input type="radio" name="is_disabled" value="1" x-model="disabled" class="text-brand-600 focus:ring-brand-500"> {{ __('Yes') }}</label>
+                        <label class="inline-flex items-center gap-2"><input type="radio" name="is_disabled" value="0" x-model="disabled" class="text-brand-600 focus:ring-brand-500"> {{ __('No') }}</label>
                     </div>
                 </fieldset>
                 <div x-show="disabled === '1'" class="sm:col-span-2 lg:col-span-3">
@@ -329,7 +329,7 @@
                             <label class="inline-flex items-center gap-2 self-end pb-2 text-sm text-gray-700">
                                 <input type="hidden" name="family[{{ $relation }}][is_nominee]" value="0">
                                 <input type="checkbox" name="family[{{ $relation }}][is_nominee]" value="1" @checked(old("family.{$relation}.is_nominee", $member?->is_nominee))
-                                       class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                       class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                 {{ __('Is nominee') }}
                             </label>
                         </div>
@@ -338,7 +338,7 @@
             </div>
 
             <label class="mt-6 inline-flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" x-on:change="copyNomineeAddresses($event.target.checked)" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                <input type="checkbox" x-on:change="copyNomineeAddresses($event.target.checked)" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 {{ __('Nominee address is employee address') }}
             </label>
 

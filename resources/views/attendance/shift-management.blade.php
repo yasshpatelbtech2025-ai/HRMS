@@ -4,9 +4,9 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $days = collect(range(1, $month->daysInMonth))->map(fn ($d) => $month->setDay($d));
-        $codeStyles = "{ 'WO': 'bg-orange-100 text-orange-700', 'NS': 'bg-indigo-100 text-indigo-800', 'SS': 'bg-sky-100 text-sky-800', 'FS': 'bg-green-100 text-green-800', 'DS': 'bg-green-100 text-green-800', 'GS': 'bg-gray-100 text-gray-800' }";
+        $codeStyles = "{ 'WO': 'bg-orange-100 text-orange-700', 'NS': 'bg-brand-100 text-brand-800', 'SS': 'bg-sky-100 text-sky-800', 'FS': 'bg-green-100 text-green-800', 'DS': 'bg-green-100 text-green-800', 'GS': 'bg-gray-100 text-gray-800' }";
     @endphp
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
@@ -36,7 +36,7 @@
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
         @elseif ($groups->isEmpty())
             <p class="px-5 py-10 text-center text-sm text-gray-500">
-                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-indigo-600 hover:underline">{{ __('Add them in Employee › Department.') }}</a>
+                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-brand-600 hover:underline">{{ __('Add them in Employee › Department.') }}</a>
             </p>
         @else
             <form method="POST" action="{{ route('attendance.shifts.store', $company) }}"
@@ -77,7 +77,7 @@
                                         <div class="flex flex-col gap-1 text-left">
                                             @foreach (\App\Http\Controllers\Attendance\ShiftManagementController::PARTS as $code => $label)
                                                 <label class="flex items-center gap-1 whitespace-nowrap">
-                                                    <input type="checkbox" value="{{ $code }}" x-model="group.parts" x-on:change="refresh(group)" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                                    <input type="checkbox" value="{{ $code }}" x-model="group.parts" x-on:change="refresh(group)" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                                     {{ __($label) }}
                                                 </label>
                                             @endforeach
@@ -114,7 +114,7 @@
                                             </select>
                                         </td>
                                         <td class="border-t border-gray-100 px-2 py-1 text-center">
-                                            <input type="checkbox" x-model="entry.manual" x-on:change="toggleManual(group, entry)" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" aria-label="{{ __('Edit days by hand') }}">
+                                            <input type="checkbox" x-model="entry.manual" x-on:change="toggleManual(group, entry)" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500" aria-label="{{ __('Edit days by hand') }}">
                                         </td>
                                         @foreach ($days as $day)
                                             <td class="border-t border-gray-100 px-0.5 py-1 text-center">

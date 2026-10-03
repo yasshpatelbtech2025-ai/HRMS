@@ -22,7 +22,7 @@
                     <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Regenerate') }}</button>
                 </form>
             @endunless
-            <button type="button" onclick="window.print()" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Download pay slip') }}</button>
+            <button type="button" onclick="window.print()" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Download pay slip') }}</button>
         </div>
     </div>
 

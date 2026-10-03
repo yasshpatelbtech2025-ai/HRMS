@@ -8,6 +8,6 @@
         <p class="mt-3 text-sm text-gray-600">
             {{ __("The :letter letter template hasn't been set up yet. Share the old system's letter (saved as a page or PDF) and it will be generated here with this employee's details filled in.", ['letter' => $letter]) }}
         </p>
-        <a href="{{ route('employees.index') }}" class="mt-4 inline-block text-sm text-indigo-600 hover:underline">← {{ __('Back to employee list') }}</a>
+        <a href="{{ route('employees.index') }}" class="mt-4 inline-block text-sm text-brand-600 hover:underline">← {{ __('Back to employee list') }}</a>
     </div>
 </x-app-layout>

@@ -7,7 +7,7 @@
         $filterKeys = ['company_id', 'name', 'employee_code', 'employment_type', 'department_id', 'sub_department_id', 'position_id', 'blood_group', 'country', 'gender', 'marital_status'];
         $filtering = collect(request()->only($filterKeys))->filter(fn ($v) => filled($v))->isNotEmpty();
         $exportQuery = request()->only([...$filterKeys, 'search', 'sort', 'direction']);
-        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
     @if (session('import_errors'))
@@ -30,7 +30,7 @@
                     {{ __('Filter') }}
                 </button>
                 <button type="button" x-on:click="$dispatch('open-modal', 'import-employees')"
-                        class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700">
+                        class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                     {{ __('Import Employees') }}
                 </button>
@@ -41,7 +41,7 @@
                 </a>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button type="button" class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700">
+                        <button type="button" class="inline-flex items-center gap-1 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
                             {{ __('Select Columns') }}
                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" /></svg>
                         </button>
@@ -184,7 +184,7 @@
                                         <span class="sr-only">{{ __('Show') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                                     </a>
-                                    <a href="{{ route('employees.edit', $employee) }}" title="{{ __('Edit') }}" class="rounded-md p-2 text-indigo-600 hover:bg-indigo-50">
+                                    <a href="{{ route('employees.edit', $employee) }}" title="{{ __('Edit') }}" class="rounded-md p-2 text-brand-600 hover:bg-brand-50">
                                         <span class="sr-only">{{ __('Edit') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                                     </a>
@@ -221,11 +221,14 @@
                             @if ($columns['shift'])<td class="px-4 py-3">{{ $employee->shift?->name }}</td>@endif
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="16" class="px-5 py-10 text-center text-gray-500">
-                                {{ $filtering || request('search') ? __('No employees match these filters.') : __('No employees yet.') }}
-                            </td>
-                        </tr>
+                        @if ($filtering || request('search'))
+                            <x-empty-state colspan="16" icon="search" :title="__('No employees match these filters.')">{{ __('Try a different search or clear the filters.') }}</x-empty-state>
+                        @else
+                            <x-empty-state colspan="16" icon="users" :title="__('No employees yet')">
+                                {{ __('Add your first employee to start tracking attendance, payroll and compliance.') }}
+                                <x-slot name="action"><a href="{{ route('employees.create') }}" class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">+ {{ __('Add employee') }}</a></x-slot>
+                            </x-empty-state>
+                        @endif
                     @endforelse
                 </tbody>
             </table>
@@ -244,7 +247,7 @@
                 <p class="text-sm text-gray-500" x-text="letters?.name"></p>
             </div>
             <div class="flex flex-col gap-2 px-6 py-5">
-                <a :href="letters?.call" target="_blank" class="rounded-md border border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50">📄 {{ __('Call Letter') }}</a>
+                <a :href="letters?.call" target="_blank" class="rounded-md border border-brand-300 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">📄 {{ __('Call Letter') }}</a>
                 <a :href="letters?.offer" target="_blank" class="rounded-md border border-sky-300 px-4 py-2 text-sm font-medium text-sky-700 hover:bg-sky-50">📄 {{ __('Offer Letter') }}</a>
                 <a :href="letters?.joining" target="_blank" class="rounded-md border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">📄 {{ __('Joining Letter') }}</a>
             </div>
@@ -272,7 +275,7 @@
                     </select>
                 </x-form-row>
                 <x-form-row :label="__('Excel Template')" x-show="company" x-transition>
-                    <a :href="templates[company]" class="inline-flex items-center gap-2 rounded-md border border-indigo-300 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50">
+                    <a :href="templates[company]" class="inline-flex items-center gap-2 rounded-md border border-brand-300 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-50">
                         {{ __('Download Company-Specific Template') }}
                     </a>
                     <p class="mt-1 text-xs text-gray-500">{{ __("The template's Lists sheet shows the departments, sub departments, designations and shifts this company accepts.") }}</p>

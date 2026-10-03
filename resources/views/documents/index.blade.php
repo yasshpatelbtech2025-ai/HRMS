@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">{{ __('Documents') }}</x-slot>
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500'; @endphp
+    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
     <div x-data="{ category: 'all', doc: null, open: false }" class="space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white px-5 py-4 shadow-sm ring-1 ring-gray-200">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Documents') }}</h2>
             <div class="relative" x-on:click.outside="open = false">
-                <button type="button" x-on:click="open = ! open" :aria-expanded="open" class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+                <button type="button" x-on:click="open = ! open" :aria-expanded="open" class="inline-flex items-center gap-1 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
                     {{ __('Select Documents') }}
                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" /></svg>
                 </button>
@@ -41,7 +41,7 @@
                                   x-on:drop.prevent="over = false; $refs.input.files = $event.dataTransfer.files; $el.requestSubmit()">
                                 @csrf
                                 <label class="relative flex h-40 cursor-pointer items-center justify-center overflow-hidden rounded-md border-2 border-dashed text-center text-sm"
-                                       :class="over ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-300 text-gray-500 hover:border-gray-400'">
+                                       :class="over ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-300 text-gray-500 hover:border-gray-400'">
                                     @if ($latest && $latest->isImage())
                                         <img src="{{ route('documents.file', $latest) }}" alt="{{ $latest->original_name }}" class="absolute inset-0 h-full w-full object-cover opacity-30">
                                     @endif
@@ -62,7 +62,7 @@
                                 <ul class="mt-2 space-y-1 text-xs">
                                     @foreach ($slotFiles->take(3) as $file)
                                         <li class="flex items-center justify-between gap-2">
-                                            <a href="{{ route('documents.file', $file) }}" target="_blank" class="truncate text-indigo-600 hover:underline">{{ $file->original_name }}</a>
+                                            <a href="{{ route('documents.file', $file) }}" target="_blank" class="truncate text-brand-600 hover:underline">{{ $file->original_name }}</a>
                                             <span class="shrink-0 text-gray-400">{{ $file->created_at->format('d M Y') }}</span>
                                         </li>
                                     @endforeach

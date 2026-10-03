@@ -20,7 +20,7 @@
            @if ($required) required @endif placeholder="{{ $type === 'file' ? '' : $label }}"
            {{ $attributes->merge(['class' => $type === 'file'
                ? 'mt-1 block w-full text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-200'
-               : 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500']) }}>
+               : 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500']) }}>
     @if ($hint)
         <p class="mt-1 text-xs text-gray-500">{{ $hint }}</p>
     @endif

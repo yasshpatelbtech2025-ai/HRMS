@@ -24,14 +24,14 @@
 
         {{-- The chosen design. --}}
         <div class="border-b border-gray-200 px-5 py-6">
-            <div class="inline-flex flex-col items-center gap-4 rounded-lg p-4 ring-2 ring-indigo-500">
+            <div class="inline-flex flex-col items-center gap-4 rounded-lg p-4 ring-2 ring-brand-500">
                 <div @class(['flip-card', 'landscape' => $selected['orientation'] === 'landscape'])>
                     <div class="flip-card-inner">
                         <div class="flip-card-front">{{ IdCardFormats::render($selected, 'front', $sample) }}</div>
                         <div class="flip-card-back">{{ IdCardFormats::render($selected, 'back', $sample) }}</div>
                     </div>
                 </div>
-                <span class="inline-flex items-center gap-1 rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white">✓ {{ __('Selected') }}</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-brand-600 px-4 py-1.5 text-sm font-semibold text-white">✓ {{ __('Selected') }}</span>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
                     <form method="POST" action="{{ route('company.id-card-formats.select') }}">
                         @csrf
                         <input type="hidden" name="format" value="{{ $format['id'] }}">
-                        <button class="rounded-full border border-indigo-300 px-5 py-1.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50">{{ __('Select') }}</button>
+                        <button class="rounded-full border border-brand-300 px-5 py-1.5 text-sm font-semibold text-brand-700 hover:bg-brand-50">{{ __('Select') }}</button>
                     </form>
                 </div>
             @endforeach

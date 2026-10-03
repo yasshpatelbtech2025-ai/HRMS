@@ -14,7 +14,7 @@
 
     <label class="flex items-center gap-2 text-gray-600">
         {{ __('Show') }}
-        <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 py-1.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 py-1.5 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
             @foreach (\App\Support\PageSize::OPTIONS as $size)
                 <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}</option>
             @endforeach

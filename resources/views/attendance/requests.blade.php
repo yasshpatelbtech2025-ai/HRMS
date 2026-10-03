@@ -4,7 +4,7 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $badge = ['pending' => 'bg-amber-100 text-amber-800', 'approved' => 'bg-green-100 text-green-800', 'rejected' => 'bg-red-100 text-red-700'];
     @endphp
 
@@ -98,7 +98,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="12" class="px-5 py-10 text-center text-gray-500">{{ $company ? __('No attendance requests.') : __('Add a company first.') }}</td></tr>
+                        <x-empty-state colspan="12" icon="inbox">{{ $company ? __('No attendance requests.') : __('Add a company first.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

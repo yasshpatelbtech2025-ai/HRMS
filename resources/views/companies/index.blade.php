@@ -46,11 +46,14 @@
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="px-5 py-10 text-center text-gray-500">
-                                {{ request('search') ? __('No companies match your search.') : __('No companies yet.') }}
-                            </td>
-                        </tr>
+                        @if (request('search'))
+                            <x-empty-state colspan="5" icon="search" :title="__('No companies match your search.')">{{ __('Try a different name.') }}</x-empty-state>
+                        @else
+                            <x-empty-state colspan="5" icon="building" :title="__('No companies yet')">
+                                {{ __('Add the companies you manage; employees, attendance and payroll are kept per company.') }}
+                                <x-slot name="action"><x-add-button modal="create-company">{{ __('Add company') }}</x-add-button></x-slot>
+                            </x-empty-state>
+                        @endif
                     @endforelse
                 </tbody>
             </table>

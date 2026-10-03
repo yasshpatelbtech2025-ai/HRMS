@@ -4,7 +4,7 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $labels = ['A' => 'A', 'P' => 'P', 'HD' => 'HD', 'WO' => 'WO', 'PH' => 'PH', 'LEAVE' => 'LEAVE', 'COFF' => 'COFF'];
         $hours = fn (float $h) => $h > 0 ? sprintf('%d:%02d', floor($h), round(($h - floor($h)) * 60)) : '--';
     @endphp
@@ -14,7 +14,7 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee wise attendance report') }}</h2>
             <div class="flex gap-2 print:hidden">
                 @if ($employee)
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'correct-raw-data')" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Attendance data correction') }}</button>
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'correct-raw-data')" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance data correction') }}</button>
                 @endif
                 <button type="button" onclick="window.print()" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Print') }}</button>
             </div>

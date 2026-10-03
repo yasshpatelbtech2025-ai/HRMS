@@ -16,7 +16,7 @@
         <a href="{{ route('employees.index') }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Back to employee list') }}</a>
         <div class="flex gap-2">
             <a href="{{ route('employees.edit', $e) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</a>
-            <button type="button" onclick="window.print()" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">{{ __('Print') }}</button>
+            <button type="button" onclick="window.print()" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Print') }}</button>
         </div>
     </div>
 
@@ -89,7 +89,7 @@
         <p class="-mt-3 mb-5 flex flex-wrap gap-3 text-xs print:hidden">
             @foreach (['aadhar_attachment' => 'Aadhar (attachment)', 'pan_attachment' => 'PAN (attachment)', 'bank_passbook' => 'Bank Passbook (attachment)'] as $file => $label)
                 @if ($e->{$file.'_path'})
-                    <a href="{{ route('employees.file', [$e, $file]) }}" target="_blank" class="text-indigo-600 hover:underline">{{ __($label) }}</a>
+                    <a href="{{ route('employees.file', [$e, $file]) }}" target="_blank" class="text-brand-600 hover:underline">{{ __($label) }}</a>
                 @endif
             @endforeach
         </p>

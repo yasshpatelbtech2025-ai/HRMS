@@ -34,7 +34,7 @@
                     @foreach ($labels as $key => $label)
                         @continue($key === 'basic')
                         <label class="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50" x-show="offered(@js($key))">
-                            <input type="checkbox" :checked="{{ $list }}.includes(@js($key))" x-on:change="toggleElement(@js($list), @js($key))" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <input type="checkbox" :checked="{{ $list }}.includes(@js($key))" x-on:change="toggleElement(@js($list), @js($key))" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                             {{ $label }}
                         </label>
                     @endforeach

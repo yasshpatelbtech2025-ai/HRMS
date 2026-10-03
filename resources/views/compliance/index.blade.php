@@ -10,7 +10,7 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Company compliance') }}</h2>
             <form method="GET" action="{{ route('compliance.index') }}">
                 <input type="hidden" name="act" value="{{ $act }}">
-                <select name="company" onchange="this.form.submit()" class="min-w-64 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" aria-label="{{ __('Company') }}">
+                <select name="company" onchange="this.form.submit()" class="min-w-64 rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Company') }}">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach
@@ -19,7 +19,7 @@
         </div>
 
         @if (! $company)
-            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-indigo-600 hover:underline">{{ __('Go to Company') }}</a></p>
+            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a></p>
         @else
             <div class="px-5 py-5">
                 <h3 class="mb-4 text-center text-xl font-semibold text-gray-900">{{ $company->establishment_name }}</h3>
@@ -50,9 +50,9 @@
                         @foreach ($forms as $key => $definition)
                             <li class="border-gray-100 p-4 sm:border-b">
                                 @if (isset($definition['view']))
-                                    <a href="{{ route('compliance.forms.show', [$company, $key]) }}" class="font-medium text-indigo-700 hover:underline">{{ $definition['title'] }}</a>
+                                    <a href="{{ route('compliance.forms.show', [$company, $key]) }}" class="font-medium text-brand-700 hover:underline">{{ $definition['title'] }}</a>
                                 @elseif (isset($definition['link']))
-                                    <a href="{{ route($definition['link']) }}" class="font-medium text-indigo-700 hover:underline">{{ $definition['title'] }}</a>
+                                    <a href="{{ route($definition['link']) }}" class="font-medium text-brand-700 hover:underline">{{ $definition['title'] }}</a>
                                     @isset ($definition['note'])<span class="block text-xs text-gray-500">{{ __($definition['note']) }}</span>@endisset
                                 @else
                                     <span class="font-medium text-gray-500">{{ $definition['title'] }}</span>

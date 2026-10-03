@@ -5,7 +5,7 @@
     <x-section-tabs section="attendance.leave" nested />
 
     @php
-        $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $exportQuery = request()->only('status', 'search');
         $badge = ['pending' => 'bg-amber-100 text-amber-800', 'approved' => 'bg-green-100 text-green-800', 'rejected' => 'bg-red-100 text-red-700'];
     @endphp
@@ -15,7 +15,7 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave list') }}</h2>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave') }}">
-                    <select name="status" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" aria-label="{{ __('Status') }}">
+                    <select name="status" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Status') }}">
                         <option value="">{{ __('All statuses') }}</option>
                         @foreach (\App\Http\Controllers\Attendance\LeaveController::STATUSES as $value => $label)
                             <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
@@ -64,7 +64,7 @@
                             <td class="px-4 py-3">{{ rtrim(rtrim($approved ? $leave->approved_days : $leave->days, '0'), '.') }}</td>
                             <td class="px-4 py-3">
                                 @if ($leave->hard_copy_path)
-                                    <a href="{{ route('attendance.leave.hard-copy', $leave) }}" target="_blank" class="text-indigo-600 hover:underline">{{ __('View') }}</a>
+                                    <a href="{{ route('attendance.leave.hard-copy', $leave) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('View') }}</a>
                                 @else
                                     —
                                 @endif
@@ -126,7 +126,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="11" class="px-5 py-10 text-center text-gray-500">{{ __('No leave applications.') }}</td></tr>
+                        <x-empty-state colspan="11" icon="inbox">{{ __('No leave applications.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>
@@ -165,7 +165,7 @@
                         <template x-for="t in companyTypes" :key="t.id"><option :value="t.id" x-text="t.code + ' — ' + t.name" :selected="String(t.id) === @js((string) old('leave_type_id'))"></option></template>
                     </select>
                     <p class="mt-1 text-xs text-gray-500" x-show="employee && ! companyTypes.length">
-                        {{ __("This employee's company has no leave types.") }} <a href="{{ route('attendance.leave.types') }}" class="text-indigo-600 hover:underline">{{ __('Add them first.') }}</a>
+                        {{ __("This employee's company has no leave types.") }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a>
                     </p>
                 </x-form-row>
                 <x-form-row :label="__('From date')" for="leave-start" required :messages="$errors->get('start_date')">

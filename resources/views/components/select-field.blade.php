@@ -16,7 +16,7 @@
         {{ $label }} @if ($required)<span class="text-red-600">*</span>@endif
     </label>
     <select id="{{ $id }}" name="{{ $inputName }}" @if ($required) required @endif
-            {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100']) }}>
+            {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-gray-100']) }}>
         @if ($placeholder !== null)
             <option value="">{{ $placeholder }}</option>
         @endif

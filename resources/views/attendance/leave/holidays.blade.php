@@ -4,7 +4,7 @@
     <x-section-tabs section="attendance" />
     <x-section-tabs section="attendance.leave" nested />
 
-    @php($select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500')
+    @php($select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500')
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
@@ -61,9 +61,9 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-5 py-10 text-center text-gray-500">
+                        <x-empty-state colspan="6" icon="inbox">
                             {{ $company ? __('No holidays for :company in :year.', ['company' => $company->establishment_name, 'year' => $year]) : __('Add a company first.') }}
-                        </td></tr>
+                        </x-empty-state>
                     @endforelse
                 </tbody>
             </table>
@@ -90,13 +90,13 @@
                             @forelse ($available as $holiday)
                                 <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-gray-700 hover:bg-gray-50">
                                     <input type="checkbox" name="holidays[]" value="{{ $holiday->uuid }}" @checked(in_array($holiday->uuid, old('holidays', []), true))
-                                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                           class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                     {{ $holiday->name }} — {{ __('Start: :start End: :end', ['start' => $holiday->start_date->toDateString(), 'end' => $holiday->end_date->toDateString()]) }}
                                 </label>
                             @empty
                                 <p class="px-2 py-1 text-sm text-gray-500">
                                     {{ __('Every :year holiday is already added.', ['year' => $year]) }}
-                                    <a href="{{ route('attendance.leave.holiday-list', ['year' => $year]) }}" class="text-indigo-600 hover:underline">{{ __('Add more to the Holiday list.') }}</a>
+                                    <a href="{{ route('attendance.leave.holiday-list', ['year' => $year]) }}" class="text-brand-600 hover:underline">{{ __('Add more to the Holiday list.') }}</a>
                                 </p>
                             @endforelse
                         </div>

@@ -53,7 +53,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-5 py-10 text-center text-gray-500">{{ request('search') ? __('No employees match your search.') : __('No employees yet.') }}</td></tr>
+                        <x-empty-state colspan="7" icon="search">{{ request('search') ? __('No employees match your search.') : __('No employees yet.') }}</x-empty-state>
                     @endforelse
                 </tbody>
             </table>

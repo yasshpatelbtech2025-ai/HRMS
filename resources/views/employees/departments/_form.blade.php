@@ -48,7 +48,7 @@
             {{-- A disabled select isn't submitted, so the locked company is sent from a hidden field instead. --}}
             <template x-if="lockedCompany"><input type="hidden" name="company_id" :value="company"></template>
             <select id="{{ $modal }}-company_id" :name="lockedCompany ? null : 'company_id'" x-model="company" :disabled="!! lockedCompany" required
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-600">
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-gray-100 disabled:text-gray-600">
                 <option value="">{{ __('Select company') }}</option>
                 @foreach ($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->label }}</option>
@@ -63,8 +63,8 @@
 
         <x-form-row :label="__('Is active')" required :messages="$error('is_active')">
             <div class="flex gap-6 pt-2 text-sm text-gray-700">
-                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="1" x-model="active" class="text-indigo-600 focus:ring-indigo-500"> {{ __('Active') }}</label>
-                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="0" x-model="active" class="text-indigo-600 focus:ring-indigo-500"> {{ __('Inactive') }}</label>
+                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="1" x-model="active" class="text-brand-600 focus:ring-brand-500"> {{ __('Active') }}</label>
+                <label class="inline-flex items-center gap-2"><input type="radio" name="is_active" value="0" x-model="active" class="text-brand-600 focus:ring-brand-500"> {{ __('Inactive') }}</label>
             </div>
         </x-form-row>
     </div>

@@ -6,7 +6,7 @@
     @php
         $labels = config('employee.gross_elements') + config('employee.deduction_elements');
         $allowed = $newStructure ? ['basic', 'allowance', 'bonus', ...array_keys(config('employee.deduction_elements'))] : array_keys($labels);
-        $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $rows = collect($labels)->only($allowed)->map(fn ($label, $key) => [
             'label' => $label,
             'current' => $current[$key]['monthly'] ?? 0,

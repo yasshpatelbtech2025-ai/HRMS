@@ -50,7 +50,7 @@
             <label for="{{ $modal }}-parent_company_id" class="block pt-2 text-sm font-medium text-gray-700">{{ __('Connected Company (if any)') }}</label>
             <div class="mt-1 lg:col-span-3 lg:mt-0">
                 <select id="{{ $modal }}-parent_company_id" name="parent_company_id" x-model="parent"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
                     <option value="">{{ __('Select company') }}</option>
                     @foreach ($choices as $parent)
                         <option value="{{ $parent->id }}">{{ $parent->establishment_name }}</option>

@@ -46,11 +46,14 @@
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="6" class="px-5 py-10 text-center text-gray-500">
-                                {{ request('search') ? __('No sub departments match your search.') : __('No sub departments yet.') }}
-                            </td>
-                        </tr>
+                        @if (request('search'))
+                            <x-empty-state colspan="6" icon="search" :title="__('No sub departments match your search.')">{{ __('Try a different name.') }}</x-empty-state>
+                        @else
+                            <x-empty-state colspan="6" icon="building" :title="__('No sub departments yet')">
+                                {{ __('Sub departments group employees within a department.') }}
+                                <x-slot name="action"><x-add-button modal="create-sub-department">{{ __('Add sub department') }}</x-add-button></x-slot>
+                            </x-empty-state>
+                        @endif
                     @endforelse
                 </tbody>
             </table>

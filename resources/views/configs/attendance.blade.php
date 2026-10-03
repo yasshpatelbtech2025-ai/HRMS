@@ -4,8 +4,8 @@
     <x-section-tabs section="configs" />
 
     @php
-        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
-        $input = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
+        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $input = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
@@ -23,7 +23,7 @@
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">
-                {{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-indigo-600 hover:underline">{{ __('Go to Company') }}</a>
+                {{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a>
             </p>
         @else
             <form method="POST" action="{{ route('configs.attendance.update', $company) }}" class="space-y-6 px-5 py-6" novalidate>
@@ -50,7 +50,7 @@
                             <h4 class="text-base font-semibold text-gray-900">{{ __($definition['label']) }}</h4>
                             @if ($definition['slots'] > 1)
                                 <button type="button" x-show="shown < max" x-on:click="shown++"
-                                        class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700">
+                                        class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">
                                     {{ __('Add :type', ['type' => __($definition['label'])]) }}
                                 </button>
                             @endif
@@ -71,7 +71,7 @@
                                         <h5 class="text-sm font-semibold text-gray-800">
                                             {{ $title }}
                                             @if ($shift?->employees_count)
-                                                <span class="ms-2 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ trans_choice(':count employee|:count employees', $shift->employees_count) }}</span>
+                                                <span class="ms-2 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">{{ trans_choice(':count employee|:count employees', $shift->employees_count) }}</span>
                                             @endif
                                         </h5>
                                         <button type="button" x-on:click="$dispatch('open-modal', @js($modal))"
