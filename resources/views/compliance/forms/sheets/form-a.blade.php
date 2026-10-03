@@ -14,7 +14,7 @@
     <tr><td>Name of Owner / Contractor</td><td>:</td><td>{{ $contractor }}</td></tr>
     <tr><td>For the month of</td><td>:</td><td>{{ $month->format('M, Y') }}</td></tr>
 </table>
-<table class="reg small">
+<table class="reg">
     <tr>@foreach ($headings as $h)<th>{{ $h }}</th>@endforeach</tr>
     <tr class="colno">@foreach ($headings as $i => $h)<td>{{ $i + 1 }}</td>@endforeach</tr>
     @forelse ($employees as $e)

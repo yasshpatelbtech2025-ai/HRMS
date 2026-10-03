@@ -1,7 +1,8 @@
-<p class="sub">[ Contract Labour (Regulation &amp; Abolition) Act 1970 - Rule 76 ]</p>
+<div class="card14">
+<p class="sub" style="font-size: 14px;">[ Contract Labour (Regulation &amp; Abolition) Act 1970 - Rule 76 ]</p>
 <h1>FORM XIV</h1>
 <p class="sub">[See Rule 76]</p>
-<p class="caption">Employment Card</p>
+<p class="caption" style="font-style: italic;">Employment Card</p>
 @if (! $employee)
     <p class="empty">{{ __('Select an employee.') }}</p>
 @else
@@ -12,7 +13,7 @@
             default => $employee->salaryElements->firstWhere('element', 'basic')?->monthly,
         };
     @endphp
-    <table class="reg" style="margin-bottom: 14px;">
+    <table class="reg head" style="margin-bottom: 20px;">
         <tr>
             <td style="width: 50%;">Name and address of Contractor<br><strong>{{ $contractor }}</strong></td>
             <td>Name and address of Establishment in under which contract is carried on<br><strong>{{ $company->establishment_name }}</strong>{{ $address ? ', '.$address : '' }}</td>
@@ -32,8 +33,9 @@
             'Tenure of employment' => ($employee->date_of_joining?->format('d/m/Y') ?? '-').' to '.($employee->separation_date?->format('d/m/Y') ?? 'Till Date'),
             'Remarks' => '-',
         ] as $label => $value)
-            <tr><td class="num" style="width: 5%;">{{ $loop->iteration }}</td><td style="width: 50%;">{{ $label }}</td><td>{{ $value }}</td></tr>
+            <tr><td class="num">{{ $loop->iteration }}</td><td style="width: 44%;">{{ $label }}</td><td class="value">{{ $value }}</td></tr>
         @endforeach
     </table>
-    <p style="text-align: right; margin-top: 40px;">Signature of Contractor</p>
+    <p style="text-align: right; margin-top: 40px; font-weight: 700; font-style: italic;">Signature of Contractor</p>
 @endif
+</div>

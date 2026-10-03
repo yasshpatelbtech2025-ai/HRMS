@@ -17,7 +17,8 @@
     @csrf
     <input type="hidden" name="period" value="{{ $period }}">
 @endunless
-<h1>Form No. 25</h1>
+<div class="form25">
+<h1 class="big">Form No. 25</h1>
 <p class="sub">(Prescribed under clause (2) of Rule 107)</p>
 <p class="caption">Half Yearly Return<br>For the half year ending {{ $half === 'june' ? 'June' : 'December' }}, {{ $year }}.</p>
 <p class="small" style="text-align: right;">Registration No.: &nbsp; Licence No.: &nbsp; *NIC Code No.: (As given in the licence)</p>
@@ -54,6 +55,7 @@
 <p class="small"><strong>Explanatory Notes :-</strong> Working days are days on which the establishment actually worked and a manufacturing process was carried on.
     Mandays worked are the aggregate attendance of all workers in all shifts on all working days; attendance for half a shift or more counts as full attendance.
     Average number of workers employed daily is mandays worked divided by working days.</p>
+</div>
 @include('compliance.forms.sheets._save', ['period' => $period])
 @unless ($printing)
 </form>

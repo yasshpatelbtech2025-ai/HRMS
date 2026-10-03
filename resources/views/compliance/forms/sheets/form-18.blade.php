@@ -3,7 +3,7 @@
 <p class="sub">[See rule 78 (1) (a) (i)]</p>
 <h1>Form of Register of Wages-cum-Muster roll</h1>
 @include('compliance.forms._establishment', ['monthLine' => $month->format('F Y'), 'wagePeriod' => 'Monthly'])
-<table class="reg small">
+<table class="reg">
     <tr>
         <th>Sl. No.</th><th>Serial No. in the register of workman</th><th>Name of Workman</th><th>Designation/ nature of work done</th>
         <th colspan="{{ $month->daysInMonth }}">Daily attendance/ units worked</th>

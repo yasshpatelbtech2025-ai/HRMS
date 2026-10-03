@@ -51,7 +51,8 @@
     <x-input-error class="mb-3" :messages="collect($errors->getMessages())->flatten()->unique()->all()" />
 
     <div class="overflow-x-auto rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
-        <div class="sheet min-w-max">
+        @php $wide = in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23'], true); @endphp
+        <div class="sheet {{ $wide ? 'min-w-max' : 'mx-auto max-w-5xl' }}">
             @include('compliance.forms.sheets.'.$view)
         </div>
     </div>
