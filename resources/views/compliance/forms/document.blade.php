@@ -17,7 +17,7 @@
         $size = match (true) {
             $view === 'form-a' => 'wide xwide form-a-print',
             in_array($view, ['form-c', 'form-18', 'form-32'], true) => 'wide xwide',
-            in_array($view, ['form-b', 'form-d', 'form-16', 'form-17', 'form-29'], true) => 'wide',
+            in_array($view, ['form-b', 'form-d', 'form-16', 'form-17', 'form-29', 'bonus-form-c'], true) => 'wide',
             $view === 'form-20' => 'mid',
             default => '',
         };

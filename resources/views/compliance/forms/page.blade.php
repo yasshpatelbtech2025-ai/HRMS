@@ -47,7 +47,7 @@
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
                     </select>
-                @elseif ($view === 'bonus-form-d')
+                @elseif (in_array($view, ['bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d'], true))
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Accounting year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($startYear === $option)>{{ $option }} - {{ $option + 1 }}</option>@endforeach
                     </select>
@@ -65,7 +65,7 @@
         <x-input-error class="mb-3" :messages="collect($errors->getMessages())->flatten()->unique()->all()" />
     @endunless
 
-    @php $wide = in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-15', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'form-29', 'form-32', 'id-card-register'], true); @endphp
+    @php $wide = in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-15', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'form-29', 'form-32', 'id-card-register', 'bonus-form-a', 'bonus-form-c'], true); @endphp
     @if ($examView)
         @include('compliance.forms._examinations')
     @else

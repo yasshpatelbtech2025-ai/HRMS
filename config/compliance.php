@@ -68,7 +68,16 @@ return [
                 'er-1-quarterly-return' => ['title' => 'ER-1 - Quarterly Return', 'view' => 'er-1'],
             ],
         ],
-        'payment-of-bonus-act' => ['label' => 'PAYMENT OF BONUS ACT 1965', 'title' => 'PAYMENT OF BONUS ACT 1965', 'forms' => []],
+        'payment-of-bonus-act' => [
+            'label' => 'PAYMENT OF BONUS ACT 1965',
+            'title' => 'PAYMENT OF BONUS ACT 1965',
+            'forms' => [
+                'bonus-form-a' => ['title' => 'Form A - Allocable Surplus', 'view' => 'bonus-form-a'],
+                'bonus-form-b' => ['title' => 'Form B - Set-On / Set-Off Bonus', 'view' => 'bonus-form-b'],
+                'bonus-form-c' => ['title' => 'Form C - Details of Bonus', 'view' => 'bonus-form-c'],
+                'payment-bonus-form-d' => ['title' => 'Form D - Annual Return', 'view' => 'bonus-form-d'],
+            ],
+        ],
         'pt' => ['label' => 'PT ACT 1976', 'title' => 'PT ACT 1976', 'forms' => []],
         'pf' => ['label' => 'PF ACT 1952', 'title' => 'PF ACT 1952', 'forms' => []],
         'wc' => ['label' => 'WC ACT 1923', 'title' => 'WC ACT 1923', 'forms' => []],

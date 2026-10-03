@@ -2,6 +2,7 @@
 
 namespace App\Services\Compliance;
 
+use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\ComplianceFormValue;
 use App\Models\ComplianceRegisterEntry;
@@ -54,6 +55,8 @@ class ComplianceForms
             'form-15', 'id-card-register' => ['employees' => $this->employees($company)->current()->get()],
             'form-29' => $this->accidents($company, $request),
             'er-1' => $this->quarterly($company, $request),
+            'bonus-form-a', 'bonus-form-b' => $this->bonusReturn($company, $request, $view),
+            'bonus-form-c' => $this->bonusDetails($company, $request),
             'form-5', 'form-27a', 'form-30', 'form-32' => $this->examinations($company, $request),
             default => abort(404),
         };
@@ -311,9 +314,7 @@ class ComplianceForms
      */
     private function bonus(Company $company, Request $request): array
     {
-        $start = $request->integer('year', (int) (date('n') >= 4 ? date('Y') - 1 : date('Y') - 1));
-        $from = CarbonImmutable::create($start, 4, 1);
-        $to = CarbonImmutable::create($start + 1, 3, 31);
+        [$start, $from, $to] = $this->accountingYear($request);
 
         $payslips = Payslip::where('company_id', $company->id)->whereDate('month', '>=', $from)->whereDate('month', '<=', $to)->get();
         $bonus = $payslips->sum(fn (Payslip $p) => $p->amount('earnings', 'bonus'));
@@ -333,6 +334,75 @@ class ComplianceForms
         $year = (int) $request->query('year');
 
         return $year >= 2000 && $year <= 2100 ? $year : (int) date('Y');
+    }
+
+    /**
+     * The bonus accounting year (April to March) picked by its starting
+     * year; by default the last completed one.
+     *
+     * @return array{int, CarbonImmutable, CarbonImmutable}
+     */
+    private function accountingYear(Request $request): array
+    {
+        $start = $request->integer('year', (int) date('Y') - (date('n') >= 4 ? 1 : 2));
+
+        return [$start, CarbonImmutable::create($start, 4, 1), CarbonImmutable::create($start + 1, 3, 31)];
+    }
+
+    /**
+     * Bonus Form A (allocable surplus) and B (set-on / set-off): figures
+     * typed in for the accounting year.
+     */
+    private function bonusReturn(Company $company, Request $request, string $view): array
+    {
+        [$start, , $to] = $this->accountingYear($request);
+
+        return [
+            'startYear' => $start,
+            'yearEnd' => $to,
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => $start.'-'.($start + 1)]),
+        ];
+    }
+
+    /**
+     * Bonus Form C: per employee, days worked, salary (basic + DA) and bonus
+     * for the accounting year from the payslips. The bonus is what payroll
+     * paid monthly; otherwise the employee's Bonus % (8.33%, the statutory
+     * minimum, when none is set) of that salary.
+     */
+    private function bonusDetails(Company $company, Request $request): array
+    {
+        [$start, $from, $to] = $this->accountingYear($request);
+        $payslips = Payslip::where('company_id', $company->id)->whereDate('month', '>=', $from)->whereDate('month', '<=', $to)->get()->groupBy('employee_id');
+        $employees = $this->employees($company)
+            ->where(fn ($q) => $q->whereNull('date_of_joining')->orWhereDate('date_of_joining', '<=', $to))
+            ->where(fn ($q) => $q->whereNull('separation_date')->orWhereDate('separation_date', '>=', $from))
+            ->get();
+
+        $rows = $employees->map(function (Employee $e) use ($payslips, $from) {
+            $slips = $payslips[$e->id] ?? collect();
+            $salary = round($slips->sum(fn (Payslip $p) => $p->amount('earnings', 'basic') + $p->amount('earnings', 'da')), 2);
+            $paidMonthly = round($slips->sum(fn (Payslip $p) => $p->amount('earnings', 'bonus')), 2);
+            $rate = (float) ($e->salaryElements->firstWhere('element', 'bonus')?->monthly ?: 8.33);
+
+            return [
+                'employee' => $e,
+                'over15' => $e->date_of_birth ? $e->date_of_birth->diffInYears($from) >= 15 : null,
+                'days' => $slips->sum(fn (Payslip $p) => ($p->attendance['present'] ?? 0) + ($p->attendance['half_days'] ?? 0) / 2),
+                'salary' => $salary,
+                'payable' => $paidMonthly > 0 ? $paidMonthly : round($salary * $rate / 100, 2),
+                'rate' => $paidMonthly > 0 ? null : $rate,
+            ];
+        });
+
+        return [
+            'startYear' => $start,
+            'yearStart' => $from,
+            'yearEnd' => $to,
+            'workingDays' => Attendance::where('company_id', $company->id)->whereDate('work_date', '>=', $from)->whereDate('work_date', '<=', $to)->distinct()->count('work_date'),
+            'rows' => $rows,
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'bonus-form-c', 'period' => $start.'-'.($start + 1)]),
+        ];
     }
 
     /**

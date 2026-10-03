@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ComplianceController extends Controller
 {
     /** Forms laid out in landscape when printed or saved as PDF. */
-    private const LANDSCAPE = ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'form-15', 'form-29', 'form-32', 'id-card-register'];
+    private const LANDSCAPE = ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'form-15', 'form-29', 'form-32', 'id-card-register', 'bonus-form-a', 'bonus-form-c'];
 
     public function __construct(private ComplianceForms $forms) {}
 
@@ -109,7 +109,7 @@ class ComplianceController extends Controller
     public function storeValues(Request $request, Company $company, string $form): RedirectResponse
     {
         $view = $this->definition($form)[1]['view'] ?? null;
-        abort_unless(in_array($view, ['form-25', 'bonus-form-d', 'gratuity-form-f', 'er-1'], true), 404);
+        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1'], true), 404);
 
         $data = $request->validate([
             'period' => ['required', 'string', 'max:20', 'regex:/^(\d{4}-\d{2}|\d{4}-\d{4}|employee:\d+)$/'],

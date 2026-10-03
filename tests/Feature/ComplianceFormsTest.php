@@ -74,7 +74,7 @@ class ComplianceFormsTest extends TestCase
                 'Form 29', 'Form 30', 'Form 32 - Health register', 'Form 33', 'coming soon', 'Identity card register', 'Identity card'])
             ->assertSee(route('employees.id-cards'), false);
 
-        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pf']))
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pt']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
@@ -196,6 +196,36 @@ class ComplianceFormsTest extends TestCase
         $pdf = $this->form('er-1-quarterly-return', ['quarter' => 3, 'year' => 2026, 'output' => 'pdf'])->assertOk();
         $this->assertStringStartsWith('%PDF', $pdf->getContent());
         $this->form('er-1-quarterly-return')->assertSee('Dec-2026')->assertSee('counted as on today');
+    }
+
+    public function test_payment_of_bonus_act_forms(): void
+    {
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'payment-of-bonus-act']))->assertOk()
+            ->assertSeeInOrder(['Form A - Allocable Surplus', 'Form B - Set-On / Set-Off Bonus', 'Form C - Details of Bonus', 'Form D - Annual Return']);
+
+        // Form A: columns 6 and 7 are worked out from the saved figures.
+        $this->post(route('compliance.forms.values', [$this->company, 'bonus-form-a']), ['period' => '2026-2027', 'raw_data' => [1 => '1000000', 2 => '100000', 4 => '50000', 8 => '510000']])
+            ->assertSessionHasNoErrors();
+        $this->form('bonus-form-a', ['year' => 2026, 'output' => 'print'])->assertOk()
+            ->assertSeeInOrder(['FORM A', 'Computation of allocable surplus', '31st March 2027', '1,000,000.00', '150,000.00', '850,000.00', '510,000.00']);
+
+        $this->post(route('compliance.forms.values', [$this->company, 'bonus-form-b']), ['period' => '2026-2027', 'raw_data' => [2 => '510000', 3 => '400000']])->assertSessionHasNoErrors();
+        $this->form('bonus-form-b', ['year' => 2026])->assertOk()->assertSee('2026 - 2027')->assertSee('110,000.00 (set on)');
+
+        // Form C: September's payslip, and the deductions typed in.
+        $id = $this->employee->id;
+        $this->post(route('compliance.forms.values', [$this->company, 'bonus-form-c']), ['period' => '2026-2027', 'raw_data' => ["{$id}_puja" => '100', "{$id}_tax" => '50', "{$id}_paid_on" => '2027-04-10']])
+            ->assertSessionHasNoErrors();
+        $this->form('bonus-form-c', ['year' => 2026])->assertOk()
+            ->assertSeeInOrder(['FORM C', 'April 2026 to March 2027', 'No. of working days in the year', '2', 'Gopal Bhat', 'Rooplal Rao Bhat', 'Yes', '2', '8.33%', '150.00'])
+            ->assertSee('Save');
+        $this->form('bonus-form-c', ['year' => 2026, 'output' => 'print'])->assertOk()->assertSee('10-04-2027')->assertSee('size: A4 landscape', false);
+        $this->form('bonus-form-c', ['year' => 2025])->assertOk()->assertSee('No employees in this accounting year');
+
+        $this->form('payment-bonus-form-d', ['year' => 2026])->assertOk()->assertSee('31st March 2027');
+        foreach (['bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'payment-bonus-form-d'] as $form) {
+            $this->assertStringStartsWith('%PDF', $this->form($form, ['year' => 2026, 'output' => 'pdf'])->assertOk()->getContent(), $form);
+        }
     }
 
     public function test_print_sets_the_page_orientation(): void
