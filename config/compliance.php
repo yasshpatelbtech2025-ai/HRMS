@@ -107,7 +107,14 @@ return [
                 'maternity-form-n' => ['title' => 'Form N - Payment Details for Maternity', 'view' => 'maternity-n'],
             ],
         ],
-        'verification' => ['label' => 'POLICE VERIFICATION', 'title' => 'POLICE VERIFICATION', 'forms' => []],
+        'verification' => [
+            'label' => 'POLICE VERIFICATION',
+            'title' => 'POLICE VERIFICATION',
+            'forms' => [
+                // Gujarati: printed from the browser; the PDF engine cannot join Gujarati letters.
+                'police-verification' => ['title' => 'Police verification', 'view' => 'police-verification', 'no_pdf' => true],
+            ],
+        ],
     ],
 
     // Medical examination forms (Factory Act), all built from MedicalExamination records.

@@ -51,6 +51,10 @@
     .sheet .cert .signs div:last-child { text-align: right; }
     .sheet .cert table.reg th, .sheet .cert table.reg td { font-size: 14px; }
 
+    /* Police verification: bold question lines with the answer below. */
+    .sheet .police h6 { font-size: 15px; font-weight: 700; margin: 12px 0 2px; }
+    .sheet .police h6 + p { margin: 0 0 4px; }
+
     /* Form 25: larger heading, 16px rows, 14px boxed tables. */
     .sheet .form25 table.reg th, .sheet .form25 table.reg td { font-size: 14px; }
 

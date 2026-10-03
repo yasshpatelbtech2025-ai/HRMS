@@ -48,7 +48,9 @@ class ComplianceController extends Controller
     {
         [$act, $definition] = $this->definition($form);
         $view = $definition['view'] ?? abort(404);
-        $data = ['form' => $form, 'act' => $act, 'title' => $definition['title'], 'view' => $view] + $this->forms->build($view, $company, $request);
+        $noPdf = $definition['no_pdf'] ?? false;
+        abort_if($noPdf && $request->query('output') === 'pdf', 404);
+        $data = ['form' => $form, 'act' => $act, 'title' => $definition['title'], 'view' => $view, 'noPdf' => $noPdf] + $this->forms->build($view, $company, $request);
 
         return match ($request->query('output')) {
             'print' => response()->view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => true, 'landscape' => in_array($view, self::LANDSCAPE, true)]),
@@ -113,7 +115,7 @@ class ComplianceController extends Controller
     public function storeValues(Request $request, Company $company, string $form): RedirectResponse
     {
         $view = $this->definition($form)[1]['view'] ?? null;
-        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1', 'pt-form-5', 'pf-statement', 'pf-form-10c', 'pf-form-19', 'maternity-k', 'maternity-l', 'maternity-m', 'maternity-n'], true), 404);
+        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1', 'pt-form-5', 'pf-statement', 'pf-form-10c', 'pf-form-19', 'maternity-k', 'maternity-l', 'maternity-m', 'maternity-n', 'police-verification'], true), 404);
 
         $data = $request->validate([
             'period' => ['required', 'string', 'max:20', 'regex:/^(\d{4}-\d{2}|\d{4}-\d{4}|employee:\d+)$/'],
@@ -136,6 +138,13 @@ class ComplianceController extends Controller
         }
 
         $value->save();
+
+        // The police station is the same for every employee of the company.
+        if ($view === 'police-verification') {
+            $station = ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => 'company']);
+            $station->data = array_filter(['station_name' => $value->value('station_name'), 'station_phone' => $value->value('station_phone')]);
+            $station->save();
+        }
 
         return back()->with('status', __('Saved.'));
     }

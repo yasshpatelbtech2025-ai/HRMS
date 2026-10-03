@@ -47,6 +47,9 @@ class ComplianceForms
             'form-d', 'form-16' => $this->muster($company, $this->month($request)),
             'form-18' => $this->muster($company, $this->month($request)) + $this->wages($company, $this->month($request)),
             'form-14', 'gratuity-form-f', 'pf-form-10c', 'pf-form-19' => $this->employeePicker($company, $request, $view),
+            'police-verification' => $this->employeePicker($company, $request, $view) + [
+                'station' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'police-verification', 'period' => 'company']),
+            ],
             'pf-statement' => $this->providentFund($company, $this->month($request)),
             'maternity-k', 'maternity-l', 'maternity-m', 'maternity-n' => $this->maternity($company, $request, $view),
             'form-13' => ['employees' => $this->employees($company)->get()],
@@ -107,7 +110,7 @@ class ComplianceForms
     private function employees(Company $company)
     {
         return Employee::where('company_id', $company->id)
-            ->with(['position', 'subDepartment', 'familyMembers', 'addresses', 'qualifications', 'shift', 'salaryElements'])
+            ->with(['position', 'subDepartment', 'familyMembers', 'addresses', 'qualifications', 'shift', 'salaryElements', 'experiences'])
             ->orderBy('employee_code');
     }
 

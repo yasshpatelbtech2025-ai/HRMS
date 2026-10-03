@@ -79,8 +79,6 @@ class ComplianceFormsTest extends TestCase
         foreach (['labour-act' => 'LABOUR WALFARE FUND ACT', 'esic' => 'ESIC ACT 1948'] as $key => $label) {
             $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => $key]))->assertOk()->assertSee($label.' forms are coming soon.');
         }
-        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'verification']))
-            ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
     public function test_every_built_form_shows_prints_and_downloads(): void
@@ -306,6 +304,28 @@ class ComplianceFormsTest extends TestCase
             $this->assertStringStartsWith('%PDF', $this->form($form, ['year' => 2026, 'output' => 'pdf'])->assertOk()->getContent(), $form);
         }
         $this->form('maternity-form-n', ['year' => 2026])->assertSeeInOrder(['Form N', 'Under section 9A of the act', 'Remarks']);
+    }
+
+    public function test_police_verification_form(): void
+    {
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'verification']))->assertOk()->assertSee('Police verification');
+        $this->employee->update(['phone' => '9876543210', 'aadhar_card_no' => '123412341234', 'driving_license_no' => 'GJ16 2020 1234567']);
+        $this->employee->experiences()->create(['company_name' => 'Aarti Drugs', 'designation' => 'Fitter']);
+        $other = Employee::factory()->create(['company_id' => $this->company->id]);
+
+        $this->form('police-verification', ['employee' => $this->employee->uuid])->assertOk()
+            ->assertSeeInOrder(['પોલીસ સ્ટેશન', 'Gopal Bhat', '32', '9876543210', 'ADHARCARD - 123412341234', 'GJ16 2020 1234567', 'Rooplal Rao Bhat (Father)', 'Fitter at Aarti Drugs', 'Srympex', 'PI Industry'])
+            ->assertSee('Print')->assertDontSee('Download PDF')->assertSee('images/police-logo.png');
+        $this->form('police-verification', ['employee' => $this->employee->uuid, 'output' => 'pdf'])->assertNotFound();
+
+        $this->post(route('compliance.forms.values', [$this->company, 'police-verification']), [
+            'period' => 'employee:'.$this->employee->id, 'raw_data' => ['station_name' => 'ઝઘડિયા', 'station_phone' => '02645-220033', 'vehicle_no' => 'GJ16 AB 1234'],
+        ])->assertSessionHasNoErrors();
+
+        $this->form('police-verification', ['employee' => $this->employee->uuid, 'output' => 'print'])->assertOk()
+            ->assertSeeInOrder(['ઝઘડિયા', '02645-220033', 'GJ16 AB 1234'])->assertSee('window.print()', false);
+        // The police station carries over to the company's other employees.
+        $this->form('police-verification', ['employee' => $other->uuid, 'output' => 'print'])->assertSee('ઝઘડિયા')->assertSee('02645-220033')->assertDontSee('GJ16 AB 1234');
     }
 
     public function test_print_sets_the_page_orientation(): void
