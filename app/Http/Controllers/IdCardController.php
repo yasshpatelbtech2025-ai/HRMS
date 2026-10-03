@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Models\Employee;
+use App\Models\Firm;
+use App\Support\IdCardFormats;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,9 +37,14 @@ class IdCardController extends Controller
 
     public function show(Employee $employee): View
     {
-        $employee->load(['company', 'position', 'subDepartment', 'department']);
+        $employee->load(['company', 'position', 'subDepartment', 'department', 'familyMembers', 'addresses']);
+        $firm = Firm::current();
 
-        return view('employees.id-cards.show', compact('employee'));
+        return view('employees.id-cards.show', [
+            'employee' => $employee,
+            'format' => IdCardFormats::selected($firm),
+            'values' => IdCardFormats::forEmployee($employee, $firm),
+        ]);
     }
 
     /**

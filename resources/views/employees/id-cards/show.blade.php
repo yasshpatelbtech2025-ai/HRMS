@@ -20,24 +20,19 @@
         </div>
     </div>
 
-    {{-- Standard CR80 card: 54 × 85.6 mm, portrait. --}}
-    <div class="flex justify-center">
-        <div class="flex flex-col overflow-hidden rounded-xl bg-white text-center shadow ring-1 ring-gray-300 print:rounded-none print:shadow-none"
-             style="width: 54mm; height: 85.6mm;">
-            <div class="bg-gray-900 px-2 py-2 text-[9pt] font-bold uppercase leading-tight text-white">{{ $e->company?->establishment_name }}</div>
-            <div class="flex flex-1 flex-col items-center px-2 pt-2">
-                <x-employee-photo :employee="$e" class="h-[24mm] w-[20mm] !rounded-md text-base" />
-                <p class="mt-1.5 text-[10pt] font-bold leading-tight text-gray-900">{{ $e->full_name }}</p>
-                <p class="text-[8pt] text-gray-600">{{ $e->position?->name }}</p>
-                <dl class="mt-1.5 w-full space-y-0.5 text-left text-[7.5pt] text-gray-800">
-                    <div class="flex"><dt class="w-[17mm] text-gray-500">{{ __('Emp. ID') }}</dt><dd class="font-mono font-semibold">{{ $e->employee_code }}</dd></div>
-                    <div class="flex"><dt class="w-[17mm] text-gray-500">{{ __('Dept.') }}</dt><dd>{{ $e->subDepartment?->name ?? $e->department?->name }}</dd></div>
-                    <div class="flex"><dt class="w-[17mm] text-gray-500">{{ __('Blood Gr.') }}</dt><dd>{{ $e->blood_group ?? '—' }}</dd></div>
-                    <div class="flex"><dt class="w-[17mm] text-gray-500">{{ __('Contact') }}</dt><dd>{{ $e->phone }}</dd></div>
-                    <div class="flex"><dt class="w-[17mm] text-gray-500">{{ __('Joined') }}</dt><dd>{{ $e->date_of_joining?->format('d-m-Y') }}</dd></div>
-                </dl>
-            </div>
-            <div class="border-t border-gray-200 px-2 py-1 text-[6.5pt] text-gray-500">{{ __('If found, please return to the company.') }}</div>
+    {{-- Front and back in the design chosen in Company › ID Card Formats. --}}
+    @include('employees.id-cards._card-styles')
+    <div class="id-card-print flex flex-wrap items-start justify-center gap-6">
+        <div class="text-center">
+            {{ \App\Support\IdCardFormats::render($format, 'front', $values) }}
+            <p class="mt-2 text-xs text-gray-500 print:hidden">{{ __('Front') }}</p>
+        </div>
+        <div class="text-center">
+            {{ \App\Support\IdCardFormats::render($format, 'back', $values) }}
+            <p class="mt-2 text-xs text-gray-500 print:hidden">{{ __('Back') }}</p>
         </div>
     </div>
+    <p class="mt-4 text-center text-xs text-gray-500 print:hidden">
+        {{ __('Design :id.', ['id' => $format['id']]) }} <a href="{{ route('company.id-card-formats') }}" class="text-indigo-600 hover:underline">{{ __('Change the design') }}</a>
+    </p>
 </x-app-layout>

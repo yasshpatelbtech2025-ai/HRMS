@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 #[Fillable([
     'establishment_name', 'sector', 'organization_type', 'establishment_category', 'premise_no', 'pin_code', 'registered_on', 'commenced_on',
     'registration_no', 'is_factory_registered', 'pan', 'address_line_1', 'address_line_2', 'village', 'state', 'district', 'taluka',
-    'nearest_police_station', 'owners', 'factory_manager', 'mail_protocol', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_type',
+    'nearest_police_station', 'id_card_format', 'owners', 'factory_manager', 'mail_protocol', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_type',
 ])]
 class Firm extends Model
 {
@@ -40,7 +40,7 @@ class Firm extends Model
     protected function casts(): array
     {
         return [
-            'registered_on' => 'date', 'commenced_on' => 'date', 'is_factory_registered' => 'boolean', 'mail_port' => 'integer',
+            'registered_on' => 'date', 'commenced_on' => 'date', 'is_factory_registered' => 'boolean', 'mail_port' => 'integer', 'id_card_format' => 'integer',
             'pan' => 'encrypted', 'owners' => 'encrypted:array', 'factory_manager' => 'encrypted:array', 'mail_password' => 'encrypted',
         ];
     }

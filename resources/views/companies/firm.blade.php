@@ -86,8 +86,9 @@
                     @endforeach
                 </div>
 
-                <h4 class="font-semibold text-gray-900">{{ __('Stamp and signature') }}</h4>
-                <div class="grid gap-4 sm:grid-cols-3">
+                <h4 class="font-semibold text-gray-900">{{ __('Logo, stamp and signature') }}</h4>
+                <p class="text-sm text-gray-500">{{ __('The logo and the stamp and signature are printed on employee ID cards.') }}</p>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach (FirmController::IMAGES as $field => [$column, $text])
                         <div>
                             <label class="{{ $label }}" for="{{ $field }}">{{ __($text) }}</label>

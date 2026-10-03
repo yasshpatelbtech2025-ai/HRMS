@@ -22,6 +22,7 @@ class FirmController extends Controller
 {
     /** The images that can be uploaded: field => [column, label]. */
     public const IMAGES = [
+        'logo' => ['logo_path', 'Logo'],
         'stamp' => ['stamp_path', 'Stamp image'],
         'signature' => ['signature_path', 'Signature image'],
         'stamp_signature' => ['stamp_signature_path', 'Stamp and signature image'],
@@ -61,7 +62,7 @@ class FirmController extends Controller
             'registration_no' => $text, 'is_factory_registered' => ['boolean'], 'pan' => ['nullable', 'regex:/^[A-Za-z]{5}\d{4}[A-Za-z]$/'],
             'address_line_1' => $text, 'address_line_2' => $text, 'village' => $text, 'state' => $text, 'district' => $text, 'taluka' => $text,
             'nearest_police_station' => $text,
-            'stamp' => ['nullable', 'image', 'max:2048'], 'signature' => ['nullable', 'image', 'max:2048'], 'stamp_signature' => ['nullable', 'image', 'max:2048'],
+            'logo' => ['nullable', 'image', 'max:2048'], 'stamp' => ['nullable', 'image', 'max:2048'], 'signature' => ['nullable', 'image', 'max:2048'], 'stamp_signature' => ['nullable', 'image', 'max:2048'],
             'owners' => ['nullable', 'array', 'max:20'],
             'owners.*.is_primary' => ['boolean'], 'owners.*.is_factory_manager' => ['boolean'],
             'factory_manager' => ['nullable', 'array'],
@@ -76,7 +77,7 @@ class FirmController extends Controller
         $clean = fn (?array $person) => collect($person ?? [])->only([...array_keys(Firm::PERSON_FIELDS), 'is_primary', 'is_factory_manager'])
             ->map(fn ($v) => is_string($v) ? trim($v) : $v)->filter(fn ($v) => $v !== null && $v !== '')->all();
 
-        $firm->fill(collect($data)->except(['stamp', 'signature', 'stamp_signature', 'owners', 'factory_manager', 'mail_password'])->all());
+        $firm->fill(collect($data)->except(['logo', 'stamp', 'signature', 'stamp_signature', 'owners', 'factory_manager', 'mail_password'])->all());
         $firm->pan = filled($data['pan'] ?? null) ? strtoupper($data['pan']) : null;
         $firm->is_factory_registered = $request->boolean('is_factory_registered');
         $firm->owners = collect($data['owners'] ?? [])->map($clean)->filter(fn ($o) => ($o['first_name'] ?? '') !== '' || ($o['last_name'] ?? '') !== '')->values()->all();

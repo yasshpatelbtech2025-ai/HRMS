@@ -15,6 +15,7 @@ use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FirmController;
+use App\Http\Controllers\IdCardFormatController;
 use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\ComplianceTaskController;
 use App\Http\Controllers\DashboardController;
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('image/{image}', 'image')->name('company.firm.image');
         Route::post('test-mail', 'testMail')->name('company.firm.test-mail');
     });
+    Route::get('company/id-card-formats', [IdCardFormatController::class, 'index'])->name('company.id-card-formats');
+    Route::post('company/id-card-formats', [IdCardFormatController::class, 'select'])->name('company.id-card-formats.select');
     Route::resource('company', CompanyController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::controller(SubDepartmentController::class)->prefix('employees/departments')->group(function () {
