@@ -36,17 +36,20 @@
     .sheet .form25 table.reg th, .sheet .form25 table.reg td { font-size: 14px; }
 
     /* Print and PDF: same layout, scaled to fit the page. */
-    .sheet.compact { font-size: 11px; }
-    .sheet.compact h1 { font-size: 16px; }
-    .sheet.compact h1.big { font-size: 22px; }
-    .sheet.compact .sub, .sheet.compact .caption { font-size: 12px; }
-    .sheet.compact table.info td { font-size: 11px; padding: 2px 6px 2px 0; }
-    .sheet.compact table.reg th, .sheet.compact table.reg td { padding: 4px; }
-    .sheet.compact .small { font-size: 9px; }
+    .sheet.compact { font-size: 13px; }
+    .sheet.compact h1 { font-size: 19px; }
+    .sheet.compact h1.big { font-size: 26px; }
+    .sheet.compact .sub, .sheet.compact .caption { font-size: 14px; }
+    .sheet.compact table.info td { font-size: 13px; padding: 3px 6px 3px 0; }
+    .sheet.compact table.reg th, .sheet.compact table.reg td { padding: 5px; }
+    .sheet.compact .small { font-size: 11px; }
     .sheet.compact .card14 { padding: 0; border: none; }
-    .sheet.compact.wide { font-size: 8px; }
-    .sheet.compact.wide table.reg th, .sheet.compact.wide table.reg td { padding: 2px; }
-    .sheet.compact.wide .day { padding: 2px 1px !important; }
-    .sheet.compact.xwide { font-size: 6.5px; }
+    .sheet.compact.mid { font-size: 11.5px; }
+    /* Long registers, printed landscape: a step smaller so every column fits. */
+    .sheet.compact.wide { font-size: 10px; }
+    .sheet.compact.wide table.reg th, .sheet.compact.wide table.reg td { padding: 3px 2px; }
+    .sheet.compact.wide .day { padding: 3px 1px !important; }
+    .sheet.compact.xwide { font-size: 7.5px; }
     .sheet.compact.xwide table.reg th, .sheet.compact.xwide table.reg td { padding: 2px 1px; }
+    .sheet.compact.form-a-print { font-size: 7px; }
 </style>

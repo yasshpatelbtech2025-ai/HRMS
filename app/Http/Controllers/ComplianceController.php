@@ -49,7 +49,7 @@ class ComplianceController extends Controller
         $data = ['form' => $form, 'act' => $act, 'title' => $definition['title'], 'view' => $view] + $this->forms->build($view, $company, $request);
 
         return match ($request->query('output')) {
-            'print' => response()->view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => true]),
+            'print' => response()->view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => true, 'landscape' => in_array($view, self::LANDSCAPE, true)]),
             'pdf' => $this->pdf($data, $view),
             default => view('compliance.forms.page', $data + ['printing' => false]),
         };
@@ -157,7 +157,7 @@ class ComplianceController extends Controller
 
     private function pdf(array $data, string $view): Response
     {
-        $html = view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => false])->render();
+        $html = view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => false, 'landscape' => in_array($view, self::LANDSCAPE, true)])->render();
         $dompdf = new Dompdf((new Options)->set('isRemoteEnabled', false)->set('defaultFont', 'DejaVu Sans'));
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', in_array($view, self::LANDSCAPE, true) ? 'landscape' : 'portrait');

@@ -8,11 +8,21 @@
     @include('compliance.forms._styles')
     <style>
         body { margin: 0; background: #fff; }
-        @page { margin: 8mm; }
+        @page { size: A4 {{ $landscape ? 'landscape' : 'portrait' }}; margin: 8mm; }
     </style>
 </head>
 <body>
-    <div class="sheet compact {{ in_array($view, ['form-a', 'form-c', 'form-18'], true) ? 'wide xwide' : (in_array($view, ['form-d', 'form-16'], true) ? 'wide' : '') }}">
+    @php
+        // Print size per form: landscape registers with many columns step down so every column fits the page.
+        $size = match (true) {
+            $view === 'form-a' => 'wide xwide form-a-print',
+            in_array($view, ['form-c', 'form-18'], true) => 'wide xwide',
+            in_array($view, ['form-b', 'form-d', 'form-16', 'form-17'], true) => 'wide',
+            $view === 'form-20' => 'mid',
+            default => '',
+        };
+    @endphp
+    <div class="sheet compact {{ $size }}">
         @include('compliance.forms.sheets.'.$view)
     </div>
     @if ($autoPrint)

@@ -104,6 +104,12 @@ class ComplianceFormsTest extends TestCase
         $this->form('form-e')->assertNotFound();
     }
 
+    public function test_print_sets_the_page_orientation(): void
+    {
+        $this->form('form-a', ['month' => '2026-09', 'output' => 'print'])->assertSee('size: A4 landscape', false);
+        $this->form('form-14', ['output' => 'print'])->assertSee('size: A4 portrait', false);
+    }
+
     public function test_rows_can_be_added_to_and_removed_from_registers(): void
     {
         $this->post(route('compliance.forms.entries', [$this->company, 'form-21']), ['month' => '2026-09', 'rows' => [
