@@ -78,7 +78,13 @@ return [
                 'payment-bonus-form-d' => ['title' => 'Form D - Annual Return', 'view' => 'bonus-form-d'],
             ],
         ],
-        'pt' => ['label' => 'PT ACT 1976', 'title' => 'PT ACT 1976', 'forms' => []],
+        'pt' => [
+            'label' => 'PT ACT 1976',
+            'title' => 'PT ACT 1976',
+            'forms' => [
+                'form-5-pt' => ['title' => 'Form 5 PT - Payment of Professional Tax', 'view' => 'pt-form-5'],
+            ],
+        ],
         'pf' => ['label' => 'PF ACT 1952', 'title' => 'PF ACT 1952', 'forms' => []],
         'wc' => ['label' => 'WC ACT 1923', 'title' => 'WC ACT 1923', 'forms' => []],
         'labour-act' => ['label' => 'LABOUR WALFARE FUND ACT', 'title' => 'LABOUR WELFARE FUND ACT', 'forms' => []],

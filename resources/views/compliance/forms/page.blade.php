@@ -19,7 +19,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <form method="GET" action="{{ route('compliance.forms.show', [$company, $form]) }}" class="flex flex-wrap items-center gap-2">
-                @if (in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23'], true))
+                @if (in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'pt-form-5'], true))
                     <input type="month" name="month" value="{{ $month->format('Y-m') }}" class="{{ $select }}" aria-label="{{ __('Month') }}">
                 @elseif (in_array($view, ['form-14', 'gratuity-form-f'], true))
                     <select name="employee" class="{{ $select }} min-w-64" aria-label="{{ __('Employee') }}">

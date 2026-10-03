@@ -109,7 +109,7 @@ class ComplianceController extends Controller
     public function storeValues(Request $request, Company $company, string $form): RedirectResponse
     {
         $view = $this->definition($form)[1]['view'] ?? null;
-        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1'], true), 404);
+        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1', 'pt-form-5'], true), 404);
 
         $data = $request->validate([
             'period' => ['required', 'string', 'max:20', 'regex:/^(\d{4}-\d{2}|\d{4}-\d{4}|employee:\d+)$/'],

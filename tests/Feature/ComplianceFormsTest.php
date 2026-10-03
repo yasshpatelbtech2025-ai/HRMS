@@ -74,7 +74,7 @@ class ComplianceFormsTest extends TestCase
                 'Form 29', 'Form 30', 'Form 32 - Health register', 'Form 33', 'coming soon', 'Identity card register', 'Identity card'])
             ->assertSee(route('employees.id-cards'), false);
 
-        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pt']))
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pf']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
@@ -226,6 +226,24 @@ class ComplianceFormsTest extends TestCase
         foreach (['bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'payment-bonus-form-d'] as $form) {
             $this->assertStringStartsWith('%PDF', $this->form($form, ['year' => 2026, 'output' => 'pdf'])->assertOk()->getContent(), $form);
         }
+    }
+
+    public function test_professional_tax_form_5(): void
+    {
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pt']))->assertOk()->assertSee('Form 5 PT - Payment of Professional Tax');
+
+        // September's payslip: one employee below ₹12,000, no PT deducted.
+        $this->form('form-5-pt', ['month' => '2026-09'])->assertOk()
+            ->assertSeeInOrder(['FORM NO. 5', 'September 2026', 'Below Rs. 12,000/-', '1', '1', '0', '0', '0.00', 'Rs. 12,000/- or more', '0', '-', '0', '200', '0.00', 'Total (A) Rs.', '0.00', 'Save']);
+        $this->form('form-5-pt', ['month' => '2026-08'])->assertSee('No salary has been generated for August 2026 yet');
+
+        $this->post(route('compliance.forms.values', [$this->company, 'form-5-pt']), [
+            'period' => '2026-09', 'raw_data' => ['registration_no' => 'PRC-77', 'interest' => '40', 'cheque_no' => '004512', 'declarant' => 'R. Shah'],
+        ])->assertSessionHasNoErrors();
+
+        $this->form('form-5-pt', ['month' => '2026-09', 'output' => 'print'])->assertOk()
+            ->assertSeeInOrder(['PRC-77', 'NOT APPLICABLE', 'Total tax and interest payable', '40.00', '004512', 'R. Shah'])->assertDontSee('Save');
+        $this->assertStringStartsWith('%PDF', $this->form('form-5-pt', ['month' => '2026-09', 'output' => 'pdf'])->assertOk()->getContent());
     }
 
     public function test_print_sets_the_page_orientation(): void

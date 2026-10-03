@@ -55,6 +55,7 @@ class ComplianceForms
             'form-15', 'id-card-register' => ['employees' => $this->employees($company)->current()->get()],
             'form-29' => $this->accidents($company, $request),
             'er-1' => $this->quarterly($company, $request),
+            'pt-form-5' => $this->professionalTax($company, $this->month($request)),
             'bonus-form-a', 'bonus-form-b' => $this->bonusReturn($company, $request, $view),
             'bonus-form-c' => $this->bonusDetails($company, $request),
             'form-5', 'form-27a', 'form-30', 'form-32' => $this->examinations($company, $request),
@@ -334,6 +335,36 @@ class ComplianceForms
         $year = (int) $request->query('year');
 
         return $year >= 2000 && $year <= 2100 ? $year : (int) date('Y');
+    }
+
+    /**
+     * PT Form 5: employees paid in the month by salary slab (below
+     * ₹12,000 / ₹12,000 or more) and the professional tax deducted, from the
+     * month's payslips.
+     */
+    private function professionalTax(Company $company, CarbonImmutable $month): array
+    {
+        $payslips = Payslip::where('company_id', $company->id)->whereDate('month', $month)->get();
+        $slab = fn (bool $upper) => $payslips->filter(fn (Payslip $p) => ((float) $p->gross_earnings >= 12000) === $upper);
+        $row = function (bool $upper) use ($slab) {
+            $slips = $slab($upper);
+            $taxed = $slips->filter(fn (Payslip $p) => $p->amount('deductions', 'pt') > 0);
+
+            return [
+                'employees' => $slips->count(),
+                'exempt' => $slips->count() - $taxed->count(),
+                'taxed' => $taxed->count(),
+                'rate' => $upper ? 200 : 0,
+                'tax' => round($taxed->sum(fn (Payslip $p) => $p->amount('deductions', 'pt')), 2),
+            ];
+        };
+
+        return [
+            'month' => $month,
+            'slabs' => ['Below Rs. 12,000/-' => $row(false), 'Rs. 12,000/- or more' => $row(true)],
+            'generated' => $payslips->isNotEmpty(),
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'pt-form-5', 'period' => $month->format('Y-m')]),
+        ];
     }
 
     /**
