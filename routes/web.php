@@ -15,6 +15,7 @@ use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\IdCardController;
@@ -224,6 +225,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('current', [CurrentSalaryController::class, 'index'])->name('payroll.current');
         Route::get('current/export/{format}', [CurrentSalaryController::class, 'export'])->name('payroll.current.export');
+    });
+
+    Route::controller(DocumentController::class)->prefix('documents')->group(function () {
+        Route::get('/', 'index')->name('documents.index');
+        Route::get('files/{file}', 'file')->name('documents.file');
+        Route::delete('files/{file}', 'destroy')->name('documents.destroy');
+        Route::get('{slot}', 'show')->name('documents.show');
+        Route::post('{slot}/upload', 'upload')->name('documents.upload');
+        Route::put('{slot}/assign', 'assign')->name('documents.assign');
     });
 
     Route::get('reports', [ReportController::class, 'sheet'])->name('reports.index');
