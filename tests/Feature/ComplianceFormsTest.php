@@ -328,6 +328,19 @@ class ComplianceFormsTest extends TestCase
         $this->form('police-verification', ['employee' => $other->uuid, 'output' => 'print'])->assertSee('ઝઘડિયા')->assertSee('02645-220033')->assertDontSee('GJ16 AB 1234');
     }
 
+    public function test_employee_forms_show_a_blank_form_when_the_company_has_no_employees(): void
+    {
+        $empty = Company::factory()->create(['establishment_name' => 'Deepak Nitrate']);
+        $titles = ['form-14' => 'Employment Card', 'gratuity-form-f' => 'NOMINATION', 'pf-form-10c' => 'FORM 10C', 'pf-form-19' => 'PROVIDENT FUNDS SCHEME, 1952', 'police-verification' => 'HOME TOWN POLICE STATION'];
+
+        foreach ($titles as $form => $title) {
+            $this->get(route('compliance.forms.show', [$empty, $form]))->assertOk()
+                ->assertSee('Deepak Nitrate has no employees yet')->assertSee($title)->assertSee(route('employees.create'))
+                ->assertDontSee('Select an employee.')->assertDontSee('name="raw_data', false);
+            $this->get(route('compliance.forms.show', [$empty, $form, 'output' => 'print']))->assertOk()->assertSee($title);
+        }
+    }
+
     public function test_print_sets_the_page_orientation(): void
     {
         $this->form('form-a', ['month' => '2026-09', 'output' => 'print'])->assertSee('size: A4 landscape', false);

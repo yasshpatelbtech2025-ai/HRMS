@@ -76,6 +76,13 @@
         @include('compliance.forms._examinations')
     @else
         <div class="overflow-x-auto rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+            @if ($blank ?? false)
+                <div class="mb-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
+                    {{ __(':company has no employees yet, so this is the blank form to print and fill by hand.', ['company' => $company->establishment_name]) }}
+                    <a href="{{ route('employees.create') }}" class="font-semibold underline">{{ __('Add an employee') }}</a>
+                    {{ __('to have it filled in from their profile.') }}
+                </div>
+            @endif
             <div class="sheet {{ $wide ? '' : 'mx-auto max-w-5xl' }}">
                 @include('compliance.forms.sheets.'.$view)
             </div>

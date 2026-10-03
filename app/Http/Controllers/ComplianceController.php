@@ -58,7 +58,8 @@ class ComplianceController extends Controller
             'csv', 'xlsx' => isset($data['export'])
                 ? TableExport::download($request->query('output'), Str::slug($definition['title']).'-'.$data['month']->format('Y-m'), $data['export']['headings'], $data['export']['rows'], $definition['title'].' — '.$company->establishment_name.' — '.$data['month']->format('F Y'))
                 : abort(404),
-            default => view('compliance.forms.page', $data + ['printing' => false]),
+            // A blank form (no employees yet) is shown read-only: there is nobody to save it for.
+            default => view('compliance.forms.page', $data + ['printing' => (bool) ($data['blank'] ?? false)]),
         };
     }
 

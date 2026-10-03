@@ -614,6 +614,14 @@ class ComplianceForms
         $employees = $this->employees($company)->get();
         $employee = $employees->firstWhere('uuid', $request->query('employee')) ?? $employees->first();
 
+        // No employees yet: a blank form to print and fill by hand.
+        if (! $employee) {
+            $blank = (new Employee)->setRelations(['familyMembers' => collect(), 'addresses' => collect(), 'experiences' => collect(), 'qualifications' => collect(),
+                'salaryElements' => collect(), 'position' => null, 'subDepartment' => null, 'shift' => null]);
+
+            return ['employees' => $employees, 'employee' => $blank, 'blank' => true, 'values' => $view === 'form-14' ? null : new ComplianceFormValue];
+        }
+
         return [
             'employees' => $employees,
             'employee' => $employee,
