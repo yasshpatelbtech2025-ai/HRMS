@@ -28,6 +28,7 @@ use App\Http\Controllers\Payroll\SalaryRevisionController;
 use App\Http\Controllers\PayrollSettingController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\SubDepartmentController;
 use Illuminate\Support\Facades\Route;
@@ -224,6 +225,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('current', [CurrentSalaryController::class, 'index'])->name('payroll.current');
         Route::get('current/export/{format}', [CurrentSalaryController::class, 'export'])->name('payroll.current.export');
     });
+
+    Route::get('reports', [ReportController::class, 'sheet'])->name('reports.index');
+    foreach (['attendance', 'lateness', 'attendance-log', 'daily-present', 'employees'] as $report) {
+        Route::get("reports/{$report}", [ReportController::class, 'show'])->defaults('report', $report)->name("reports.{$report}");
+    }
 
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
     Route::put('configs/attendance/{company}', [AttendanceSettingController::class, 'update'])->name('configs.attendance.update');
