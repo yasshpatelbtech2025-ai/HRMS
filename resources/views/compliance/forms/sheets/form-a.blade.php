@@ -27,10 +27,10 @@
             <td>{{ $e->full_name }}</td>
             <td>{{ $e->gender?->label() }}</td>
             <td>{{ F::guardian($e) }}</td>
-            <td>{{ $e->date_of_birth?->format('d-m-Y') }}</td>
+            <td class="nw">{{ $e->date_of_birth?->format('d-m-Y') }}</td>
             <td>{{ strtoupper($e->country === 'India' ? 'Indian' : (string) $e->country) }}</td>
             <td>{{ $education ? config('employee.qualification_levels')[$education] : '' }}</td>
-            <td>{{ $e->date_of_joining?->format('d-m-Y') }}</td>
+            <td class="nw">{{ $e->date_of_joining?->format('d-m-Y') }}</td>
             <td>{{ $e->position?->name }}</td>
             <td></td>
             <td>{{ $e->employment_type?->label() }}</td>
@@ -46,7 +46,7 @@
             <td>{{ F::address($e->address('present')) }}</td>
             <td>{{ F::address($e->address('permanent')) }}</td>
             <td></td>
-            <td>{{ $e->separation_date?->format('d-m-Y') }}</td>
+            <td class="nw">{{ $e->separation_date?->format('d-m-Y') }}</td>
             <td></td>
             <td></td>
             <td>@if (! $printing && $e->photo_path)<img src="{{ route('employees.file', [$e, 'photo']) }}" alt="" style="height: 36px;">@endif</td>

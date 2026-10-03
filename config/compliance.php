@@ -45,7 +45,22 @@ return [
                 'form-v-licence' => ['title' => 'FORM V - LICENCE APPLY'],
             ],
         ],
-        'factory-act' => ['label' => 'FACTORY ACT 1948', 'title' => 'FACTORY ACT 1948', 'forms' => []],
+        'factory-act' => [
+            'label' => 'FACTORY ACT 1948',
+            'title' => 'FACTORY ACT 1948',
+            'forms' => [
+                'form-15-adult-register' => ['title' => 'Form 15 - Register of adult workers', 'view' => 'form-15'],
+                'form-5-fitness-young' => ['title' => 'Form 5 - Certificate of Fitness (for young persons)', 'view' => 'form-5'],
+                'factory-form-25' => ['title' => 'Form 25 - Half Yearly Return', 'view' => 'form-25'],
+                'form-27a-fitness' => ['title' => 'Form 27-A - Certificate of fitness', 'view' => 'form-27a'],
+                'form-29-accidents' => ['title' => 'Form 29 - Register of accidents, major accidents and dangerous occurrences', 'view' => 'form-29'],
+                'form-30-special-fitness' => ['title' => 'Form 30 - Special certificate of fitness', 'view' => 'form-30'],
+                'form-32-health-register' => ['title' => 'Form 32 - Health register', 'view' => 'form-32'],
+                'form-33' => ['title' => 'Form 33 - Certificate of fitness of employment'],
+                'id-card-register' => ['title' => 'Identity card register', 'view' => 'id-card-register'],
+                'id-card' => ['title' => 'Identity card', 'link' => 'employees.id-cards'],
+            ],
+        ],
         'employment-exchange-act' => ['label' => 'EMPLOYMENT EXCHANGE ACT 1959', 'title' => 'EMPLOYMENT EXCHANGE ACT 1959', 'forms' => []],
         'payment-of-bonus-act' => ['label' => 'PAYMENT OF BONUS ACT 1965', 'title' => 'PAYMENT OF BONUS ACT 1965', 'forms' => []],
         'pt' => ['label' => 'PT ACT 1976', 'title' => 'PT ACT 1976', 'forms' => []],
@@ -56,6 +71,9 @@ return [
         'maternity' => ['label' => 'MATERNITY ACT 1961', 'title' => 'MATERNITY ACT 1961', 'forms' => []],
         'verification' => ['label' => 'POLICE VERIFICATION', 'title' => 'POLICE VERIFICATION', 'forms' => []],
     ],
+
+    // Medical examination forms (Factory Act), all built from MedicalExamination records.
+    'examination_views' => ['form-5', 'form-27a', 'form-30', 'form-32'],
 
     // Hand-entered register rows: Form C (all recovery types), 20 (damage or loss) and 21 (fines).
     'recovery_types' => ['Damage', 'Loss', 'Fines', 'Advance', 'Loans', 'Absence'],

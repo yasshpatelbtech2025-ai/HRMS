@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\ComplianceFormValue;
 use App\Models\ComplianceRegisterEntry;
 use App\Models\Employee;
+use App\Models\MedicalExamination;
 use App\Models\SalaryAdvance;
 use App\Models\Shift;
 use App\Models\User;
@@ -69,6 +70,11 @@ class ComplianceFormsTest extends TestCase
                 'coming soon', 'FORM 23 - OVERTIME REGISTER', 'FORM V - LICENCE APPLY']);
 
         $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'factory-act']))
+            ->assertOk()->assertSeeInOrder(['Form 15 - Register of adult workers', 'Form 5 - Certificate of Fitness', 'Form 25 - Half Yearly Return', 'Form 27-A',
+                'Form 29', 'Form 30', 'Form 32 - Health register', 'Form 33', 'coming soon', 'Identity card register', 'Identity card'])
+            ->assertSee(route('employees.id-cards'), false);
+
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pt']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
@@ -102,6 +108,73 @@ class ComplianceFormsTest extends TestCase
         }
 
         $this->form('form-e')->assertNotFound();
+    }
+
+    public function test_factory_act_forms_show_print_and_download(): void
+    {
+        $this->employee->update(['id_card_assigned_on' => '2026-07-05', 'ip_number' => '3712345678']);
+        $exam = MedicalExamination::create([
+            'company_id' => $this->company->id, 'employee_id' => $this->employee->id, 'examined_on' => '2026-08-20', 'result' => 'fit',
+            'certifying_surgeon' => 'Dr. Mehta', 'signs_symptoms' => 'NIL', 'extended_until' => '2027-08-19',
+            'details' => ['identification_marks' => 'Mole on left cheek', 'hazardous_process' => 'Chlorination', 'tests' => 'Blood, X-ray normal'],
+        ]);
+        $this->post(route('compliance.forms.entries', [$this->company, 'form-29-accidents']), ['rows' => [
+            ['employee' => $this->employee->uuid, 'date' => '2026-09-14', 'time' => '10:30', 'place' => 'Boiler house', 'cause' => 'Slipped', 'nature' => 'Sprain', 'days_absent' => 3],
+        ]])->assertSessionHasNoErrors();
+
+        $forms = [
+            'form-15-adult-register' => [[], ['Register of Adult Workers', 'Gopal Bhat', '01-09-1994', 'Male', 'Rooplal Rao Bhat', '01-07-2026', 'General', 'N/A']],
+            'id-card-register' => [[], ['IDENTITY CARD REGISTER', 'PI Industry', 'Gopal Bhat', '01-09-1994', '01-07-2026', '05-07-2026']],
+            'form-29-accidents' => [['year' => 2026], ['Register of accidents', 'Gopal Bhat (0001)', '3712345678', '14-09-2026', '10:30', 'Boiler house', 'Slipped', 'Sprain', '3']],
+            'form-5-fitness-young' => [[], ['FORM NO. 5', '0001', 'Gopal Bhat', 'Rooplal Rao Bhat', 'Mole on left cheek', 'Fit', 'adult', 'DR. MEHTA']],
+            'form-27a-fitness' => [[], ['FORM NO. 27-A', 'CERTIFICATE OF FITNESS', 'Gopal Bhat', 'Rooplal Rao Bhat', '31', 'Fit', '20-08-2026', '19-08-2027', 'NIL']],
+            'form-30-special-fitness' => [[], ['FORM NO. 30', 'lead compounds', 'Gopal Bhat', 'Mole on left cheek', '20-08-2026', '19-08-2027']],
+            'form-32-health-register' => [[], ['FORM NO. 32', 'Health Register', '0001', 'Gopal Bhat', '32 Years', 'Chlorination', '20-08-2026', 'NIL', 'Blood, X-ray normal', 'Fit', 'Dr. Mehta']],
+            'factory-form-25' => [['month' => 'june', 'year' => 2026], ['Form No. 25', 'Half Yearly Return']],
+        ];
+
+        foreach ($forms as $form => [$query, $see]) {
+            $this->form($form, $query)->assertOk()->assertSeeInOrder(['Print', 'Download PDF'])->assertSeeInOrder($see);
+            $this->form($form, $query + ['output' => 'print'])->assertOk()->assertSee('window.print()', false)->assertDontSee('Add examination')->assertDontSee('Add Row');
+            $pdf = $this->form($form, $query + ['output' => 'pdf'])->assertOk()->assertHeader('Content-Type', 'application/pdf');
+            $this->assertStringStartsWith('%PDF', $pdf->getContent(), "{$form} PDF");
+        }
+
+        $this->form('form-27a-fitness')->assertSee('Examination : 20-08-2026')->assertSee('Add examination');
+        $this->form('form-29-accidents', ['year' => 2025])->assertSee('No accidents recorded in 2025');
+        $this->form('form-32-health-register', ['output' => 'print'])->assertSee('size: A4 landscape', false);
+        $this->form('form-5-fitness-young', ['output' => 'print'])->assertSee('size: A4 portrait', false);
+        $this->assertSame($exam->uuid, MedicalExamination::sole()->uuid);
+    }
+
+    public function test_medical_examinations_can_be_added_edited_and_deleted(): void
+    {
+        $this->post(route('compliance.examinations.store', $this->company), [
+            '_modal' => 'examination-add', 'form' => 'form-27a-fitness', 'employee' => $this->employee->uuid, 'examined_on' => '2026-09-01',
+            'result' => 'fit', 'certifying_surgeon' => 'Dr. Shah', 'details' => ['raw_materials' => 'Chlorine', 'unfit_on' => ''],
+            'doc' => UploadedFile::fake()->create('cert.pdf', 50, 'application/pdf'),
+        ])->assertSessionHasNoErrors()->assertSessionHas('status');
+
+        $exam = MedicalExamination::sole();
+        $this->assertSame(['raw_materials' => 'Chlorine'], $exam->details);
+        Storage::disk('local')->assertExists($exam->signed_copy_path);
+        $this->get(route('compliance.examinations.signed-copy', $exam))->assertOk();
+        $this->form('form-32-health-register', ['employee' => $this->employee->uuid, 'exam' => $exam->uuid])->assertSee('Chlorine')->assertSee('Edit');
+
+        $this->put(route('compliance.examinations.update', $exam), ['examined_on' => '2026-09-02', 'result' => 'unfit', 'details' => ['withdrawal_period' => '3 months']])
+            ->assertSessionHasNoErrors();
+        $this->assertSame('unfit', $exam->fresh()->result);
+        $this->assertSame('3 months', $exam->fresh()->detail('withdrawal_period'));
+
+        $this->post(route('compliance.examinations.store', $this->company), ['_modal' => 'examination-add', 'employee' => $this->employee->uuid, 'result' => 'maybe'])
+            ->assertSessionHasErrors(['examined_on', 'result']);
+        $this->post(route('compliance.forms.entries', [$this->company, 'form-29-accidents']), ['rows' => [['employee' => $this->employee->uuid, 'date' => '2026-12-01']]])
+            ->assertSessionHasErrors('rows.0.date');
+
+        $path = $exam->fresh()->signed_copy_path;
+        $this->delete(route('compliance.examinations.destroy', $exam))->assertSessionHas('status');
+        $this->assertModelMissing($exam);
+        Storage::disk('local')->assertMissing($path);
     }
 
     public function test_print_sets_the_page_orientation(): void

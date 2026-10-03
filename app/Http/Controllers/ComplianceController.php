@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\ComplianceFormValue;
 use App\Models\ComplianceRegisterEntry;
 use App\Models\Employee;
+use App\Models\MedicalExamination;
 use App\Services\Compliance\ComplianceForms;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -25,7 +26,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ComplianceController extends Controller
 {
     /** Forms laid out in landscape when printed or saved as PDF. */
-    private const LANDSCAPE = ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23'];
+    private const LANDSCAPE = ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'form-15', 'form-29', 'form-32', 'id-card-register'];
 
     public function __construct(private ComplianceForms $forms) {}
 
@@ -60,6 +61,9 @@ class ComplianceController extends Controller
      */
     public function storeEntries(Request $request, Company $company, string $form): RedirectResponse
     {
+        if ($form === 'form-29-accidents') {
+            return $this->storeAccidents($request, $company);
+        }
         abort_unless(in_array($form, ['form-c', 'form-20', 'form-21'], true), 404);
 
         $data = $request->validate([
@@ -104,8 +108,8 @@ class ComplianceController extends Controller
      */
     public function storeValues(Request $request, Company $company, string $form): RedirectResponse
     {
-        abort_unless(in_array($form, ['form-25-half-yearly', 'bonus-form-d', 'gratuity-form-f'], true), 404);
-        $view = config("compliance.acts.contract-labour-act.forms.{$form}.view");
+        $view = $this->definition($form)[1]['view'] ?? null;
+        abort_unless(in_array($view, ['form-25', 'bonus-form-d', 'gratuity-form-f'], true), 404);
 
         $data = $request->validate([
             'period' => ['required', 'string', 'max:20', 'regex:/^(\d{4}-\d{2}|\d{4}-\d{4}|employee:\d+)$/'],
@@ -139,6 +143,122 @@ class ComplianceController extends Controller
         abort_unless($value->signed_copy_path && $disk->exists($value->signed_copy_path), 404);
 
         return $disk->response($value->signed_copy_path, $value->signed_copy_name);
+    }
+
+    /**
+     * Form 29: add accidents. Each row is filed under the month it happened.
+     */
+    private function storeAccidents(Request $request, Company $company): RedirectResponse
+    {
+        $text = ['nullable', 'string', 'max:255'];
+        $data = $request->validate([
+            'rows' => ['required', 'array', 'min:1'],
+            'rows.*.employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
+            'rows.*.notice_at' => ['nullable', 'date'],
+            'rows.*.esic' => ['nullable', 'string', 'max:30'],
+            'rows.*.date' => ['required', 'date', 'before_or_equal:today'],
+            'rows.*.time' => ['nullable', 'date_format:H:i'],
+            'rows.*.place' => $text, 'rows.*.cause' => $text, 'rows.*.nature' => $text, 'rows.*.doing' => $text,
+            'rows.*.notice_by' => $text, 'rows.*.witnesses' => $text,
+            'rows.*.returned_on' => ['nullable', 'date', 'after_or_equal:rows.*.date'],
+            'rows.*.days_absent' => ['nullable', 'integer', 'min:0', 'max:3650'],
+        ], [], ['rows.*.employee' => 'employee', 'rows.*.date' => 'date of accident', 'rows.*.returned_on' => 'date of return to work']);
+
+        $ids = Employee::whereIn('uuid', collect($data['rows'])->pluck('employee'))->pluck('id', 'uuid');
+
+        foreach ($data['rows'] as $row) {
+            ComplianceRegisterEntry::create([
+                'company_id' => $company->id, 'form' => 'form-29', 'month' => substr($row['date'], 0, 7).'-01',
+                'employee_id' => $ids[$row['employee']], 'data' => collect($row)->except('employee')->filter(fn ($v) => $v !== null && $v !== '')->all(),
+            ]);
+        }
+
+        return back()->with('status', trans_choice(':count accident saved.|:count accidents saved.', count($data['rows'])));
+    }
+
+    /**
+     * Record a medical examination (Factory Act Form 5, 27-A, 30, 32).
+     */
+    public function storeExamination(Request $request, Company $company): RedirectResponse
+    {
+        $data = $this->validateExamination($request, $company);
+        $employee = Employee::where('uuid', $data['employee'])->firstOrFail();
+        $examination = new MedicalExamination(['company_id' => $company->id, 'employee_id' => $employee->id]);
+        $this->fillExamination($examination, $data, $request, $company);
+        $form = $request->input('form');
+
+        return ($form && in_array($this->definition($form)[1]['view'] ?? null, config('compliance.examination_views'), true)
+            ? redirect()->route('compliance.forms.show', [$company, $form, 'employee' => $employee->uuid, 'exam' => $examination->uuid])
+            : back())->with('status', __('Examination saved for :name.', ['name' => $employee->full_name]));
+    }
+
+    public function updateExamination(Request $request, MedicalExamination $examination): RedirectResponse
+    {
+        $company = Company::findOrFail($examination->company_id);
+        $data = $this->validateExamination($request, $company, $examination);
+        $this->fillExamination($examination, $data, $request, $company);
+
+        return back()->with('status', __('Examination updated.'));
+    }
+
+    public function destroyExamination(MedicalExamination $examination): RedirectResponse
+    {
+        if ($examination->signed_copy_path) {
+            Storage::disk(config('filesystems.employee_files'))->delete($examination->signed_copy_path);
+        }
+        $examination->delete();
+
+        return back()->with('status', __('Examination deleted.'));
+    }
+
+    public function examinationCopy(MedicalExamination $examination): StreamedResponse
+    {
+        $disk = Storage::disk(config('filesystems.employee_files'));
+        abort_unless($examination->signed_copy_path && $disk->exists($examination->signed_copy_path), 404);
+
+        return $disk->response($examination->signed_copy_path, $examination->signed_copy_name);
+    }
+
+    private function validateExamination(Request $request, Company $company, ?MedicalExamination $examination = null): array
+    {
+        $details = collect(MedicalExamination::DETAILS)->collapse()
+            ->map(fn ($field) => $field[1] === 'date' ? ['nullable', 'date'] : ['nullable', 'string', 'max:500'])
+            ->mapWithKeys(fn ($rules, $key) => ["details.{$key}" => $rules])->all();
+
+        return $request->validate([
+            'employee' => [$examination ? 'nullable' : 'required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
+            'examined_on' => ['required', 'date'],
+            'result' => ['nullable', Rule::in(['fit', 'unfit'])],
+            'certifying_surgeon' => ['nullable', 'string', 'max:255'],
+            'signs_symptoms' => ['nullable', 'string', 'max:1000'],
+            'extended_until' => ['nullable', 'date', 'after_or_equal:examined_on'],
+            'details' => ['nullable', 'array'],
+            'doc' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+        ] + $details, [], ['examined_on' => 'examination date', 'doc' => 'signed copy', 'extended_until' => 'extended until']);
+    }
+
+    private function fillExamination(MedicalExamination $examination, array $data, Request $request, Company $company): void
+    {
+        $examination->fill([
+            'examined_on' => $data['examined_on'],
+            'result' => $data['result'] ?? null,
+            'certifying_surgeon' => $data['certifying_surgeon'] ?? null,
+            'signs_symptoms' => $data['signs_symptoms'] ?? null,
+            'extended_until' => $data['extended_until'] ?? null,
+            'details' => array_filter($data['details'] ?? [], fn ($v) => $v !== null && $v !== ''),
+        ]);
+
+        if ($request->hasFile('doc')) {
+            $disk = Storage::disk(config('filesystems.employee_files'));
+            if ($examination->signed_copy_path) {
+                $disk->delete($examination->signed_copy_path);
+            }
+            $file = $request->file('doc');
+            $examination->signed_copy_path = $disk->putFileAs("compliance/{$company->uuid}/examinations", $file, Str::random(12).'.'.$file->guessExtension());
+            $examination->signed_copy_name = $file->getClientOriginalName();
+        }
+
+        $examination->save();
     }
 
     /**

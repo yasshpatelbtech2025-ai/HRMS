@@ -22,11 +22,11 @@
             <td>{{ \App\Services\Compliance\ComplianceForms::guardian($e) }}</td>
             <td>{{ $e->position?->name }}</td>
             <td>{{ config('employee.pay_frequencies')[$e->pay_frequency] ?? '' }}{{ $wage ? ' — '.$m($wage) : '' }}</td>
-            <td>{{ $a->advance_date->format('d-m-Y') }} — {{ $m($a->amount) }}</td>
+            <td class="nw">{{ $a->advance_date->format('d-m-Y') }} — {{ $m($a->amount) }}</td>
             <td>{{ __('Salary advance') }}</td>
             <td class="num">1</td>
-            <td>{{ $repaid > 0 ? $a->salary_month->endOfMonth()->format('d-m-Y').' — '.$m($repaid) : '' }}</td>
-            <td>{{ $repaid >= (float) $a->amount ? $a->salary_month->endOfMonth()->format('d-m-Y') : '' }}</td>
+            <td class="nw">{{ $repaid > 0 ? $a->salary_month->endOfMonth()->format('d-m-Y').' — '.$m($repaid) : '' }}</td>
+            <td class="nw">{{ $repaid >= (float) $a->amount ? $a->salary_month->endOfMonth()->format('d-m-Y') : '' }}</td>
             <td>{{ $a->is_active ? '' : __('Inactive') }}</td>
         </tr>
     @empty

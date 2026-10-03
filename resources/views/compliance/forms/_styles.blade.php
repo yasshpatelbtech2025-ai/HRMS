@@ -20,6 +20,8 @@
     .sheet table.info td.label { width: 28%; }
     .sheet table.info td.sep { width: 2%; }
     .sheet .small { font-size: 13px; }
+    .sheet td.nw { white-space: nowrap; }
+    .sheet .scroll-x { overflow-x: auto; }
     .sheet .day { padding: 8px 6px !important; white-space: nowrap; }
     .sheet .empty { text-align: center; color: #555; padding: 14px; }
     .sheet input, .sheet select, .sheet textarea { font: inherit; font-size: 15px; border: 1px solid #c7c7c7; border-radius: 4px; padding: 6px 8px; width: 100%; box-sizing: border-box; background: #fff; }
@@ -31,6 +33,23 @@
     .sheet .card14 table.reg td.value { font-weight: 700; }
     .sheet .card14 .head td { border: none !important; padding: 8px 12px; font-size: 14px; }
     .sheet .card14 .head strong { font-size: 15px; }
+
+    /* Factory Act certificates (Form 5, 27-A, 30, 32): a bordered sheet, 16px
+       numbered rows, values on dotted lines. */
+    .sheet .cert { max-width: 900px; margin: 0 auto; padding: 48px 56px; border: 1px solid #d5d5d5; font-size: 16px; }
+    .sheet .cert.full { max-width: none; padding: 32px; }
+    .sheet .cert .sub { margin-bottom: 4px; }
+    .sheet .cert table.fields td { padding: 4px 0; vertical-align: top; text-align: left; border: none; }
+    .sheet .cert table.fields td.no { width: 36px; }
+    .sheet .cert table.fields td.label { width: 42%; }
+    .sheet .cert table.fields td.sep { width: 24px; text-align: center; }
+    .sheet .cert .dots { display: inline-block; min-width: 180px; border-bottom: 1px dotted #070707; padding: 0 6px; font-weight: 600; }
+    .sheet .cert p.text { line-height: 2.1; }
+    .sheet .cert .photo { float: right; width: 110px; height: 130px; border: 1px solid #070707; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 13px; margin: 0 0 12px 16px; }
+    .sheet .cert .signs { display: flex; justify-content: space-between; gap: 24px; margin-top: 48px; }
+    .sheet .cert .signs div { width: 45%; }
+    .sheet .cert .signs div:last-child { text-align: right; }
+    .sheet .cert table.reg th, .sheet .cert table.reg td { font-size: 14px; }
 
     /* Form 25: larger heading, 16px rows, 14px boxed tables. */
     .sheet .form25 table.reg th, .sheet .form25 table.reg td { font-size: 14px; }
@@ -44,6 +63,16 @@
     .sheet.compact table.reg th, .sheet.compact table.reg td { padding: 5px; }
     .sheet.compact .small { font-size: 11px; }
     .sheet.compact .card14 { padding: 0; border: none; }
+    .sheet.compact .cert { padding: 0; border: none; font-size: 14px; max-width: none; }
+    .sheet.compact .cert.full { font-size: inherit; }
+    .sheet.compact .cert.full table.fields td { font-size: 12px; }
+    .sheet.compact .cert .signs { display: block; }
+    .sheet.compact .cert .photo { display: block; height: 80px; padding-top: 40px; }
+    .sheet.compact .cert table.reg th, .sheet.compact .cert table.reg td { font-size: inherit; }
+    .sheet.compact .scroll-x { overflow: visible; }
+    .sheet.compact .cert .dots { display: inline; min-width: 0 !important; padding: 0 4px; }
+    .sheet.compact.xwide td.nw { white-space: normal; }
+    .sheet.compact .cert .signs div { display: inline-block; vertical-align: top; width: 48%; }
     .sheet.compact.mid { font-size: 11.5px; }
     /* Long registers, printed landscape: a step smaller so every column fits. */
     .sheet.compact.wide { font-size: 10px; }

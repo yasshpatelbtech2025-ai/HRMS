@@ -8,6 +8,7 @@ use App\Models\ComplianceRegisterEntry;
 use App\Models\Employee;
 use App\Models\EmployeeAddress;
 use App\Models\Loan;
+use App\Models\MedicalExamination;
 use App\Models\Payslip;
 use App\Models\SalaryAdvance;
 use App\Models\SalarySheet;
@@ -50,6 +51,9 @@ class ComplianceForms
             'form-23' => $this->overtime($company, $this->month($request)),
             'form-25' => $this->halfYearly($company, $request),
             'bonus-form-d' => $this->bonus($company, $request),
+            'form-15', 'id-card-register' => ['employees' => $this->employees($company)->current()->get()],
+            'form-29' => $this->accidents($company, $request),
+            'form-5', 'form-27a', 'form-30', 'form-32' => $this->examinations($company, $request),
             default => abort(404),
         };
     }
@@ -74,6 +78,12 @@ class ComplianceForms
     public static function address(?EmployeeAddress $address): string
     {
         return $address ? collect([$address->address_line_1, $address->address_line_2, $address->village, $address->taluka, $address->district, $address->state])->filter()->implode(', ') : '';
+    }
+
+    /** Where the employee lives: the present address, or the permanent one when they are the same. */
+    public static function residence(Employee $employee): string
+    {
+        return self::address($employee->address('present') ?? $employee->address('permanent'));
     }
 
     public static function mask(?string $value): string
@@ -315,6 +325,54 @@ class ComplianceForms
             'bonusPaid' => round($bonus, 2),
             'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'bonus-form-d', 'period' => $start.'-'.($start + 1)]),
         ];
+    }
+
+    public function year(Request $request): int
+    {
+        $year = (int) $request->query('year');
+
+        return $year >= 2000 && $year <= 2100 ? $year : (int) date('Y');
+    }
+
+    /**
+     * Form 29: accidents typed in for the year.
+     */
+    private function accidents(Company $company, Request $request): array
+    {
+        $year = $this->year($request);
+
+        return [
+            'year' => $year,
+            'month' => CarbonImmutable::create($year, 1, 1),
+            'entries' => ComplianceRegisterEntry::where('company_id', $company->id)->where('form', 'form-29')->whereYear('month', $year)
+                ->with('employee')->orderBy('month')->orderBy('id')->get(),
+            'employeeOptions' => $this->employees($company)->current()->get(),
+        ];
+    }
+
+    /**
+     * Medical examination forms (5, 27-A, 30, 32): employees with their
+     * examinations, and the one picked (by default the latest).
+     */
+    private function examinations(Company $company, Request $request): array
+    {
+        $examinations = MedicalExamination::where('company_id', $company->id)->orderByDesc('examined_on')->orderByDesc('id')->get()->groupBy('employee_id');
+        $employees = $this->employees($company)
+            ->where(fn ($q) => $q->current()->orWhereIn('id', $examinations->keys()))
+            ->get()->each(fn (Employee $e) => $e->setRelation('examinations', $examinations[$e->id] ?? collect()));
+
+        $employee = $employees->firstWhere('uuid', $request->query('employee'))
+            ?? $employees->first(fn (Employee $e) => $e->examinations->isNotEmpty())
+            ?? $employees->first();
+        $examination = $employee?->examinations->firstWhere('uuid', $request->query('exam')) ?? $employee?->examinations->first();
+
+        return ['employees' => $employees, 'employee' => $employee, 'examination' => $examination];
+    }
+
+    /** Age in whole years on a date, from the date of birth. */
+    public static function age(Employee $employee, ?\DateTimeInterface $on = null): ?int
+    {
+        return $employee->date_of_birth ? (int) $employee->date_of_birth->diffInYears($on ?? today()) : null;
     }
 
     /**

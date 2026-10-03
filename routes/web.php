@@ -244,6 +244,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('forms/{company}/{form}/values', 'storeValues')->name('compliance.forms.values');
         Route::get('forms/{company}/{form}/signed-copy/{period}', 'signedCopy')->name('compliance.forms.signed-copy');
         Route::delete('entries/{entry}', 'destroyEntry')->name('compliance.entries.destroy');
+        Route::post('forms/{company}/examinations', 'storeExamination')->name('compliance.examinations.store');
+        Route::put('examinations/{examination}', 'updateExamination')->name('compliance.examinations.update');
+        Route::delete('examinations/{examination}', 'destroyExamination')->name('compliance.examinations.destroy');
+        Route::get('examinations/{examination}/signed-copy', 'examinationCopy')->name('compliance.examinations.signed-copy');
     });
 
     Route::get('reports', [ReportController::class, 'sheet'])->name('reports.index');

@@ -7,6 +7,8 @@
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500';
         $btn = 'rounded-md px-3 py-2 text-sm font-semibold';
         $query = request()->except('output');
+        $examView = in_array($view, config('compliance.examination_views'), true);
+        $noFilter = $examView || in_array($view, ['form-13', 'form-15', 'id-card-register'], true);
     @endphp
 
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -34,12 +36,16 @@
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
                     </select>
+                @elseif ($view === 'form-29')
+                    <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
+                        @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
+                    </select>
                 @elseif ($view === 'bonus-form-d')
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Accounting year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($startYear === $option)>{{ $option }} - {{ $option + 1 }}</option>@endforeach
                     </select>
                 @endif
-                @unless ($view === 'form-13')
+                @unless ($noFilter)
                     <button class="{{ $btn }} bg-emerald-600 text-white hover:bg-emerald-700">{{ __('Find') }}</button>
                 @endunless
             </form>
@@ -48,12 +54,18 @@
         </div>
     </div>
 
-    <x-input-error class="mb-3" :messages="collect($errors->getMessages())->flatten()->unique()->all()" />
+    @unless (old('_modal'))
+        <x-input-error class="mb-3" :messages="collect($errors->getMessages())->flatten()->unique()->all()" />
+    @endunless
 
-    <div class="overflow-x-auto rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
-        @php $wide = in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23'], true); @endphp
-        <div class="sheet {{ $wide ? 'min-w-max' : 'mx-auto max-w-5xl' }}">
-            @include('compliance.forms.sheets.'.$view)
+    @php $wide = in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-13', 'form-15', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'form-29', 'form-32', 'id-card-register'], true); @endphp
+    @if ($examView)
+        @include('compliance.forms._examinations')
+    @else
+        <div class="overflow-x-auto rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+            <div class="sheet {{ $wide ? '' : 'mx-auto max-w-5xl' }}">
+                @include('compliance.forms.sheets.'.$view)
+            </div>
         </div>
-    </div>
+    @endif
 </x-app-layout>

@@ -18,9 +18,9 @@
             <td>{{ $e->position?->name }}</td>
             <td>{{ F::address($e->address('permanent')) }}</td>
             <td>{{ F::address($e->address('present')) }}</td>
-            <td>{{ $e->date_of_joining?->format('d-m-Y') }}</td>
+            <td class="nw">{{ $e->date_of_joining?->format('d-m-Y') }}</td>
             <td></td>
-            <td>{{ $e->separation_date?->format('d-m-Y') }}</td>
+            <td class="nw">{{ $e->separation_date?->format('d-m-Y') }}</td>
             <td></td>
             <td></td>
         </tr>

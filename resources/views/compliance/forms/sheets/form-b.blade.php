@@ -32,7 +32,7 @@
             <td class="money">{{ $w ? $m($w['other_deductions']) : '-' }}</td>
             <td class="money">{{ $w ? $m($w['deductions']) : '-' }}</td>
             <td class="money">{{ $w ? $m($w['net']) : '-' }}</td>
-            <td>{{ $w ? $sheet?->paid_date?->format('d-m-Y') : '' }}</td>
+            <td class="nw">{{ $w ? $sheet?->paid_date?->format('d-m-Y') : '' }}</td>
             <td></td>
         </tr>
     @empty
