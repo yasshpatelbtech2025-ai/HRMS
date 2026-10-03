@@ -61,7 +61,13 @@ return [
                 'id-card' => ['title' => 'Identity card', 'link' => 'employees.id-cards'],
             ],
         ],
-        'employment-exchange-act' => ['label' => 'EMPLOYMENT EXCHANGE ACT 1959', 'title' => 'EMPLOYMENT EXCHANGE ACT 1959', 'forms' => []],
+        'employment-exchange-act' => [
+            'label' => 'EMPLOYMENT EXCHANGE ACT 1959',
+            'title' => 'EMPLOYMENT EXCHANGE ACT 1959',
+            'forms' => [
+                'er-1-quarterly-return' => ['title' => 'ER-1 - Quarterly Return', 'view' => 'er-1'],
+            ],
+        ],
         'payment-of-bonus-act' => ['label' => 'PAYMENT OF BONUS ACT 1965', 'title' => 'PAYMENT OF BONUS ACT 1965', 'forms' => []],
         'pt' => ['label' => 'PT ACT 1976', 'title' => 'PT ACT 1976', 'forms' => []],
         'pf' => ['label' => 'PF ACT 1952', 'title' => 'PF ACT 1952', 'forms' => []],

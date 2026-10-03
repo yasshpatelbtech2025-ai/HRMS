@@ -36,6 +36,13 @@
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
                     </select>
+                @elseif ($view === 'er-1')
+                    <select name="quarter" class="{{ $select }}" aria-label="{{ __('Quarter') }}">
+                        @foreach ([1 => 'Jan - Mar', 2 => 'Apr - Jun', 3 => 'Jul - Sep', 4 => 'Oct - Dec'] as $value => $label)<option value="{{ $value }}" @selected($quarter === $value)>{{ $label }}</option>@endforeach
+                    </select>
+                    <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
+                        @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
+                    </select>
                 @elseif ($view === 'form-29')
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach

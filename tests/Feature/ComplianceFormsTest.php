@@ -74,7 +74,7 @@ class ComplianceFormsTest extends TestCase
                 'Form 29', 'Form 30', 'Form 32 - Health register', 'Form 33', 'coming soon', 'Identity card register', 'Identity card'])
             ->assertSee(route('employees.id-cards'), false);
 
-        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pt']))
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pf']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
@@ -175,6 +175,27 @@ class ComplianceFormsTest extends TestCase
         $this->delete(route('compliance.examinations.destroy', $exam))->assertSessionHas('status');
         $this->assertModelMissing($exam);
         Storage::disk('local')->assertMissing($path);
+    }
+
+    public function test_employment_exchange_er1_counts_staff_and_saves_fields(): void
+    {
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'employment-exchange-act']))->assertOk()->assertSee('ER-1 - Quarterly Return');
+        Employee::factory()->create(['company_id' => $this->company->id, 'gender' => 'female', 'date_of_joining' => '2026-08-10']);
+
+        // Jul - Sep 2026: nobody on 30 Jun (both joined later), one man and one woman on 30 Sep.
+        $this->form('er-1-quarterly-return', ['quarter' => 3, 'year' => 2026])->assertOk()
+            ->assertSeeInOrder(['FORM ER-1', 'quarter ended', 'Sep-2026', 'PI Industry', 'Jun-2026', 'Sep-2026', 'MEN', '0', '1', 'WOMEN', '0', '1', 'TOTAL', '0', '2', 'Save']);
+
+        $this->post(route('compliance.forms.values', [$this->company, 'er-1-quarterly-return']), [
+            'period' => '2026-09', 'raw_data' => ['nature_of_business' => 'Chemicals', 'vacancies_occurred' => '3', 'shortage_1_post' => 'Boiler operator'],
+        ])->assertSessionHasNoErrors();
+
+        $this->form('er-1-quarterly-return', ['quarter' => 3, 'year' => 2026, 'output' => 'print'])->assertOk()
+            ->assertSee('Chemicals')->assertSee('Boiler operator')->assertSee('size: A4 portrait', false)->assertDontSee('Save');
+        $this->form('er-1-quarterly-return', ['quarter' => 2, 'year' => 2026])->assertDontSee('Chemicals');
+        $pdf = $this->form('er-1-quarterly-return', ['quarter' => 3, 'year' => 2026, 'output' => 'pdf'])->assertOk();
+        $this->assertStringStartsWith('%PDF', $pdf->getContent());
+        $this->form('er-1-quarterly-return')->assertSee('Dec-2026')->assertSee('counted as on today');
     }
 
     public function test_print_sets_the_page_orientation(): void

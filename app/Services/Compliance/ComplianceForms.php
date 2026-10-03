@@ -53,6 +53,7 @@ class ComplianceForms
             'bonus-form-d' => $this->bonus($company, $request),
             'form-15', 'id-card-register' => ['employees' => $this->employees($company)->current()->get()],
             'form-29' => $this->accidents($company, $request),
+            'er-1' => $this->quarterly($company, $request),
             'form-5', 'form-27a', 'form-30', 'form-32' => $this->examinations($company, $request),
             default => abort(404),
         };
@@ -332,6 +333,38 @@ class ComplianceForms
         $year = (int) $request->query('year');
 
         return $year >= 2000 && $year <= 2100 ? $year : (int) date('Y');
+    }
+
+    /**
+     * ER-1: men and women on the rolls on the last day of the previous
+     * quarter and of the quarter (or today, while the quarter is running).
+     */
+    private function quarterly(Company $company, Request $request): array
+    {
+        $year = $this->year($request);
+        $quarter = (int) $request->query('quarter') ?: (int) ceil(date('n') / 3);
+        $quarter = min(4, max(1, $quarter));
+        $end = CarbonImmutable::create($year, $quarter * 3, 1)->endOfMonth()->startOfDay();
+        $previous = $end->subMonthsNoOverflow(3)->endOfMonth()->startOfDay();
+        $employees = $this->employees($company)->get();
+
+        $count = function (CarbonImmutable $on) use ($employees): array {
+            $on = $on->min(CarbonImmutable::today());
+            $rolls = $employees->filter(fn (Employee $e) => (! $e->date_of_joining || $e->date_of_joining->lte($on)) && (! $e->separation_date || $e->separation_date->gt($on)));
+            $women = $rolls->filter(fn (Employee $e) => $e->gender?->value === 'female')->count();
+
+            return ['men' => $rolls->count() - $women, 'women' => $women, 'total' => $rolls->count()];
+        };
+
+        return [
+            'year' => $year,
+            'quarter' => $quarter,
+            'quarterEnd' => $end,
+            'previousEnd' => $previous,
+            'running' => $end->isFuture(),
+            'counts' => ['previous' => $count($previous), 'current' => $count($end)],
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'er-1', 'period' => $end->format('Y-m')]),
+        ];
     }
 
     /**
