@@ -48,6 +48,7 @@ class ComplianceForms
             'form-18' => $this->muster($company, $this->month($request)) + $this->wages($company, $this->month($request)),
             'form-14', 'gratuity-form-f', 'pf-form-10c', 'pf-form-19' => $this->employeePicker($company, $request, $view),
             'pf-statement' => $this->providentFund($company, $this->month($request)),
+            'maternity-k', 'maternity-l', 'maternity-m', 'maternity-n' => $this->maternity($company, $request, $view),
             'form-13' => ['employees' => $this->employees($company)->get()],
             'form-20', 'form-21' => $this->entries($company, $view, $this->month($request)),
             'form-22' => $this->advances($company, $this->month($request)),
@@ -337,6 +338,38 @@ class ComplianceForms
         $year = (int) $request->query('year');
 
         return $year >= 2000 && $year <= 2100 ? $year : (int) date('Y');
+    }
+
+    /**
+     * Maternity Benefit Act Form K, L, M and N for a calendar year: typed-in
+     * answers, plus for Form L the women employed (not interns or
+     * contractual) during the year and those who worked 160 days or more
+     * (days with attendance punches).
+     */
+    private function maternity(Company $company, Request $request, string $view): array
+    {
+        $year = $this->year($request);
+        $from = CarbonImmutable::create($year, 1, 1);
+        $to = $from->endOfYear()->startOfDay();
+        $auto = [];
+
+        if ($view === 'maternity-l') {
+            $women = Employee::where('company_id', $company->id)->where('gender', 'female')
+                ->whereNotIn('employment_type', ['intern', 'contractual'])
+                ->where(fn ($q) => $q->whereNull('date_of_joining')->orWhereDate('date_of_joining', '<=', $to))
+                ->where(fn ($q) => $q->whereNull('separation_date')->orWhereDate('separation_date', '>=', $from))
+                ->pluck('id');
+            $days = Attendance::where('company_id', $company->id)->whereIn('employee_id', $women)
+                ->whereDate('work_date', '>=', $from)->whereDate('work_date', '<=', $to)
+                ->selectRaw('employee_id, count(distinct work_date) as days')->groupBy('employee_id')->pluck('days', 'employee_id');
+            $auto = ['women_employed' => $women->count(), 'women_160_days' => $days->filter(fn ($d) => $d >= 160)->count()];
+        }
+
+        return [
+            'year' => $year,
+            'auto' => $auto,
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => (string) $year.'-12']),
+        ];
     }
 
     /**

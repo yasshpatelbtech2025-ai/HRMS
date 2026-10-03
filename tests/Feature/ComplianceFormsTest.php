@@ -76,7 +76,10 @@ class ComplianceFormsTest extends TestCase
 
         $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'wc']))
             ->assertOk()->assertSeeInOrder(['WC ACT 1923', 'coming soon', 'WC ACT 1923 forms are coming soon.']);
-        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'esic']))
+        foreach (['labour-act' => 'LABOUR WALFARE FUND ACT', 'esic' => 'ESIC ACT 1948'] as $key => $label) {
+            $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => $key]))->assertOk()->assertSee($label.' forms are coming soon.');
+        }
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'verification']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
@@ -276,6 +279,33 @@ class ComplianceFormsTest extends TestCase
         foreach (['pf-act' => ['month' => '2026-09'], 'pf-form-10c' => [], 'pf-form-19' => []] as $form => $query) {
             $this->assertStringStartsWith('%PDF', $this->form($form, $query + ['output' => 'pdf'])->assertOk()->getContent(), $form);
         }
+    }
+
+    public function test_maternity_act_forms(): void
+    {
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'maternity']))->assertOk()
+            ->assertSeeInOrder(['Form K - Abstract of Maternity Act', 'Form L - Annual Return (Maternity)', 'Form M - Maternity Benefit Details', 'Form N - Payment Details for Maternity']);
+
+        $woman = Employee::factory()->create(['company_id' => $this->company->id, 'gender' => 'female', 'employment_type' => 'full_time', 'date_of_joining' => '2025-01-01']);
+        Employee::factory()->create(['company_id' => $this->company->id, 'gender' => 'female', 'employment_type' => 'intern', 'date_of_joining' => '2025-01-01']);
+        foreach (range(0, 159) as $i) {
+            $woman->attendances()->create(['company_id' => $this->company->id, 'punched_at' => CarbonImmutable::parse('2026-01-01 09:00')->addDays($i), 'work_date' => CarbonImmutable::parse('2026-01-01')->addDays($i)->toDateString(), 'type' => 'in']);
+        }
+
+        $this->form('maternity-form-l', ['year' => 2026])->assertOk()
+            ->assertSeeInOrder(['Form L', 'MATERNITY BENEFIT ACT', '31st Dec 2026', 'PI Industry', 'permanently employed', '1', 'not less than 160 days', '1', 'Save']);
+
+        $this->post(route('compliance.forms.values', [$this->company, 'maternity-form-k']), ['period' => '2026-12', 'raw_data' => ['opened_on' => '01-04-2010', 'lady_doctor' => 'No']])
+            ->assertSessionHasNoErrors();
+        $this->form('maternity-form-k', ['year' => 2026, 'output' => 'print'])->assertOk()
+            ->assertSeeInOrder(['Form K', 'PI Industry', 'Active', '01-04-2010', 'Srympex', 'Is there a lady doctor?', 'No', 'Authorised Signatory'])->assertDontSee('Save');
+        $this->form('maternity-form-k', ['year' => 2025])->assertDontSee('01-04-2010');
+
+        foreach (['maternity-form-k', 'maternity-form-l', 'maternity-form-m', 'maternity-form-n'] as $form) {
+            $this->form($form, ['year' => 2026])->assertOk();
+            $this->assertStringStartsWith('%PDF', $this->form($form, ['year' => 2026, 'output' => 'pdf'])->assertOk()->getContent(), $form);
+        }
+        $this->form('maternity-form-n', ['year' => 2026])->assertSeeInOrder(['Form N', 'Under section 9A of the act', 'Remarks']);
     }
 
     public function test_print_sets_the_page_orientation(): void

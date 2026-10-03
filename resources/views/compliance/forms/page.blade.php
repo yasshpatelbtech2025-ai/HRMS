@@ -43,7 +43,7 @@
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
                     </select>
-                @elseif ($view === 'form-29')
+                @elseif ($view === 'form-29' || str_starts_with($view, 'maternity-'))
                     <select name="year" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y'), 2020) as $option)<option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>@endforeach
                     </select>

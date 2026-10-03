@@ -95,9 +95,18 @@ return [
             ],
         ],
         'wc' => ['label' => 'WC ACT 1923', 'title' => 'WC ACT 1923', 'forms' => [], 'coming_soon' => true],
-        'labour-act' => ['label' => 'LABOUR WALFARE FUND ACT', 'title' => 'LABOUR WELFARE FUND ACT', 'forms' => []],
-        'esic' => ['label' => 'ESIC ACT 1948', 'title' => 'ESIC ACT 1948', 'forms' => []],
-        'maternity' => ['label' => 'MATERNITY ACT 1961', 'title' => 'MATERNITY ACT 1961', 'forms' => []],
+        'labour-act' => ['label' => 'LABOUR WALFARE FUND ACT', 'title' => 'LABOUR WELFARE FUND ACT', 'forms' => [], 'coming_soon' => true],
+        'esic' => ['label' => 'ESIC ACT 1948', 'title' => 'ESIC ACT 1948', 'forms' => [], 'coming_soon' => true],
+        'maternity' => [
+            'label' => 'MATERNITY ACT 1961',
+            'title' => 'MATERNITY ACT 1961',
+            'forms' => [
+                'maternity-form-k' => ['title' => 'Form K - Abstract of Maternity Act', 'view' => 'maternity-k'],
+                'maternity-form-l' => ['title' => 'Form L - Annual Return (Maternity)', 'view' => 'maternity-l'],
+                'maternity-form-m' => ['title' => 'Form M - Maternity Benefit Details', 'view' => 'maternity-m'],
+                'maternity-form-n' => ['title' => 'Form N - Payment Details for Maternity', 'view' => 'maternity-n'],
+            ],
+        ],
         'verification' => ['label' => 'POLICE VERIFICATION', 'title' => 'POLICE VERIFICATION', 'forms' => []],
     ],
 

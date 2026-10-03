@@ -1,0 +1,22 @@
+@include('compliance.forms.sheets._maternity', [
+    'heading' => 'Form K',
+    'signature' => 'Authorised Signatory',
+    'rows' => [
+        ['1.', 'Name of the establishment', ['auto', $company->establishment_name]],
+        ['2.', 'Situation of the establishment', ['auto', 'Active']],
+        ['3.', 'Date of opening of establishment', 'opened_on'],
+        ['4.', 'Date of closing, if closed', 'closed_on'],
+        ['5.', 'Postal address of establishment', ['auto', $address]],
+        ['6.', 'Name of the employer with address', ['auto', $contractor]],
+        ['7.', 'Name of the Managing agent, if any with address', 'managing_agent'],
+        ['8.', 'Name of agent or representative of Employer with postal address', 'agent'],
+        ['9.', 'Name of manager with address', 'manager'],
+        ['10.', 'Name of Medical Officer attached to the establishment', 'medical_officer'],
+        ['11.', 'Qualification of Medical Officer', 'medical_officer_qualification'],
+        ['12.', 'Is he resident at the establishment?', 'medical_officer_resident'],
+        ['13.', 'If a part time employee, how often does he pay visit to the establishment', 'medical_officer_visits'],
+        ['14.', 'Is there any hospital at the establishment', 'hospital'],
+        ['15.', 'If so, how many beds are provided for women employees?', 'beds'],
+        ['16.', 'Is there a lady doctor?', 'lady_doctor'],
+    ],
+])

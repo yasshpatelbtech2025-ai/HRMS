@@ -1,0 +1,21 @@
+@include('compliance.forms.sheets._maternity', [
+    'heading' => 'Form M',
+    'caption' => 'Detail of payment made during the year ending 31st Dec '.$year,
+    'rows' => [
+        ['', 'Name of person to whom paid', 'paid_to'],
+        ['', 'Amount paid', 'amount_paid'],
+        ['', 'Date of payment', 'paid_on'],
+        ['', 'Woman employee', 'woman_employee'],
+        ['', 'Nominee of the women', 'nominee'],
+        ['', 'Legal representative of women', 'legal_representative'],
+        ['', 'Amount for the period preceding date of expected delivery', 'amount_before'],
+        ['', 'Amount for the subsequent period', 'amount_after'],
+        ['1.', 'Under section 8 of act', 'section_8'],
+        ['2.', 'Under section 9 of act', 'section_9'],
+        ['3.', 'Under section 10 of act', 'section_10'],
+        ['4.', 'No of women workers who absconded after receiving the first installment of maternity benefit', 'absconded'],
+        ['5.', 'Cases where claims were contested in a court of law', 'contested'],
+        ['6.', 'Result of such cases', 'contested_result'],
+        ['7.', 'Remarks', 'remarks'],
+    ],
+])
