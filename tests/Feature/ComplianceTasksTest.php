@@ -101,6 +101,9 @@ class ComplianceTasksTest extends TestCase
         $this->post(route('compliance.tasks.complete', $task))->assertSessionHas('status');
         $this->assertSame([$this->user->id, $this->user->id], [$task->fresh()->assigned_to, $task->fresh()->completed_by]);
         $this->get(route('compliance.to-do', ['status' => 'completed']))->assertSee('I-Card (Identity Card)')->assertSee('Asha Patel')->assertSee('Reopen');
+        // The list opens on pending tasks; "all" includes completed ones.
+        $this->get(route('compliance.to-do'))->assertDontSee('I-Card (Identity Card)</p>', false)->assertSee('<option value="pending" selected', false);
+        $this->get(route('compliance.to-do', ['status' => 'all']))->assertSee('I-Card (Identity Card)</p>', false);
         $this->post(route('compliance.tasks.reopen', $task));
         $this->assertNull($task->fresh()->completed_at);
 

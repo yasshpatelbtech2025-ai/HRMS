@@ -32,15 +32,18 @@ class ComplianceTaskController extends Controller
             ->when($company, fn ($q) => $q->where('company_id', $company->id))
             ->with(['company.parent', 'employee', 'assignee', 'completer'])
             ->orderBy('due_on')->orderBy('id')->get();
-        $status = $request->query('status');
+        // Like the old page, the list opens on pending tasks; "all" shows completed ones too.
+        $status = $request->query('status', 'pending');
         $tasks = $all
-            ->when($status, fn ($c) => $c->filter(fn (ComplianceTask $t) => $t->status() === $status))
+            ->when($status === 'pending', fn ($c) => $c->whereNull('completed_at'))
+            ->when(! in_array($status, ['pending', 'all'], true), fn ($c) => $c->filter(fn (ComplianceTask $t) => $t->status() === $status))
             ->when($request->query('department'), fn ($c, $d) => $c->where('department', $d))
             ->when($request->query('type'), fn ($c, $type) => $c->where('type', $type));
 
         return view('compliance.tasks', [
             'companies' => $companies,
             'company' => $company,
+            'status' => $status,
             'stats' => collect(['overdue', 'week', 'completed', 'upcoming'])->mapWithKeys(fn ($s) => [$s => $all->filter(fn ($t) => $t->status() === $s)->count()])->put('total', $all->count()),
             // Per-employee tasks of a kind are grouped under one row; the rest are listed singly.
             'groups' => $tasks->groupBy(fn (ComplianceTask $t) => $t->employee_id ? $t->type.'|'.$t->company_id : 'task:'.$t->id),

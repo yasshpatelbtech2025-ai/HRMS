@@ -17,13 +17,13 @@
 
     {{-- Stat cards: click one to filter by it. --}}
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <a href="{{ $filter(['status' => null]) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ request('status') ? 'ring-gray-200' : 'ring-indigo-300' }} hover:ring-gray-300">
+        <a href="{{ $filter(['status' => 'all']) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === 'all' ? 'ring-indigo-300' : 'ring-gray-200' }} hover:ring-gray-300">
             <span class="absolute inset-y-0 start-0 w-1 bg-indigo-500"></span>
             <p class="text-sm font-medium text-gray-500">{{ __('Total tasks') }}</p>
             <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $stats['total'] }}</p>
         </a>
         @foreach (['overdue', 'week', 'completed', 'upcoming'] as $key)
-            <a href="{{ $filter(['status' => $key]) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ request('status') === $key ? 'ring-indigo-300' : 'ring-gray-200' }} hover:ring-gray-300">
+            <a href="{{ $filter(['status' => $key]) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === $key ? 'ring-indigo-300' : 'ring-gray-200' }} hover:ring-gray-300">
                 <span class="absolute inset-y-0 start-0 w-1 {{ $statuses[$key]['accent'] }}"></span>
                 <p class="text-sm font-medium text-gray-500">{{ $statuses[$key]['label'] }}</p>
                 <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $stats[$key] }}</p>
@@ -35,8 +35,9 @@
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <form method="GET" action="{{ route('compliance.to-do') }}" class="flex flex-wrap items-center gap-2">
                 <select name="status" class="{{ $select }}" aria-label="{{ __('Status') }}" onchange="this.form.submit()">
-                    <option value="">{{ __('Select Status') }}</option>
-                    @foreach ($statuses as $key => $s)<option value="{{ $key }}" @selected(request('status') === $key)>{{ $s['label'] }}</option>@endforeach
+                    <option value="all" @selected($status === 'all')>{{ __('All statuses') }}</option>
+                    <option value="pending" @selected($status === 'pending')>{{ __('Pending') }}</option>
+                    @foreach ($statuses as $key => $s)<option value="{{ $key }}" @selected($status === $key)>{{ $s['label'] }}</option>@endforeach
                 </select>
                 <select name="department" class="{{ $select }}" aria-label="{{ __('Department') }}" onchange="this.form.submit()">
                     <option value="">{{ __('Select Department') }}</option>
@@ -141,7 +142,7 @@
                         @endforeach
                     </tbody>
                 @empty
-                    <tbody><tr><td colspan="8" class="px-5 py-10 text-center text-gray-500">{{ request()->hasAny(['status', 'department', 'type']) ? __('No tasks match these filters.') : __('Nothing is due. Tasks appear here as employees join and months close.') }}</td></tr></tbody>
+                    <tbody><tr><td colspan="8" class="px-5 py-10 text-center text-gray-500">{{ ($status !== 'all' || request()->hasAny(['department', 'type'])) ? __('No tasks match these filters.') : __('Nothing is due. Tasks appear here as employees join and months close.') }}</td></tr></tbody>
                 @endforelse
             </table>
         </div>
