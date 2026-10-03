@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\EmployeeAddress;
 use App\Models\Loan;
 use App\Models\MedicalExamination;
+use App\Models\PayrollSetting;
 use App\Models\Payslip;
 use App\Models\SalaryAdvance;
 use App\Models\SalarySheet;
@@ -45,7 +46,8 @@ class ComplianceForms
             'form-c' => $this->formC($company, $this->month($request)),
             'form-d', 'form-16' => $this->muster($company, $this->month($request)),
             'form-18' => $this->muster($company, $this->month($request)) + $this->wages($company, $this->month($request)),
-            'form-14', 'gratuity-form-f' => $this->employeePicker($company, $request, $view),
+            'form-14', 'gratuity-form-f', 'pf-form-10c', 'pf-form-19' => $this->employeePicker($company, $request, $view),
+            'pf-statement' => $this->providentFund($company, $this->month($request)),
             'form-13' => ['employees' => $this->employees($company)->get()],
             'form-20', 'form-21' => $this->entries($company, $view, $this->month($request)),
             'form-22' => $this->advances($company, $this->month($request)),
@@ -338,6 +340,65 @@ class ComplianceForms
     }
 
     /**
+     * PF ACT: the month's contribution statement from the payslips -
+     * wages, employee share (EE), pension (EPS) and employer EPF (ER) per
+     * employee, and the challan accounts: AC 1 (EE + ER), AC 2 admin charge
+     * (0.5% of EPF wages, at least ₹500), AC 10 (EPS) and AC 21 EDLI (0.5% of
+     * EDLI wages).
+     */
+    private function providentFund(Company $company, CarbonImmutable $month): array
+    {
+        $onGross = PayrollSetting::where('company_id', $company->id)->value('pf_effect_on') === 'gross';
+        $payslips = Payslip::where('company_id', $company->id)->whereDate('month', $month)->with('employee')->get()
+            ->sortBy(fn (Payslip $p) => $p->employee?->employee_code)->values();
+
+        $rows = $payslips->map(function (Payslip $p) use ($onGross) {
+            $ee = $p->amount('deductions', 'pf');
+            $wage = $ee > 0 ? round($onGross ? (float) $p->gross_earnings : $p->amount('earnings', 'basic')) : 0;
+
+            return [
+                'employee' => $p->employee,
+                'gross' => (float) $p->gross_earnings,
+                'epf' => $wage,
+                'eps' => min($wage, 15000),
+                'edli' => min($wage, 15000),
+                'ee' => $ee,
+                'eps_share' => $p->amount('employer', 'employer_eps'),
+                'er' => $p->amount('employer', 'employer_epf'),
+                'absent' => $p->attendance['lop'] ?? 0,
+            ];
+        });
+
+        $sum = fn (string $key) => round($rows->sum($key), 2);
+        $ac2 = $sum('epf') > 0 ? max(500, round($sum('epf') * 0.005)) : 0;
+        $ac21 = round($sum('edli') * 0.005);
+        $totals = [
+            'ADMINISTRATION CHARGE (AC 2)' => $ac2,
+            'EDLI CHARGE (AC 21)' => $ac21,
+            'Total EPF Contribution' => $sum('ee'),
+            'Total EPS Contribution (AC 10)' => $sum('eps_share'),
+            'Total EPF-EPS Contribution' => $sum('er'),
+            'TOTAL PF' => $sum('ee') + $sum('er') + $sum('eps_share') + $ac2 + $ac21,
+            'AC 1' => $sum('ee') + $sum('er'),
+        ];
+
+        return [
+            'month' => $month,
+            'rows' => $rows,
+            'sums' => collect(['gross', 'epf', 'eps', 'edli', 'ee', 'eps_share', 'er'])->mapWithKeys(fn ($k) => [$k => $sum($k)])->all(),
+            'totals' => $totals,
+            'generated' => $payslips->isNotEmpty(),
+            'values' => ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'pf-statement', 'period' => $month->format('Y-m')]),
+            'export' => [
+                'headings' => ['Sr No', 'Employee Id', 'Employee Name', 'UAN', 'Gross Salary', 'EPF Wage', 'EPS Wage', 'EDLI Wages', 'EE', 'EPS', 'ER', 'Absent'],
+                'rows' => $rows->values()->map(fn ($r, $i) => [$i + 1, $r['employee']?->employee_code, $r['employee']?->full_name, $r['employee']?->uan_code,
+                    $r['gross'], $r['epf'], $r['eps'], $r['edli'], $r['ee'], $r['eps_share'], $r['er'], $r['absent']])
+                    ->concat(collect($totals)->map(fn ($v, $label) => ['', '', $label, '', $v]))->values()->all(),
+            ],
+        ];
+    }
+
+    /**
      * PT Form 5: employees paid in the month by salary slab (below
      * ₹12,000 / ₹12,000 or more) and the professional tax deducted, from the
      * month's payslips.
@@ -520,8 +581,8 @@ class ComplianceForms
         return [
             'employees' => $employees,
             'employee' => $employee,
-            'values' => $employee && $view === 'gratuity-form-f'
-                ? ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => 'gratuity-form-f', 'period' => 'employee:'.$employee->id])
+            'values' => $employee && $view !== 'form-14'
+                ? ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => 'employee:'.$employee->id])
                 : null,
         ];
     }

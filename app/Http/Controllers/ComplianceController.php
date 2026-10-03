@@ -8,6 +8,7 @@ use App\Models\ComplianceRegisterEntry;
 use App\Models\Employee;
 use App\Models\MedicalExamination;
 use App\Services\Compliance\ComplianceForms;
+use App\Support\TableExport;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\RedirectResponse;
@@ -52,6 +53,9 @@ class ComplianceController extends Controller
         return match ($request->query('output')) {
             'print' => response()->view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => true, 'landscape' => in_array($view, self::LANDSCAPE, true)]),
             'pdf' => $this->pdf($data, $view),
+            'csv', 'xlsx' => isset($data['export'])
+                ? TableExport::download($request->query('output'), Str::slug($definition['title']).'-'.$data['month']->format('Y-m'), $data['export']['headings'], $data['export']['rows'], $definition['title'].' — '.$company->establishment_name.' — '.$data['month']->format('F Y'))
+                : abort(404),
             default => view('compliance.forms.page', $data + ['printing' => false]),
         };
     }
@@ -109,7 +113,7 @@ class ComplianceController extends Controller
     public function storeValues(Request $request, Company $company, string $form): RedirectResponse
     {
         $view = $this->definition($form)[1]['view'] ?? null;
-        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1', 'pt-form-5'], true), 404);
+        abort_unless(in_array($view, ['form-25', 'bonus-form-a', 'bonus-form-b', 'bonus-form-c', 'bonus-form-d', 'gratuity-form-f', 'er-1', 'pt-form-5', 'pf-statement', 'pf-form-10c', 'pf-form-19'], true), 404);
 
         $data = $request->validate([
             'period' => ['required', 'string', 'max:20', 'regex:/^(\d{4}-\d{2}|\d{4}-\d{4}|employee:\d+)$/'],
@@ -277,7 +281,7 @@ class ComplianceController extends Controller
 
     private function pdf(array $data, string $view): Response
     {
-        $html = view('compliance.forms.document', $data + ['printing' => true, 'autoPrint' => false, 'landscape' => in_array($view, self::LANDSCAPE, true)])->render();
+        $html = view('compliance.forms.document', $data + ['printing' => true, 'pdf' => true, 'autoPrint' => false, 'landscape' => in_array($view, self::LANDSCAPE, true)])->render();
         $dompdf = new Dompdf((new Options)->set('isRemoteEnabled', false)->set('defaultFont', 'DejaVu Sans'));
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', in_array($view, self::LANDSCAPE, true) ? 'landscape' : 'portrait');

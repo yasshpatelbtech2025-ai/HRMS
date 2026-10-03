@@ -85,7 +85,15 @@ return [
                 'form-5-pt' => ['title' => 'Form 5 PT - Payment of Professional Tax', 'view' => 'pt-form-5'],
             ],
         ],
-        'pf' => ['label' => 'PF ACT 1952', 'title' => 'PF ACT 1952', 'forms' => []],
+        'pf' => [
+            'label' => 'PF ACT 1952',
+            'title' => 'PF ACT 1952',
+            'forms' => [
+                'pf-act' => ['title' => 'PF ACT - Monthly contribution statement', 'view' => 'pf-statement'],
+                'pf-form-10c' => ['title' => 'Form 10C - Withdrawal / Scheme Certificate', 'view' => 'pf-form-10c'],
+                'pf-form-19' => ['title' => 'Form 19 - Claim Form', 'view' => 'pf-form-19'],
+            ],
+        ],
         'wc' => ['label' => 'WC ACT 1923', 'title' => 'WC ACT 1923', 'forms' => []],
         'labour-act' => ['label' => 'LABOUR WALFARE FUND ACT', 'title' => 'LABOUR WELFARE FUND ACT', 'forms' => []],
         'esic' => ['label' => 'ESIC ACT 1948', 'title' => 'ESIC ACT 1948', 'forms' => []],

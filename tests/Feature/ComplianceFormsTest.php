@@ -74,7 +74,7 @@ class ComplianceFormsTest extends TestCase
                 'Form 29', 'Form 30', 'Form 32 - Health register', 'Form 33', 'coming soon', 'Identity card register', 'Identity card'])
             ->assertSee(route('employees.id-cards'), false);
 
-        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pf']))
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'wc']))
             ->assertOk()->assertSee('The forms for this act will be added once their pages are shared.');
     }
 
@@ -244,6 +244,36 @@ class ComplianceFormsTest extends TestCase
         $this->form('form-5-pt', ['month' => '2026-09', 'output' => 'print'])->assertOk()
             ->assertSeeInOrder(['PRC-77', 'NOT APPLICABLE', 'Total tax and interest payable', '40.00', '004512', 'R. Shah'])->assertDontSee('Save');
         $this->assertStringStartsWith('%PDF', $this->form('form-5-pt', ['month' => '2026-09', 'output' => 'pdf'])->assertOk()->getContent());
+    }
+
+    public function test_pf_act_statement_and_claim_forms(): void
+    {
+        $this->get(route('compliance.index', ['company' => $this->company->uuid, 'act' => 'pf']))->assertOk()
+            ->assertSeeInOrder(['PF ACT - Monthly contribution statement', 'Form 10C', 'Form 19 - Claim Form']);
+
+        $this->form('pf-act', ['month' => '2026-09'])->assertOk()
+            ->assertSeeInOrder(['PF Contribution Statement', 'September 2026', '0001', 'Gopal Bhat', '101209880378', 'ADMINISTRATION CHARGE (AC 2)', 'EDLI CHARGE (AC 21)', 'TOTAL PF', 'AC 1'])
+            ->assertSee('Excel')->assertSee('Upload statement');
+        $this->form('pf-act', ['month' => '2026-08'])->assertSee('No salary has been generated for August 2026 yet');
+        $xlsx = $this->form('pf-act', ['month' => '2026-09', 'output' => 'xlsx'])->assertOk();
+        $this->assertStringContainsString('spreadsheetml', $xlsx->headers->get('Content-Type'));
+        $this->assertStringContainsString('Gopal Bhat', $this->form('pf-act', ['month' => '2026-09', 'output' => 'csv'])->streamedContent());
+        $this->form('form-5-pt', ['output' => 'xlsx'])->assertNotFound();
+
+        $this->employee->update(['bank_name' => 'State Bank of India', 'account_number' => '30012345678', 'ifsc_code' => 'SBIN0001234', 'pan_card_no' => 'ABCDE1234F', 'phone' => '9876543210']);
+        $this->post(route('compliance.forms.values', [$this->company, 'pf-form-19']), ['period' => 'employee:'.$this->employee->id, 'raw_data' => ['pf_account_no' => 'GJ/VAD/12345/678']])
+            ->assertSessionHasNoErrors();
+
+        $this->form('pf-form-19', ['employee' => $this->employee->uuid])->assertOk()
+            ->assertSeeInOrder(['9876543210', "EMPLOYEES' PROVIDENT FUNDS SCHEME, 1952", 'Gopal Bhat', 'Rooplal Rao Bhat', '01-09-1994', 'PI Industry', 'GJ/VAD/12345/678', '101209880378', '01-07-2026', 'ABCDE1234F', '30012345678', 'State Bank of India', 'SBIN0001234'])
+            ->assertSee('सदस्य का नाम');
+        $this->form('pf-form-19', ['employee' => $this->employee->uuid, 'output' => 'print'])->assertSee('सदस्य का नाम')->assertSee('Personal Reasons');
+        $this->form('pf-form-10c', ['employee' => $this->employee->uuid])->assertOk()
+            ->assertSeeInOrder(['FORM 10C', "EMPLOYEES' PENSION SCHEME, 1995", 'GOPAL BHAT', '01/09/1994', 'Rooplal Rao Bhat', 'PI Industry', '01/07/2026', 'ROOPLAL RAO BHAT', '30012345678', 'STATE BANK OF INDIA']);
+
+        foreach (['pf-act' => ['month' => '2026-09'], 'pf-form-10c' => [], 'pf-form-19' => []] as $form => $query) {
+            $this->assertStringStartsWith('%PDF', $this->form($form, $query + ['output' => 'pdf'])->assertOk()->getContent(), $form);
+        }
     }
 
     public function test_print_sets_the_page_orientation(): void

@@ -1,7 +1,7 @@
-{{-- Signed copy upload and Save for a return (screen only). Expects: $values, $company, $form, $period. --}}
+{{-- Signed copy upload and Save for a return (screen only). Expects: $values, $company, $form, $period; optional $label. --}}
 @unless ($printing)
     <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #ddd;">
-        <label style="display: block; font-weight: 600; margin-bottom: 4px;">{{ __('Signed copy') }}</label>
+        <label style="display: block; font-weight: 600; margin-bottom: 4px;">{{ $label ?? __('Signed copy') }}</label>
         <div class="flex flex-wrap items-center gap-3">
             <input type="file" name="doc" accept=".pdf,.jpg,.jpeg,.png" style="width: auto; border: none;">
             @if ($values->signed_copy_path)

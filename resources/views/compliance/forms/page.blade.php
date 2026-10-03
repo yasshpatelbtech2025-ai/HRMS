@@ -19,9 +19,9 @@
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <form method="GET" action="{{ route('compliance.forms.show', [$company, $form]) }}" class="flex flex-wrap items-center gap-2">
-                @if (in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'pt-form-5'], true))
+                @if (in_array($view, ['form-a', 'form-b', 'form-c', 'form-d', 'form-16', 'form-17', 'form-18', 'form-20', 'form-21', 'form-22', 'form-23', 'pt-form-5', 'pf-statement'], true))
                     <input type="month" name="month" value="{{ $month->format('Y-m') }}" class="{{ $select }}" aria-label="{{ __('Month') }}">
-                @elseif (in_array($view, ['form-14', 'gratuity-form-f'], true))
+                @elseif (in_array($view, ['form-14', 'gratuity-form-f', 'pf-form-10c', 'pf-form-19'], true))
                     <select name="employee" class="{{ $select }} min-w-64" aria-label="{{ __('Employee') }}">
                         <option value="">{{ __('-- Select employee --') }}</option>
                         @foreach ($employees as $option)
@@ -56,6 +56,10 @@
                     <button class="{{ $btn }} bg-emerald-600 text-white hover:bg-emerald-700">{{ __('Find') }}</button>
                 @endunless
             </form>
+            @isset ($export)
+                <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'xlsx']) }}" class="{{ $btn }} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
+                <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'csv']) }}" class="{{ $btn }} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
+            @endisset
             <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'print']) }}" target="_blank" class="{{ $btn }} bg-indigo-600 text-white hover:bg-indigo-700">{{ __('Print') }}</a>
             <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'pdf']) }}" class="{{ $btn }} bg-gray-800 text-white hover:bg-gray-900">{{ __('Download PDF') }}</a>
         </div>
