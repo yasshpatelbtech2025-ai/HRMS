@@ -105,7 +105,7 @@
             <section x-show="step === 2" class="space-y-6 px-5 py-5" @if ($step !== 2) style="display: none;" @endif>
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">{{ __('Owners Details:') }}</h3>
-                    <button type="button" x-on:click="addOwner()" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">+ {{ __('Add owner') }}</button>
+                    <button type="button" x-on:click="addOwner()" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">+ {{ __('Add owner') }}</button>
                 </div>
                 <template x-for="(owner, i) in owners" :key="i">
                     <div class="rounded-md border border-gray-200 p-4">

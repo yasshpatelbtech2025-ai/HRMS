@@ -26,7 +26,7 @@
                     </select>
                 </form>
                 @if ($company && $types->isNotEmpty())
-                    <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Export Data') }}</a>
+                    <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Export Data') }}</a>
                 @endif
             </div>
         </div>

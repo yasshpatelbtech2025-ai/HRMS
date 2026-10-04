@@ -12,7 +12,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Loan list') }}</h2>
             <div class="flex gap-2">
-                <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Filter') }}</button>
+                <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Filter') }}</button>
                 <x-add-button modal="create-loan">{{ __('Add loan') }}</x-add-button>
             </div>
         </div>
@@ -21,7 +21,7 @@
             <div class="min-w-72">
                 @include('payroll._employee-select', ['id' => 'loan-filter-employee', 'selected' => request('employee')])
             </div>
-            <button class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Find') }}</button>
+            <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Find') }}</button>
             <a href="{{ route('payroll.loans') }}" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">{{ __('Reset') }}</a>
         </form>
 

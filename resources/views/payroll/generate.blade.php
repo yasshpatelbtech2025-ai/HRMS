@@ -62,7 +62,7 @@
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->paid_date?->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
-                                    <a href="{{ route('payroll.approval', $sheet) }}" class="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700">{{ __('Salary Approval') }}</a>
+                                    <a href="{{ route('payroll.approval', $sheet) }}" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Salary Approval') }}</a>
                                     @if ($sheet->isApproved())
                                         <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Add Paid Date') }}</button>
                                     @endif

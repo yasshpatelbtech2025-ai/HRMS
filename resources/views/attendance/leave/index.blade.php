@@ -74,7 +74,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
                                     @unless ($approved)
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700">{{ __('Approve') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
                                     @endunless
                                     @if ($leave->status !== 'rejected')
                                         <form method="POST" action="{{ route('attendance.leave.reject', $leave) }}" data-confirm="{{ __('Reject this leave?') }}">

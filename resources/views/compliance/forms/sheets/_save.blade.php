@@ -7,7 +7,7 @@
             @if ($values->signed_copy_path)
                 <a href="{{ route('compliance.forms.signed-copy', [$company, $values->form, $period]) }}" target="_blank" class="text-sm text-brand-600 hover:underline">{{ $values->signed_copy_name }}</a>
             @endif
-            <button class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Save') }}</button>
+            <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Save') }}</button>
         </div>
     </div>
 @endunless

@@ -27,7 +27,7 @@
                 <nav class="flex flex-wrap justify-center gap-2" aria-label="{{ __('Acts') }}">
                     @foreach ($acts as $key => $definition)
                         <a href="{{ route('compliance.index', ['company' => $company->uuid, 'act' => $key]) }}" @if ($key === $act) aria-current="page" @endif
-                           class="relative rounded-md px-3 py-2 text-sm font-semibold {{ $key === $act ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                           class="relative rounded-md px-3 py-2 text-sm font-semibold {{ $key === $act ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             {{ $definition['label'] }}
                             @if ($definition['coming_soon'] ?? false)
                                 <span class="ms-1 rounded-full {{ $key === $act ? 'bg-white/20' : 'bg-white' }} px-1.5 text-xs font-medium">{{ __('coming soon') }}</span>

@@ -22,7 +22,7 @@
                     <form method="POST" action="{{ route('payroll.approve', $sheet) }}" data-confirm="{{ __('Approve this salary? Advance recoveries and loan installments on it will be recorded.') }}">
                         @csrf
                         @method('PUT')
-                        <button class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Approve salary') }}</button>
+                        <button class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Approve salary') }}</button>
                     </form>
                 @endif
             @endif

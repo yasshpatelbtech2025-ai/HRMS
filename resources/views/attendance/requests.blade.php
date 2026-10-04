@@ -15,7 +15,7 @@
                 @if ($company)
                     <x-add-button modal="add-attendance-request">{{ __('Add attendance request') }}</x-add-button>
                 @endif
-                <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Attendance form') }}</a>
+                <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance form') }}</a>
             </div>
         </div>
 
@@ -81,7 +81,7 @@
                                         <form method="POST" action="{{ route('attendance.requests.approve', $item) }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700">{{ __('Approve') }}</button>
+                                            <button class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
                                         </form>
                                         <form method="POST" action="{{ route('attendance.requests.reject', $item) }}">
                                             @csrf

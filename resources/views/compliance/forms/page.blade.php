@@ -53,7 +53,7 @@
                     </select>
                 @endif
                 @unless ($noFilter)
-                    <button class="{{ $btn }} bg-emerald-600 text-white hover:bg-emerald-700">{{ __('Find') }}</button>
+                    <button class="{{ $btn }} bg-brand-600 text-white hover:bg-brand-700">{{ __('Find') }}</button>
                 @endunless
             </form>
             @isset ($export)

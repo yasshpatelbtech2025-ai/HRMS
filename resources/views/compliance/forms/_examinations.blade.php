@@ -11,7 +11,7 @@
         <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
             <h3 class="text-[15px] font-bold text-gray-900">{{ __('Employees') }}</h3>
             <button type="button" x-data x-on:click="$dispatch('open-modal', 'examination-add')"
-                    class="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-700">+ {{ __('Add examination') }}</button>
+                    class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">+ {{ __('Add examination') }}</button>
         </div>
         <ul class="max-h-[70vh] divide-y divide-gray-100 overflow-y-auto" x-data="{ open: @js($employee?->uuid) }">
             @forelse ($employees as $e)

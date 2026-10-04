@@ -13,7 +13,7 @@
             </div>
             <form method="POST" action="{{ route('documents.upload', $slot['slug']) }}" enctype="multipart/form-data">
                 @csrf
-                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
                     {{ __('Upload files') }}
                     <input type="file" name="files[]" multiple class="sr-only" onchange="this.form.submit()" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
                 </label>

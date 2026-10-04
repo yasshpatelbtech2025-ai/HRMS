@@ -8,7 +8,7 @@
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Missing attendance') }}</h2>
-            <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 print:hidden">
+            <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 print:hidden">
                 {{ __('Attendance form') }}
             </a>
         </div>

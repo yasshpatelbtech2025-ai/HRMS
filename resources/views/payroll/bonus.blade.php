@@ -41,7 +41,7 @@
                         @csrf
                         <input type="hidden" name="company" value="{{ $company->uuid }}">
                         <input type="hidden" name="fy" value="{{ $fy }}">
-                        <button class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Work out bonus') }}</button>
+                        <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Work out bonus') }}</button>
                     </form>
                     <p class="mx-auto mt-4 max-w-2xl text-xs text-gray-500">{{ __('Works out each employee\'s bonus from the year\'s payslips under the Payment of Bonus Act: eligible if basic + DA is up to ₹:limit a month and they worked at least :days days; bonus is their Bonus % (8.33% to 20%) of basic + DA capped at ₹:ceiling a month.', ['limit' => number_format(config('bonus.eligibility_salary')), 'days' => config('bonus.eligibility_days'), 'ceiling' => number_format(config('bonus.calculation_ceiling'))]) }}</p>
                 </div>
@@ -79,7 +79,7 @@
                             <form method="POST" action="{{ route('payroll.bonus.approve', $sheet) }}" class="flex items-center gap-2">
                                 @csrf
                                 <input type="date" name="paid_on" value="{{ today()->toDateString() }}" class="{{ $select }}" aria-label="{{ __('Date paid') }}">
-                                <button class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Approve') }}</button>
+                                <button class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
                             </form>
                         @endif
                     </div>

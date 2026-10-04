@@ -39,6 +39,6 @@
     </table>
     <div class="flex gap-2">
         <button type="button" x-on:click="rows.push({ id: Date.now() })" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Add Row') }}</button>
-        <button x-show="rows.length" style="display: none;" class="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Save') }}</button>
+        <button x-show="rows.length" style="display: none;" class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Save') }}</button>
     </div>
 </form>

@@ -21,7 +21,7 @@
                 </select>
                 <a :href="employee ? @js(route('payroll.revisions.create', '__UUID__')).replace('__UUID__', employee) : null"
                    x-on:click="if (! employee) { $event.preventDefault(); alert(@js(__('Please select employee'))); }"
-                   class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                   class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
                     {{ __('Add salary revision') }}
                 </a>
                 <a href="{{ route('payroll.revisions.export', ['format' => 'csv'] + request()->only('employee')) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
@@ -55,7 +55,7 @@
                                         <form method="POST" action="{{ route('payroll.revisions.apply', $revision) }}" data-confirm="{{ __('Apply this revision now?') }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700">{{ __('Apply now') }}</button>
+                                            <button class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Apply now') }}</button>
                                         </form>
                                         <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" data-confirm="{{ __('Cancel this revision?') }}">
                                             @csrf

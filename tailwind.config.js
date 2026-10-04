@@ -2,11 +2,12 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /*
- * HRMS design tokens.
+ * SRYMPEX HRMS design tokens.
  *
- * - brand: the product colour (a deep teal-blue) for primary actions, links,
- *   focus rings and the active navigation; replaces Tailwind's stock indigo.
- * - Status colours keep their meaning only: emerald = success / add,
+ * - Theme: red, white and black (SRYMPEX). brand is the red, for primary
+ *   actions, links, focus rings and the active navigation; the sidebar is
+ *   black and pages are white.
+ * - Status colours keep their meaning only: emerald = success,
  *   amber = warning, red = danger. Neutrals are Tailwind's gray.
  * - Type scale (15px body, as in the old system): xs 12 · sm 13.5 · base 15 ·
  *   lg 17 · xl 20 · 2xl 24 · 3xl 28 (page titles) · 4xl 34 (figures).
@@ -31,17 +32,17 @@ export default {
             },
             colors: {
                 brand: {
-                    50: '#eff8fa',
-                    100: '#d7eef3',
-                    200: '#b2dde8',
-                    300: '#7cc4d6',
-                    400: '#41a3bd',
-                    500: '#2386a3',
-                    600: '#1a6c88',
-                    700: '#19586f',
-                    800: '#1a4a5c',
-                    900: '#1a3f4e',
-                    950: '#0d2833',
+                    50: '#fff1f2',
+                    100: '#ffe1e3',
+                    200: '#ffc7cb',
+                    300: '#ff9ca3',
+                    400: '#fb6170',
+                    500: '#ef3343',
+                    600: '#d4141f',
+                    700: '#b20f19',
+                    800: '#93111a',
+                    900: '#7a141b',
+                    950: '#43050a',
                 },
             },
             fontSize: {

@@ -5,12 +5,11 @@
 <!-- Sidebar -->
 {{-- Hidden off-screen on phones until opened (in CSS, so it never flashes open while the page loads). --}}
 <aside :class="sidebarOpen && '!translate-x-0 shadow-xl'"
-       class="fixed inset-y-0 start-0 z-40 w-[260px] flex flex-col print:hidden bg-brand-950 text-gray-300 transform -translate-x-full transition-transform duration-200 ease-in-out lg:translate-x-0">
+       class="fixed inset-y-0 start-0 z-40 w-[260px] flex flex-col print:hidden bg-black text-gray-300 transform -translate-x-full transition-transform duration-200 ease-in-out lg:translate-x-0">
     <!-- Brand -->
     <div class="flex items-center gap-3 h-16 px-6 border-b border-white/10">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-            <x-application-logo class="h-8 w-auto fill-current text-white" />
-            <span class="text-lg font-semibold text-white">{{ config('app.name', 'HRMS') }}</span>
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3" aria-label="{{ __('SRYMPEX home') }}">
+            <x-brand-logo dark />
         </a>
     </div>
 
