@@ -12,6 +12,9 @@
         @endisset
     </div>
 
+    <div class="flex items-center gap-2 sm:gap-4">
+    <x-global-search />
+
     <!-- User menu -->
     <x-dropdown align="right" width="48">
         <x-slot name="trigger">
@@ -46,4 +49,5 @@
             </form>
         </x-slot>
     </x-dropdown>
+    </div>
 </header>

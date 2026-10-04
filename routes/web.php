@@ -15,6 +15,7 @@ use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FirmController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\IdCardFormatController;
 use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\ComplianceTaskController;
@@ -43,6 +44,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/dashboard');
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/search', SearchController::class)->middleware(['auth', 'verified', 'throttle:60,1'])->name('search');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('company/export', [CompanyController::class, 'export'])->name('company.export');
