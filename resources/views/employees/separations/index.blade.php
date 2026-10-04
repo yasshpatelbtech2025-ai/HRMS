@@ -17,12 +17,12 @@
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <th class="px-5 py-3">{{ __('Company name') }}</th>
-                        <th class="px-5 py-3">{{ __('Employee id') }}</th>
-                        <th class="px-5 py-3">{{ __('Name of employee') }}</th>
+                        <x-sort-header column="code" class="px-5 py-3">{{ __('Employee id') }}</x-sort-header>
+                        <x-sort-header column="name" class="px-5 py-3">{{ __('Name of employee') }}</x-sort-header>
                         <th class="px-5 py-3">{{ __('Department') }}</th>
                         <th class="px-5 py-3">{{ __('Designation') }}</th>
-                        <th class="px-5 py-3">{{ __('Joining Date') }}</th>
-                        <th class="px-5 py-3">{{ __('Separation Date') }}</th>
+                        <x-sort-header column="joined" class="px-5 py-3">{{ __('Joining Date') }}</x-sort-header>
+                        <x-sort-header column="separated" class="px-5 py-3">{{ __('Separation Date') }}</x-sort-header>
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>

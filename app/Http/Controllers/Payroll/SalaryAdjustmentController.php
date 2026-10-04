@@ -67,7 +67,8 @@ class SalaryAdjustmentController extends Controller
     {
         return SalaryAdjustment::with('employee')
             ->tap(fn (Builder $q) => $this->search($q, $request, ['title', 'employee.first_name', 'employee.last_name', 'employee.employee_code']))
-            ->latest('salary_month')->latest('id');
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['employee' => $this->byEmployeeName('salary_adjustments'), 'title' => 'title', 'amount' => 'amount', 'month' => 'salary_month'],
+                fn (Builder $q) => $q->latest('salary_month')->latest('id')));
     }
 
     private function validated(Request $request): array

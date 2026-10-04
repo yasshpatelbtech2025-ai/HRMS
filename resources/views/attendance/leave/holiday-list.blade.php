@@ -27,9 +27,9 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
-                        <th class="px-5 py-3">{{ __('Holiday name') }}</th>
-                        <th class="px-5 py-3">{{ __('From date') }}</th>
-                        <th class="px-5 py-3">{{ __('To date') }}</th>
+                        <x-sort-header column="name" class="px-5 py-3">{{ __('Holiday name') }}</x-sort-header>
+                        <x-sort-header column="from" class="px-5 py-3">{{ __('From date') }}</x-sort-header>
+                        <x-sort-header column="to" class="px-5 py-3">{{ __('To date') }}</x-sort-header>
                         <th class="px-5 py-3">{{ __('Total days') }}</th>
                         <th class="px-5 py-3">{{ __('Companies') }}</th>
                         <th class="px-5 py-3">{{ __('Action') }}</th>

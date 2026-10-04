@@ -25,7 +25,8 @@ class SeparationController extends Controller
         $employees = Employee::whereNotNull('separation_date')
             ->with(['company', 'department', 'subDepartment', 'position'])
             ->tap(fn (Builder $q) => $this->search($q, $request, ['employee_code', 'first_name', 'middle_name', 'last_name', 'phone']))
-            ->orderByDesc('separation_date')->orderBy('employee_code')
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['code' => 'employee_code', 'name' => 'first_name', 'joined' => 'date_of_joining', 'separated' => 'separation_date'],
+                fn (Builder $q) => $q->orderByDesc('separation_date')->orderBy('employee_code')))
             ->paginate($perPage = $this->perPage($request))->withQueryString();
 
         return view('employees.separations.index', [

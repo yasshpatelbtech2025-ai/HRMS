@@ -16,11 +16,11 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
-                        <th class="px-5 py-3">{{ __('Employee id') }}</th>
-                        <th class="px-5 py-3">{{ __('Employee name') }}</th>
+                        <x-sort-header column="code" class="px-5 py-3">{{ __('Employee id') }}</x-sort-header>
+                        <x-sort-header column="name" class="px-5 py-3">{{ __('Employee name') }}</x-sort-header>
                         <th class="px-5 py-3">{{ __('Position') }}</th>
                         <th class="px-5 py-3">{{ __('Contact no') }}</th>
-                        <th class="px-5 py-3">{{ __('Assign date') }}</th>
+                        <x-sort-header column="assigned" class="px-5 py-3">{{ __('Assign date') }}</x-sort-header>
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>

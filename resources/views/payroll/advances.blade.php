@@ -21,11 +21,11 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
-                        <th class="px-4 py-3">{{ __('Employee name') }}</th>
-                        <th class="px-4 py-3">{{ __('Amount') }}</th>
+                        <x-sort-header column="employee" class="px-4 py-3">{{ __('Employee name') }}</x-sort-header>
+                        <x-sort-header column="amount" class="px-4 py-3">{{ __('Amount') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Release amount') }}</th>
-                        <th class="px-4 py-3">{{ __('Salary month') }}</th>
-                        <th class="px-4 py-3">{{ __('Advance date') }}</th>
+                        <x-sort-header column="month" class="px-4 py-3">{{ __('Salary month') }}</x-sort-header>
+                        <x-sort-header column="date" class="px-4 py-3">{{ __('Advance date') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Attachment') }}</th>
                         <th class="px-4 py-3">{{ __('Status') }}</th>
                         <th class="px-4 py-3">{{ __('Action') }}</th>

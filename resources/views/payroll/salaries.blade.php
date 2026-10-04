@@ -27,7 +27,11 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         @foreach (['Sl', 'Company name', 'Employee name', 'Salary month', 'Total salary', 'Action'] as $heading)
-                            <th class="px-4 py-3 {{ $heading === 'Action' ? 'print:hidden' : '' }}">{{ __($heading) }}</th>
+                            @if ($sortKey = ['Employee name' => 'employee', 'Salary month' => 'month', 'Total salary' => 'total'][$heading] ?? null)
+                                <x-sort-header :column="$sortKey" class="px-4 py-3">{{ __($heading) }}</x-sort-header>
+                            @else
+                                <th class="px-4 py-3 {{ $heading === 'Action' ? 'print:hidden' : '' }}">{{ __($heading) }}</th>
+                            @endif
                         @endforeach
                     </tr>
                 </thead>

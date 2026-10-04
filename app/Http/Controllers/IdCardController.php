@@ -25,7 +25,8 @@ class IdCardController extends Controller
     {
         $employees = Employee::current()->with('position')
             ->tap(fn (Builder $q) => $this->search($q, $request, ['employee_code', 'first_name', 'middle_name', 'last_name', 'phone', 'position.name']))
-            ->orderBy('company_id')->orderBy('employee_code')
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['code' => 'employee_code', 'name' => 'first_name', 'assigned' => 'id_card_assigned_on'],
+                fn (Builder $q) => $q->orderBy('company_id')->orderBy('employee_code')))
             ->paginate($perPage = $this->perPage($request))->withQueryString();
 
         return view('employees.id-cards.index', [

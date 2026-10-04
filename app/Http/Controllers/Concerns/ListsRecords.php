@@ -26,6 +26,42 @@ trait ListsRecords
     }
 
     /**
+     * Sort by the requested column (?sort=key&direction=asc|desc, from
+     * <x-sort-header>) when it is one of $sortable (key => column, or a
+     * callback receiving the query and direction); otherwise apply $default.
+     * Only listed keys are accepted, so a URL can't sort by any column.
+     *
+     * @param  array<string, string|callable>  $sortable
+     */
+    protected function sort(Builder $query, Request $request, array $sortable, callable $default): Builder
+    {
+        $key = $request->query('sort');
+        if (! is_string($key) || ! array_key_exists($key, $sortable)) {
+            $default($query);
+
+            return $query;
+        }
+
+        $direction = $request->query('direction') === 'desc' ? 'desc' : 'asc';
+        $column = $sortable[$key];
+        is_callable($column) ? $column($query, $direction) : $query->orderBy($column, $direction);
+
+        // Ties keep a stable order across pages.
+        return $query->orderBy($query->getModel()->getQualifiedKeyName());
+    }
+
+    /**
+     * A sort callback by the related employee's name, for lists of records
+     * that belong to an employee.
+     */
+    protected function byEmployeeName(string $table): callable
+    {
+        return fn (Builder $query, string $direction) => $query
+            ->orderBy(\App\Models\Employee::withTrashed()->select('first_name')->whereColumn('employees.id', "{$table}.employee_id"), $direction)
+            ->orderBy(\App\Models\Employee::withTrashed()->select('last_name')->whereColumn('employees.id', "{$table}.employee_id"), $direction);
+    }
+
+    /**
      * Constrain $query to rows where any of $columns contains the request's
      * search term, ignoring case. Dotted columns search a relation, e.g.
      * "department.name".

@@ -23,7 +23,7 @@ class HolidayController extends Controller
 
         $holidays = Holiday::inYear($year)->withCount('companies')
             ->tap(fn ($q) => $this->search($q, $request, ['name']))
-            ->orderBy('start_date')
+            ->tap(fn ($q) => $this->sort($q, $request, ['name' => 'name', 'from' => 'start_date', 'to' => 'end_date'], fn ($q) => $q->orderBy('start_date')))
             ->paginate($perPage = $this->perPage($request))->withQueryString();
 
         return view('attendance.leave.holiday-list', compact('holidays', 'perPage', 'year'));

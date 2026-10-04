@@ -18,8 +18,8 @@
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <th class="px-5 py-3">{{ __('Company name') }}</th>
-                        <th class="px-5 py-3">{{ __('Leave type') }}</th>
-                        <th class="px-5 py-3">{{ __('Days') }}</th>
+                        <x-sort-header column="name" class="px-5 py-3">{{ __('Leave type') }}</x-sort-header>
+                        <x-sort-header column="days" class="px-5 py-3">{{ __('Days') }}</x-sort-header>
                         <th class="px-5 py-3">{{ __('Is paid') }}</th>
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>

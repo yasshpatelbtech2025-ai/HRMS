@@ -95,7 +95,8 @@ class LoanController extends Controller
         return Loan::with(['employee.company', 'permittedBy'])
             ->when($request->filled('employee'), fn ($q) => $q->whereHas('employee', fn ($e) => $e->where('uuid', $request->query('employee'))))
             ->tap(fn (Builder $q) => $this->search($q, $request, ['loan_no', 'employee.first_name', 'employee.last_name', 'employee.employee_code']))
-            ->latest('approved_date')->latest('id');
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['employee' => $this->byEmployeeName('loans'), 'loan' => 'loan_no', 'amount' => 'amount', 'approved' => 'approved_date', 'status' => 'is_active'],
+                fn (Builder $q) => $q->latest('approved_date')->latest('id')));
     }
 
     private function validated(Request $request, ?Loan $loan = null): array

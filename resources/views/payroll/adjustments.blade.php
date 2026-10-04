@@ -19,10 +19,10 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
-                        <th class="px-4 py-3">{{ __('Employee name') }}</th>
-                        <th class="px-4 py-3">{{ __('Title') }}</th>
-                        <th class="px-4 py-3">{{ __('Amount') }}</th>
-                        <th class="px-4 py-3">{{ __('Salary month') }}</th>
+                        <x-sort-header column="employee" class="px-4 py-3">{{ __('Employee name') }}</x-sort-header>
+                        <x-sort-header column="title" class="px-4 py-3">{{ __('Title') }}</x-sort-header>
+                        <x-sort-header column="amount" class="px-4 py-3">{{ __('Amount') }}</x-sort-header>
+                        <x-sort-header column="month" class="px-4 py-3">{{ __('Salary month') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Adjustment type') }}</th>
                         <th class="px-4 py-3">{{ __('Action') }}</th>
                     </tr>

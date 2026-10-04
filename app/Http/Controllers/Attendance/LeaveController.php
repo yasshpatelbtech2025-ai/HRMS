@@ -147,7 +147,9 @@ class LeaveController extends Controller
         return LeaveApplication::with(['employee', 'leaveType'])
             ->when(array_key_exists((string) $request->query('status'), self::STATUSES), fn ($q) => $q->where('status', $request->query('status')))
             ->tap(fn (Builder $q) => $this->search($q, $request, ['employee.first_name', 'employee.last_name', 'employee.employee_code', 'leaveType.name', 'leaveType.code']))
-            ->latest();
+            ->tap(fn (Builder $q) => $this->sort($q, $request, [
+                'employee' => $this->byEmployeeName('leave_applications'), 'applied' => 'created_at', 'start' => 'start_date', 'end' => 'end_date', 'days' => 'days', 'status' => 'status',
+            ], fn (Builder $q) => $q->latest()));
     }
 
     private function daysBetween(string $from, string $to): int

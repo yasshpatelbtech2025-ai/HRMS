@@ -82,7 +82,8 @@ class SalaryAdvanceController extends Controller
     {
         return SalaryAdvance::with('employee')
             ->tap(fn (Builder $q) => $this->search($q, $request, ['employee.first_name', 'employee.last_name', 'employee.employee_code']))
-            ->latest('advance_date')->latest('id');
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['employee' => $this->byEmployeeName('salary_advances'), 'amount' => 'amount', 'month' => 'salary_month', 'date' => 'advance_date'],
+                fn (Builder $q) => $q->latest('advance_date')->latest('id')));
     }
 
     private function validated(Request $request, ?SalaryAdvance $advance = null): array

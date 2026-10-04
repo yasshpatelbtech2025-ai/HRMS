@@ -35,7 +35,11 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         @foreach (['Sl', 'Company name', 'Employee name', 'Permitted by', 'Loan no', 'Amount', 'Interest rate', 'Installment period', 'Installment cleared', 'Repayment amount', 'Approved date', 'Repayment from', 'Attachment', 'Status', 'Action'] as $heading)
-                            <th class="whitespace-nowrap px-3 py-3">{{ __($heading) }}</th>
+                            @if ($sortKey = ['Employee name' => 'employee', 'Loan no' => 'loan', 'Amount' => 'amount', 'Approved date' => 'approved', 'Status' => 'status'][$heading] ?? null)
+                                <x-sort-header :column="$sortKey" class="whitespace-nowrap px-3 py-3">{{ __($heading) }}</x-sort-header>
+                            @else
+                                <th class="whitespace-nowrap px-3 py-3">{{ __($heading) }}</th>
+                            @endif
                         @endforeach
                     </tr>
                 </thead>

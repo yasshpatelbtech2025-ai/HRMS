@@ -40,16 +40,16 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="px-4 py-3">{{ __('Employee id') }}</th>
-                        <th class="px-4 py-3">{{ __('Name') }}</th>
+                        <x-sort-header column="name" class="px-4 py-3">{{ __('Name') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Designation') }}</th>
                         <th class="px-4 py-3">{{ __('In time') }}</th>
                         <th class="px-4 py-3">{{ __('Requested in time') }}</th>
                         <th class="px-4 py-3">{{ __('Out time') }}</th>
                         <th class="px-4 py-3">{{ __('Requested out time') }}</th>
-                        <th class="px-4 py-3">{{ __('Date') }}</th>
+                        <x-sort-header column="date" class="px-4 py-3">{{ __('Date') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Original shift') }}</th>
                         <th class="px-4 py-3">{{ __('Actual shift') }}</th>
-                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <x-sort-header column="status" class="px-4 py-3">{{ __('Status') }}</x-sort-header>
                         <th class="px-4 py-3 print:hidden">{{ __('Action') }}</th>
                     </tr>
                 </thead>

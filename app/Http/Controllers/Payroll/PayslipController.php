@@ -47,7 +47,8 @@ class PayslipController extends Controller
         return Payslip::with(['employee', 'company.parent', 'sheet'])
             ->when($month, fn ($q) => $q->whereDate('month', $month.'-01'))
             ->tap(fn (Builder $q) => $this->search($q, $request, ['employee.first_name', 'employee.last_name', 'employee.employee_code']))
-            ->orderByDesc('month')->orderBy('company_id')->orderBy('employee_id');
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['employee' => $this->byEmployeeName('payslips'), 'month' => 'month', 'total' => 'net_pay'],
+                fn (Builder $q) => $q->orderByDesc('month')->orderBy('company_id')->orderBy('employee_id')));
     }
 
     private function month(Request $request): ?string

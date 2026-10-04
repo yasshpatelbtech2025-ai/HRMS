@@ -53,7 +53,8 @@ class CurrentSalaryController extends Controller
         $employees = $company
             ? Employee::current()->where('company_id', $company->id)->with(['position', 'salaryElements'])
                 ->tap(fn (Builder $q) => $this->search($q, $request, ['employee_code', 'first_name', 'last_name']))
-                ->orderBy('employee_code')->paginate($perPage = $this->perPage($request, allowAll: true))->withQueryString()
+                ->tap(fn (Builder $q) => $this->sort($q, $request, ['code' => 'employee_code', 'name' => 'first_name'], fn (Builder $q) => $q->orderBy('employee_code')))
+                ->paginate($perPage = $this->perPage($request, allowAll: true))->withQueryString()
             : null;
 
         return view('payroll.current', ['companies' => $companies, 'company' => $company, 'employees' => $employees, 'perPage' => $perPage ?? 10, 'revisions' => $revisions]);

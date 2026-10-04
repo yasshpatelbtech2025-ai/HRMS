@@ -36,15 +36,15 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
-                        <th class="px-4 py-3">{{ __('Employee name') }}</th>
+                        <x-sort-header column="employee" class="px-4 py-3">{{ __('Employee name') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Type') }}</th>
-                        <th class="px-4 py-3">{{ __('Apply date') }}</th>
-                        <th class="px-4 py-3">{{ __('Leave start date') }}</th>
-                        <th class="px-4 py-3">{{ __('Leave end date') }}</th>
-                        <th class="px-4 py-3">{{ __('Days') }}</th>
+                        <x-sort-header column="applied" class="px-4 py-3">{{ __('Apply date') }}</x-sort-header>
+                        <x-sort-header column="start" class="px-4 py-3">{{ __('Leave start date') }}</x-sort-header>
+                        <x-sort-header column="end" class="px-4 py-3">{{ __('Leave end date') }}</x-sort-header>
+                        <x-sort-header column="days" class="px-4 py-3">{{ __('Days') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Hard copy') }}</th>
                         <th class="px-4 py-3">{{ __('Is paid') }}</th>
-                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <x-sort-header column="status" class="px-4 py-3">{{ __('Status') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>

@@ -24,7 +24,8 @@ class LeaveTypeController extends Controller
     {
         $leaveTypes = LeaveType::with('company')
             ->tap(fn (Builder $q) => $this->search($q, $request, ['name', 'code', 'company.establishment_name']))
-            ->orderBy(Company::select('establishment_name')->whereColumn('companies.id', 'leave_types.company_id'))->orderBy('name')
+            ->tap(fn (Builder $q) => $this->sort($q, $request, ['name' => 'name', 'days' => 'days'],
+                fn (Builder $q) => $q->orderBy(Company::select('establishment_name')->whereColumn('companies.id', 'leave_types.company_id'))->orderBy('name')))
             ->paginate($perPage = $this->perPage($request))->withQueryString();
 
         return view('attendance.leave.types', [

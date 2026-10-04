@@ -36,7 +36,8 @@ class AttendanceRequestController extends Controller
             ? AttendanceRequest::where('company_id', $company->id)
                 ->when($status, fn ($q) => $q->where('status', $status))
                 ->with(['employee.position', 'employee.shift'])
-                ->latest('work_date')->latest('id')
+                ->tap(fn ($q) => $this->sort($q, $request, ['name' => $this->byEmployeeName('attendance_requests'), 'date' => 'work_date', 'status' => 'status'],
+                    fn ($q) => $q->latest('work_date')->latest('id')))
                 ->paginate($perPage = $this->perPage($request))->withQueryString()
             : null;
 
