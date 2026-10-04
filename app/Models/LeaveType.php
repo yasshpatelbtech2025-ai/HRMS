@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'name', 'code', 'days', 'is_paid'])]
 class LeaveType extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, Trashable;
 
     protected function casts(): array
     {

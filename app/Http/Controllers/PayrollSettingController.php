@@ -70,7 +70,7 @@ class PayrollSettingController extends Controller
     {
         $rule->delete();
 
-        return back()->with('status', __('Payroll rule deleted.'));
+        return $this->deleted($rule, __('Payroll rule deleted.'));
     }
 
     private function validatedRule(Request $request): array

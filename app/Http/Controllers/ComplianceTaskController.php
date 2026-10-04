@@ -102,6 +102,6 @@ class ComplianceTaskController extends Controller
     {
         $task->delete();
 
-        return back()->with('status', __('Task deleted.'));
+        return $this->deleted($task, __('Task deleted.'));
     }
 }

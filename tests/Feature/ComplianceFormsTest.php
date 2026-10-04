@@ -176,8 +176,8 @@ class ComplianceFormsTest extends TestCase
 
         $path = $exam->fresh()->signed_copy_path;
         $this->delete(route('compliance.examinations.destroy', $exam))->assertSessionHas('status');
-        $this->assertModelMissing($exam);
-        Storage::disk('local')->assertMissing($path);
+        $this->assertSoftDeleted($exam);
+        Storage::disk('local')->assertExists($path); // kept until the record is pruned
     }
 
     public function test_employment_exchange_er1_counts_staff_and_saves_fields(): void
@@ -362,7 +362,7 @@ class ComplianceFormsTest extends TestCase
         $this->post(route('compliance.forms.entries', [$this->company, 'form-a']), ['month' => '2026-09', 'rows' => []])->assertNotFound();
 
         $this->delete(route('compliance.entries.destroy', $entry))->assertSessionHas('status');
-        $this->assertModelMissing($entry);
+        $this->assertSoftDeleted($entry);
     }
 
     public function test_return_fields_and_signed_copy_are_saved(): void

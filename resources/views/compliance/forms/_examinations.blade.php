@@ -61,7 +61,7 @@
                 @if ($examination)
                     <div class="flex items-center gap-2">
                         <button type="button" x-data x-on:click="$dispatch('open-modal', 'examination-edit')" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</button>
-                        <form method="POST" action="{{ route('compliance.examinations.destroy', $examination) }}" onsubmit="return confirm(@js(__('Delete this examination? It is removed from Form 5, 27-A, 30 and 32.')))">
+                        <form method="POST" action="{{ route('compliance.examinations.destroy', $examination) }}" data-confirm="{{ __('Delete this examination? It is removed from Form 5, 27-A, 30 and 32.') }}">
                             @csrf
                             @method('DELETE')
                             <button class="rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>

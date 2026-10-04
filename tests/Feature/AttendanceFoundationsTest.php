@@ -122,7 +122,7 @@ class AttendanceFoundationsTest extends TestCase
         $this->assertFalse($type->fresh()->is_paid);
 
         $this->delete(route('attendance.leave.types.destroy', $type))->assertSessionHas('status');
-        $this->assertModelMissing($type);
+        $this->assertSoftDeleted($type);
     }
 
     public function test_holiday_list_and_company_holidays(): void
@@ -145,6 +145,6 @@ class AttendanceFoundationsTest extends TestCase
         $this->delete(route('attendance.leave.holidays.destroy', [$this->company, $diwali]))->assertSessionHas('status');
         $this->assertFalse($this->company->holidays()->exists());
         $this->delete(route('attendance.leave.holiday-list.destroy', $diwali))->assertSessionHas('status');
-        $this->assertModelMissing($diwali);
+        $this->assertSoftDeleted($diwali);
     }
 }

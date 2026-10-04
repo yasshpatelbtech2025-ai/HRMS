@@ -60,7 +60,7 @@ class SubDepartmentController extends Controller
     {
         $subDepartment->delete();
 
-        return back()->with('status', __('Sub department deleted.'));
+        return $this->deleted($subDepartment, __('Sub department deleted.'));
     }
 
     public function export(Request $request, string $format): StreamedResponse

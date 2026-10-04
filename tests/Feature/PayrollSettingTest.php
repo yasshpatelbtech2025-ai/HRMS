@@ -77,7 +77,7 @@ class PayrollSettingTest extends TestCase
         $this->assertFalse($saved->fresh()->is_active);
 
         $this->delete(route('configs.payroll.rules.destroy', $saved))->assertSessionHas('status');
-        $this->assertModelMissing($saved);
+        $this->assertSoftDeleted($saved);
     }
 
     public function test_new_structure_limits_the_employee_salary_elements(): void

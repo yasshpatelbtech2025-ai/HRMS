@@ -56,6 +56,6 @@ class PositionController extends Controller
     {
         $position->delete();
 
-        return back()->with('status', __('Position deleted.'));
+        return $this->deleted($position, __('Position deleted.'));
     }
 }

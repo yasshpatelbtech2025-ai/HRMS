@@ -65,7 +65,7 @@ class PayrollInputsTest extends TestCase
 
         $this->assertStringContainsString('Gopal Bhat', $this->get(route('payroll.advances.export', 'csv'))->streamedContent());
         $this->delete(route('payroll.advances.destroy', $advance))->assertSessionHas('status');
-        $this->assertModelMissing($advance);
+        $this->assertSoftDeleted($advance);
     }
 
     public function test_salary_adjustments_accept_new_titles(): void

@@ -14,3 +14,6 @@ Artisan::command('compliance:sync-tasks', function (App\Services\Compliance\Comp
 })->purpose('Create and complete the compliance To Do List tasks for every company');
 
 Illuminate\Support\Facades\Schedule::command('compliance:sync-tasks')->dailyAt('06:00');
+
+// Recently deleted records older than 30 days are removed for good (App\Models\Concerns\Trashable).
+Illuminate\Support\Facades\Schedule::command('model:prune')->dailyAt('03:00');

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * A medical examination of an employee by the certifying surgeon (Factory
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'employee_id', 'examined_on', 'result', 'certifying_surgeon', 'signs_symptoms', 'extended_until', 'details', 'signed_copy_path', 'signed_copy_name'])]
 class MedicalExamination extends Model
 {
-    use HasUuids;
+    use HasUuids, Trashable;
 
     /** The `details` fields, as label => input type, grouped as on the examination form. */
     public const DETAILS = [
@@ -62,6 +64,14 @@ class MedicalExamination extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class)->withTrashed();
+    }
+
+    /** When the record is finally removed (30 days after deletion), so is the signed copy. */
+    public function pruning(): void
+    {
+        if ($this->signed_copy_path) {
+            Storage::disk(config('filesystems.employee_files'))->delete($this->signed_copy_path);
+        }
     }
 
     public function detail(string $key): ?string

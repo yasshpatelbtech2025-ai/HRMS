@@ -106,6 +106,6 @@ class AttendanceRequestController extends Controller
     {
         $attendanceRequest->delete();
 
-        return back()->with('status', __('Request deleted.'));
+        return $this->deleted($attendanceRequest, __('Request deleted.'));
     }
 }

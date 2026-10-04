@@ -13,13 +13,13 @@
             <button type="button" onclick="window.print()" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Print') }}</button>
             @if ($approval)
                 @if ($sheet->isApproved())
-                    <form method="POST" action="{{ route('payroll.unapprove', $sheet) }}" onsubmit="return confirm(@js(__('Undo the approval? Advance recoveries and loan installments recorded by it are reversed.')))">
+                    <form method="POST" action="{{ route('payroll.unapprove', $sheet) }}" data-confirm="{{ __('Undo the approval? Advance recoveries and loan installments recorded by it are reversed.') }}">
                         @csrf
                         @method('PUT')
                         <button class="rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-white hover:bg-amber-600">{{ __('Undo approval') }}</button>
                     </form>
                 @else
-                    <form method="POST" action="{{ route('payroll.approve', $sheet) }}" onsubmit="return confirm(@js(__('Approve this salary? Advance recoveries and loan installments on it will be recorded.')))">
+                    <form method="POST" action="{{ route('payroll.approve', $sheet) }}" data-confirm="{{ __('Approve this salary? Advance recoveries and loan installments on it will be recorded.') }}">
                         @csrf
                         @method('PUT')
                         <button class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{{ __('Approve salary') }}</button>

@@ -52,7 +52,7 @@ class LeaveTypeController extends Controller
     {
         $leaveType->delete();
 
-        return back()->with('status', __('Leave type deleted.'));
+        return $this->deleted($leaveType, __('Leave type deleted.'));
     }
 
     private function validated(Request $request, ?LeaveType $leaveType = null): array
@@ -62,7 +62,7 @@ class LeaveTypeController extends Controller
         $data = $request->validate([
             'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:20', Rule::unique('leave_types')->where('company_id', $request->integer('company_id'))->ignore($leaveType)],
+            'code' => ['required', 'string', 'max:20', Rule::unique('leave_types')->where('company_id', $request->integer('company_id'))->whereNull('deleted_at')->ignore($leaveType)],
             'days' => ['required', 'numeric', 'min:0', 'max:366'],
             'is_paid' => ['nullable', 'boolean'],
         ], ['code.unique' => __('This company already has a leave type with that code.')], ['name' => 'leave type', 'code' => 'leave code', 'days' => 'leave days']);

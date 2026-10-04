@@ -107,7 +107,7 @@
                                         @method('PATCH')
                                     </form>
                                     @unless ($punch->is_locked)
-                                        <form method="POST" action="{{ route('attendance.raw-data.destroy', $punch) }}" onsubmit="return confirm(@js(__('Delete this punch?')))">
+                                        <form method="POST" action="{{ route('attendance.raw-data.destroy', $punch) }}" data-confirm="{{ __('Delete this punch?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button title="{{ __('Delete') }}" class="rounded-md p-2 text-red-600 hover:bg-red-50">

@@ -119,7 +119,7 @@ class LeaveController extends Controller
         }
         $leave->delete();
 
-        return back()->with('status', __('Leave application deleted.'));
+        return $this->deleted($leave, __('Leave application deleted.'));
     }
 
     public function hardCopy(LeaveApplication $leave): StreamedResponse

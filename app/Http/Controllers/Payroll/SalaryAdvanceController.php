@@ -57,7 +57,7 @@ class SalaryAdvanceController extends Controller
         }
         $advance->delete();
 
-        return back()->with('status', __('Salary advance deleted.'));
+        return $this->deleted($advance, __('Salary advance deleted.'));
     }
 
     public function attachment(SalaryAdvance $advance): StreamedResponse

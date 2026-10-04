@@ -53,7 +53,7 @@ class HolidayController extends Controller
 
         $holiday->delete();
 
-        return back()->with('status', __('Holiday deleted.'));
+        return $this->deleted($holiday, __('Holiday deleted.'));
     }
 
     private function validated(Request $request): array

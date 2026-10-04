@@ -52,7 +52,7 @@ class DocumentTest extends TestCase
         $this->assertFalse(DocumentAssignment::exists());
 
         $this->delete(route('documents.destroy', $file))->assertSessionHas('status');
-        Storage::disk('local')->assertMissing($file->path);
-        $this->assertModelMissing($file);
+        Storage::disk('local')->assertExists($file->path); // kept until the record is pruned
+        $this->assertSoftDeleted($file);
     }
 }

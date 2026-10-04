@@ -50,7 +50,7 @@
                             <td class="px-5 py-3">{{ $holiday->total_days }}</td>
                             <td class="px-5 py-3">
                                 <form method="POST" action="{{ route('attendance.leave.holidays.destroy', [$company, $holiday]) }}"
-                                      onsubmit="return confirm(@js(__('Remove :holiday for :company?', ['holiday' => $holiday->name, 'company' => $company->establishment_name])))">
+                                      data-confirm="{{ __('Remove :holiday for :company?', ['holiday' => $holiday->name, 'company' => $company->establishment_name]) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button title="{{ __('Delete') }}" class="rounded-md p-2 text-red-600 hover:bg-red-50">

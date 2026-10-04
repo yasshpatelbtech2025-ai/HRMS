@@ -1,7 +1,7 @@
 {{-- Toast notifications: this request's flash messages, and any sent with a "toast" window event (resources/js/toasts.js). --}}
 @php
     $initial = collect([
-        session('status') ? ['type' => 'success', 'message' => session('status')] : null,
+        session('status') ? ['type' => 'success', 'message' => session('status'), 'undo' => session('undo')] : null,
         session('error') ? ['type' => 'error', 'message' => session('error')] : null,
     ])->filter()->values();
 @endphp
@@ -25,6 +25,7 @@
                 <svg x-show="toast.type === 'info'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8h.01M11 12h1v5h1" /></svg>
             </span>
             <p class="flex-1 text-sm text-gray-800" x-text="toast.message"></p>
+            <button type="button" x-show="toast.undo" x-on:click="undo(toast)" class="-my-1 rounded-md px-2 py-1 text-sm font-semibold text-brand-700 hover:bg-brand-50">{{ __('Undo') }}</button>
             <button type="button" x-on:click="remove(toast.id)" class="-m-1 rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600" aria-label="{{ __('Dismiss') }}">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>

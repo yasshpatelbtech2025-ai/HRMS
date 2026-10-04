@@ -15,6 +15,7 @@ use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FirmController;
+use App\Http\Controllers\RecentlyDeletedController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\IdCardFormatController;
 use App\Http\Controllers\ComplianceController;
@@ -297,6 +298,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     }
 
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
+    Route::controller(RecentlyDeletedController::class)->prefix('configs/recently-deleted')->group(function () {
+        Route::get('/', 'index')->name('configs.recently-deleted');
+        Route::post('{type}/{id}', 'restore')->whereNumber('id')->name('recently-deleted.restore');
+        Route::delete('{type}/{id}', 'destroy')->whereNumber('id')->name('recently-deleted.destroy');
+    });
     Route::put('configs/attendance/{company}', [AttendanceSettingController::class, 'update'])->name('configs.attendance.update');
 
     Route::controller(PayrollSettingController::class)->prefix('configs/payroll')->group(function () {

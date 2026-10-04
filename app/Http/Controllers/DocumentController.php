@@ -81,10 +81,9 @@ class DocumentController extends Controller
 
     public function destroy(DocumentFile $file): RedirectResponse
     {
-        Storage::disk(config('filesystems.employee_files'))->delete($file->path);
-        $file->delete();
+        $file->delete(); // the file stays until the record is pruned
 
-        return back()->with('status', __(':name deleted.', ['name' => $file->original_name]));
+        return $this->deleted($file, __(':name deleted.', ['name' => $file->original_name]));
     }
 
     public function assign(Request $request, string $slot): RedirectResponse

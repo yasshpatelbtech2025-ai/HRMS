@@ -107,7 +107,7 @@ class ComplianceController extends Controller
     {
         $entry->delete();
 
-        return back()->with('status', __('Row deleted.'));
+        return $this->deleted($entry, __('Row deleted.'));
     }
 
     /**
@@ -217,12 +217,9 @@ class ComplianceController extends Controller
 
     public function destroyExamination(MedicalExamination $examination): RedirectResponse
     {
-        if ($examination->signed_copy_path) {
-            Storage::disk(config('filesystems.employee_files'))->delete($examination->signed_copy_path);
-        }
-        $examination->delete();
+        $examination->delete(); // the signed copy stays until the record is pruned
 
-        return back()->with('status', __('Examination deleted.'));
+        return $this->deleted($examination, __('Examination deleted.'));
     }
 
     public function examinationCopy(MedicalExamination $examination): StreamedResponse

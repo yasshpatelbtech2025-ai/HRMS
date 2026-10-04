@@ -71,7 +71,7 @@ class CompanyController extends Controller
 
         $company->delete();
 
-        return back()->with('status', __('Company deleted.'));
+        return $this->deleted($company, __('Company deleted.'));
     }
 
     public function export(Request $request): StreamedResponse

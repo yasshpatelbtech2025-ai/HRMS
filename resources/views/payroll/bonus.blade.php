@@ -60,18 +60,18 @@
                         <a href="{{ route('payroll.bonus.export', [$sheet, 'xlsx']) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
                         <a href="{{ route('payroll.bonus.export', [$sheet, 'csv']) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
                         @if ($approved)
-                            <form method="POST" action="{{ route('payroll.bonus.unapprove', $sheet) }}" onsubmit="return confirm(@js(__('Unapprove this bonus sheet?')))">
+                            <form method="POST" action="{{ route('payroll.bonus.unapprove', $sheet) }}" data-confirm="{{ __('Unapprove this bonus sheet?') }}">
                                 @csrf
                                 <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Unapprove') }}</button>
                             </form>
                         @else
-                            <form method="POST" action="{{ route('payroll.bonus.generate') }}" onsubmit="return confirm(@js(__('Work the bonus out again from the payslips? Amounts you changed will be reset.')))">
+                            <form method="POST" action="{{ route('payroll.bonus.generate') }}" data-confirm="{{ __('Work the bonus out again from the payslips? Amounts you changed will be reset.') }}">
                                 @csrf
                                 <input type="hidden" name="company" value="{{ $company->uuid }}">
                                 <input type="hidden" name="fy" value="{{ $fy }}">
                                 <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Work out again') }}</button>
                             </form>
-                            <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" onsubmit="return confirm(@js(__('Delete this bonus sheet?')))">
+                            <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" data-confirm="{{ __('Delete this bonus sheet?') }}">
                                 @csrf
                                 @method('DELETE')
                                 <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>

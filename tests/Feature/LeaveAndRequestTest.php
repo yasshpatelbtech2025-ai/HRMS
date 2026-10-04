@@ -87,7 +87,7 @@ class LeaveAndRequestTest extends TestCase
         $this->assertStringNotContainsString('Rejected', $csv);
 
         $this->delete(route('attendance.leave.destroy', $second))->assertSessionHas('status');
-        $this->assertModelMissing($second);
+        $this->assertSoftDeleted($second);
     }
 
     public function test_leave_type_must_belong_to_the_employees_company(): void

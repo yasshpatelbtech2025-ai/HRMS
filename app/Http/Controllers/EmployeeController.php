@@ -99,7 +99,7 @@ class EmployeeController extends Controller
 
         $employee->delete();
 
-        return back()->with('status', __('Employee :name deleted.', ['name' => $employee->full_name]));
+        return $this->deleted($employee, __('Employee :name deleted.', ['name' => $employee->full_name]));
     }
 
     public function toggleStatus(Employee $employee): RedirectResponse

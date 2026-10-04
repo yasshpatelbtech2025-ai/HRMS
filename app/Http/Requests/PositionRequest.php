@@ -15,7 +15,7 @@ class PositionRequest extends FormRequest
 
         return [
             'company_id' => $position ? ['prohibited'] : ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
-            'name' => ['required', 'string', 'max:255', Rule::unique('positions')->where('company_id', $companyId)->ignore($position)],
+            'name' => ['required', 'string', 'max:255', Rule::unique('positions')->where('company_id', $companyId)->whereNull('deleted_at')->ignore($position)],
             'details' => ['required', 'string', 'max:255'],
             'is_active' => ['required', 'boolean'],
         ];

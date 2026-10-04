@@ -52,12 +52,12 @@
                             <td class="px-4 py-3">
                                 @if ($revision->status === 'pending')
                                     <div class="flex gap-1">
-                                        <form method="POST" action="{{ route('payroll.revisions.apply', $revision) }}" onsubmit="return confirm(@js(__('Apply this revision now?')))">
+                                        <form method="POST" action="{{ route('payroll.revisions.apply', $revision) }}" data-confirm="{{ __('Apply this revision now?') }}">
                                             @csrf
                                             @method('PUT')
                                             <button class="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700">{{ __('Apply now') }}</button>
                                         </form>
-                                        <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" onsubmit="return confirm(@js(__('Cancel this revision?')))">
+                                        <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" data-confirm="{{ __('Cancel this revision?') }}">
                                             @csrf
                                             @method('PUT')
                                             <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Cancel') }}</button>

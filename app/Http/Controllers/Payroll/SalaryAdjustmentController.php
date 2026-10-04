@@ -50,7 +50,7 @@ class SalaryAdjustmentController extends Controller
     {
         $adjustment->delete();
 
-        return back()->with('status', __('Salary adjustment deleted.'));
+        return $this->deleted($adjustment, __('Salary adjustment deleted.'));
     }
 
     public function export(Request $request, string $format): StreamedResponse

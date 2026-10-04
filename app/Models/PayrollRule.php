@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'type', 'name', 'amount', 'month', 'is_percent', 'effect_on', 'is_active'])]
 class PayrollRule extends Model
 {
-    use HasUuids;
+    use HasUuids, Trashable;
 
     public const TYPES = ['variable_bonus' => 'Variable Bonus'];
 

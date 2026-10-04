@@ -72,5 +72,6 @@ return [
     'configs' => [
         '' => 'Attendance',
         'payroll' => 'Payroll',
+        'recently-deleted' => 'Recently deleted',
     ],
 ];

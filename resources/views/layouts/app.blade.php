@@ -21,6 +21,7 @@
             <div class="h-full w-2/5 animate-progress-indeterminate rounded-full bg-brand-500"></div>
         </div>
         <x-toasts />
+        <x-confirm-dialog />
 
         <div x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="min-h-screen">
             @include('layouts.sidebar')

@@ -70,6 +70,6 @@ class PositionTest extends TestCase
         $position = Position::factory()->create();
 
         $this->delete(route('employees.positions.destroy', $position))->assertSessionHas('status');
-        $this->assertModelMissing($position);
+        $this->assertSoftDeleted($position);
     }
 }

@@ -39,7 +39,7 @@ class LoanController extends Controller
         $data = $this->validated($request);
 
         $loan = DB::transaction(function () use ($data) {
-            $next = (int) Loan::lockForUpdate()->max('id') + 1;
+            $next = (int) Loan::withTrashed()->lockForUpdate()->max('id') + 1;
 
             return Loan::create($data + ['loan_no' => sprintf('LN-%04d', $next)]);
         });
@@ -67,7 +67,7 @@ class LoanController extends Controller
         }
         $loan->delete();
 
-        return back()->with('status', __('Loan deleted.'));
+        return $this->deleted($loan, __('Loan deleted.'));
     }
 
     public function attachment(Loan $loan): StreamedResponse

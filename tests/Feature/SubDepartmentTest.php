@@ -84,7 +84,7 @@ class SubDepartmentTest extends TestCase
         $this->assertDatabaseHas('sub_departments', ['id' => $subDepartment->id, 'name' => 'Boiler House', 'is_active' => false]);
 
         $this->delete(route('employees.departments.destroy', $subDepartment))->assertSessionHas('status');
-        $this->assertModelMissing($subDepartment);
+        $this->assertSoftDeleted($subDepartment);
     }
 
     public function test_search_and_export(): void

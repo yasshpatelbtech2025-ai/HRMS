@@ -3,6 +3,7 @@ import { employeeForm, photoCapture } from './employee-form';
 import { shiftRoster } from './shift-roster';
 import { toasts } from './toasts';
 import { globalSearch } from './global-search';
+import { confirmDialog } from './confirm-dialog';
 import './loading';
 
 window.Alpine = Alpine;
@@ -12,5 +13,6 @@ Alpine.data('photoCapture', photoCapture);
 Alpine.data('shiftRoster', shiftRoster);
 Alpine.data('toasts', toasts);
 Alpine.data('globalSearch', globalSearch);
+Alpine.data('confirmDialog', confirmDialog);
 
 Alpine.start();
