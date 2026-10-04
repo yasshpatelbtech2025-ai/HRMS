@@ -17,6 +17,8 @@
 @if ($colspan)
     <tr>
         <td colspan="{{ $colspan }}" class="px-5 py-12">
+            {{-- Kept in view when the table is wider than its scroll box (phones). --}}
+            <div class="sticky start-5" style="width: min(100%, calc(100vw - 5rem));">
 @endif
 <div {{ $attributes->merge(['class' => 'mx-auto flex max-w-md flex-col items-center text-center']) }}>
     <span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600 ring-8 ring-brand-50/50">
@@ -31,6 +33,7 @@
     @endisset
 </div>
 @if ($colspan)
+            </div>
         </td>
     </tr>
 @endif

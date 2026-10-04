@@ -17,9 +17,9 @@
         ];
     @endphp
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         @foreach ($cards as $card)
-            <a href="{{ $card['href'] }}" class="relative overflow-hidden rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200 transition hover:ring-gray-300">
+            <a href="{{ $card['href'] }}" class="relative overflow-hidden rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-200 transition hover:-translate-y-0.5 hover:shadow-md sm:p-6">
                 <span class="absolute inset-y-0 start-0 w-1 {{ $card['accent'] }}"></span>
                 <p class="text-sm font-medium text-gray-500">{{ $card['label'] }}</p>
                 <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $card['value'] }}</p>

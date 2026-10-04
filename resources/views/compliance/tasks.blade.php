@@ -16,7 +16,7 @@
     @endphp
 
     {{-- Stat cards: click one to filter by it. --}}
-    <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         <a href="{{ $filter(['status' => 'all']) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === 'all' ? 'ring-brand-300' : 'ring-gray-200' }} hover:ring-gray-300">
             <span class="absolute inset-y-0 start-0 w-1 bg-brand-500"></span>
             <p class="text-sm font-medium text-gray-500">{{ __('Total tasks') }}</p>
