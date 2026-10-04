@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -102,6 +103,39 @@ class EmployeeController extends Controller
         return $this->deleted($employee, __('Employee :name deleted.', ['name' => $employee->full_name]));
     }
 
+    /**
+     * Bulk actions on the selected employees: mark active / inactive, or delete.
+     */
+    public function bulk(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:500'],
+            'ids.*' => ['uuid'],
+            'action' => ['required', Rule::in(['activate', 'deactivate', 'delete'])],
+        ], ['ids.required' => __('Select at least one employee.')]);
+
+        $employees = Employee::whereIn('uuid', $data['ids'])->get();
+
+        if ($data['action'] !== 'delete') {
+            $status = $data['action'] === 'activate' ? EmployeeStatus::Active : EmployeeStatus::Inactive;
+            Employee::whereKey($employees->modelKeys())->update(['status' => $status]);
+
+            return back()->with('status', trans_choice(':count employee is now :status.|:count employees are now :status.', $employees->count(), ['status' => strtolower($status->label())]));
+        }
+
+        // Reporting officers of employees who stay are kept.
+        $blocked = Employee::whereIn('reporting_officer_id', $employees->modelKeys())->whereNotIn('id', $employees->modelKeys())->pluck('reporting_officer_id')->unique();
+        $deleting = $employees->reject(fn (Employee $e) => $blocked->contains($e->id));
+        DB::transaction(fn () => $deleting->each->delete());
+
+        $message = trans_choice(':count employee deleted.|:count employees deleted.', $deleting->count())
+            .($blocked->isNotEmpty() ? ' '.trans_choice(':count kept: reporting officer of other employees.|:count kept: reporting officers of other employees.', $blocked->count()) : '');
+
+        return $deleting->isEmpty()
+            ? back()->with('error', $message)
+            : back()->with('status', $message)->with('undo', route('recently-deleted.restore-many', ['employee', 'ids' => $deleting->modelKeys()]));
+    }
+
     public function toggleStatus(Employee $employee): RedirectResponse
     {
         $employee->update(['status' => $employee->status === EmployeeStatus::Active ? EmployeeStatus::Inactive : EmployeeStatus::Active]);
@@ -142,7 +176,11 @@ class EmployeeController extends Controller
 
     public function export(Request $request, string $format): StreamedResponse
     {
-        $employees = $this->filtered($request, Employee::current())->get();
+        // Selected rows (bulk export), or everything the filters show.
+        $ids = array_filter((array) $request->query('ids'), 'is_string');
+        $employees = $ids
+            ? Employee::whereIn('uuid', $ids)->with(['company', 'department', 'subDepartment'])->orderBy('employee_code')->get()
+            : $this->filtered($request, Employee::current())->get();
 
         return TableExport::download($format, 'employees',
             ['Sl', 'Company name', 'Employee id', 'Name of employee', 'Mobile no', 'Department', 'Status'],

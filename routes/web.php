@@ -81,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('create', 'create')->name('employees.create');
             Route::post('/', 'store')->name('employees.store');
             Route::get('export/{format}', 'export')->name('employees.export');
+            Route::post('bulk', 'bulk')->name('employees.bulk');
             Route::post('columns', 'toggleColumn')->name('employees.columns');
         });
 
@@ -273,6 +274,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ComplianceTaskController::class)->prefix('compliance/to-do')->group(function () {
         Route::get('/', 'index')->name('compliance.to-do');
         Route::post('/', 'store')->name('compliance.tasks.store');
+        Route::post('bulk', 'bulk')->name('compliance.tasks.bulk');
         Route::patch('{task}', 'update')->name('compliance.tasks.update');
         Route::post('{task}/complete', 'complete')->name('compliance.tasks.complete');
         Route::post('{task}/reopen', 'reopen')->name('compliance.tasks.reopen');
@@ -300,6 +302,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
     Route::controller(RecentlyDeletedController::class)->prefix('configs/recently-deleted')->group(function () {
         Route::get('/', 'index')->name('configs.recently-deleted');
+        Route::post('{type}/restore', 'restoreMany')->name('recently-deleted.restore-many');
         Route::post('{type}/{id}', 'restore')->whereNumber('id')->name('recently-deleted.restore');
         Route::delete('{type}/{id}', 'destroy')->whereNumber('id')->name('recently-deleted.destroy');
     });

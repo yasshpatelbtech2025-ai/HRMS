@@ -59,10 +59,13 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto" x-data="bulkSelect">
+            <x-bulk-bar :action="route('compliance.tasks.bulk')" noun="task|tasks"
+                        :actions="['complete' => [__('Complete'), 'default', null], 'reopen' => [__('Reopen'), 'default', null], 'delete' => [__('Delete'), 'danger', 'Delete :count selected task(s)? Deleted tasks are not created again.']]" />
             <table class="w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50 text-left text-gray-600">
                     <tr>
+                        <th class="w-10 px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all') }}"></th>
                         <th class="px-3 py-3">{{ __('ID') }}</th><th class="px-3 py-3">{{ __('Title') }}</th><th class="px-3 py-3">{{ __('Category') }} / {{ __('Department') }}</th>
                         <th class="px-3 py-3">{{ __('Company') }}</th><th class="px-3 py-3">{{ __('Due Date') }}</th>
                         <th class="px-3 py-3">{{ __('Priority') }}</th><th class="px-3 py-3">{{ __('Status') }}</th><th class="px-3 py-3">{{ __('Assigned To') }}</th>
@@ -77,6 +80,7 @@
                                 $worst = collect(['overdue', 'week', 'upcoming', 'completed'])->first(fn ($s) => isset($counts[$s]));
                             @endphp
                             <tr class="cursor-pointer bg-gray-50/60 hover:bg-gray-100" x-on:click="open = ! open">
+                                <td class="px-3 py-3" x-on:click.stop>@php $groupIds = $group->pluck('uuid')->values(); @endphp<input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="groupState(@js($groupIds)) === 'all'" :indeterminate="groupState(@js($groupIds)) === 'some'" x-on:change="toggleIds(@js($groupIds), $event.target.checked)" aria-label="{{ __('Select the whole group') }}"></td>
                                 <td class="px-3 py-3 font-semibold text-gray-900">{{ $number }}</td>
                                 <td class="px-3 py-3 font-semibold text-gray-900" colspan="3">
                                     <span x-text="open ? '▾' : '▸'" class="me-1 text-gray-500">▸</span>{{ config('compliance.tasks.'.$first->type.'.title', $first->title) }}
@@ -93,7 +97,8 @@
                         @endif
                         @foreach ($group as $task)
                             @php $status = $task->status(); $link = ComplianceTasks::link($task); @endphp
-                            <tr x-show="open" @if ($grouped && $group->count() > 1) style="display: none;" @endif class="align-top">
+                            <tr x-show="open" @if ($grouped && $group->count() > 1) style="display: none;" @endif class="align-top" :class="selected.includes(@js($task->uuid)) && 'bg-brand-50/60'">
+                                <td class="px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="{{ $task->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :title', ['title' => $task->title]) }}"></td>
                                 <td class="px-3 py-3 text-gray-500">{{ $grouped && $group->count() > 1 ? $loop->iteration : $number }}</td>
                                 <td class="min-w-[15rem] px-3 py-3">
                                     <p class="font-semibold text-gray-900">{{ $task->title }}</p>
@@ -142,7 +147,7 @@
                         @endforeach
                     </tbody>
                 @empty
-                    <tbody><x-empty-state colspan="8" icon="search">{{ ($status !== 'all' || request()->hasAny(['department', 'type'])) ? __('No tasks match these filters.') : __('Nothing is due. Tasks appear here as employees join and months close.') }}</x-empty-state></tbody>
+                    <tbody><x-empty-state colspan="9" icon="search">{{ ($status !== 'all' || request()->hasAny(['department', 'type'])) ? __('No tasks match these filters.') : __('Nothing is due. Tasks appear here as employees join and months close.') }}</x-empty-state></tbody>
                 @endforelse
             </table>
         </div>

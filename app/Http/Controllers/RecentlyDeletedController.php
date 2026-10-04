@@ -42,6 +42,27 @@ class RecentlyDeletedController extends Controller
         return back()->with('status', __('Restored: :name.', ['name' => $name]));
     }
 
+    /**
+     * Undo of a bulk delete: restore the given records of a type.
+     */
+    public function restoreMany(Request $request, string $type): RedirectResponse
+    {
+        $class = RecentlyDeleted::TYPES[$type][0] ?? abort(404);
+        $ids = array_filter((array) $request->input('ids'), 'is_numeric');
+        $restored = 0;
+
+        foreach ($class::onlyTrashed()->whereKey($ids)->get() as $model) {
+            try {
+                $model->restore();
+                $restored++;
+            } catch (UniqueConstraintViolationException) {
+                // a live record took its name; it stays in Recently deleted
+            }
+        }
+
+        return back()->with('status', trans_choice('Restored :count record.|Restored :count records.', $restored));
+    }
+
     public function destroy(string $type, int $id): RedirectResponse
     {
         abort_unless(RecentlyDeleted::expires($type), 403, 'Employees and companies can only be restored.');

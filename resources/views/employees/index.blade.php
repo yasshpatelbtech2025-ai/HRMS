@@ -135,10 +135,14 @@
             __('Excel') => route('employees.export', ['format' => 'xlsx'] + $exportQuery),
         ]" />
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto" x-data="bulkSelect">
+            <x-bulk-bar :action="route('employees.bulk')" noun="employee|employees"
+                        :exports="[__('Export CSV') => route('employees.export', 'csv'), __('Export Excel') => route('employees.export', 'xlsx')]"
+                        :actions="['activate' => [__('Mark active'), 'default', null], 'deactivate' => [__('Mark inactive'), 'default', null], 'delete' => [__('Delete'), 'danger', 'Delete :count selected employee(s)? They can be restored from Configs › Recently deleted.']]" />
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
+                        <th class="w-10 px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all on this page') }}"></th>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="company" default class="px-4 py-3">{{ __('Company name') }}</x-sort-header>
                         <x-sort-header column="employee_code" class="px-4 py-3">{{ __('Employee id') }}</x-sort-header>
@@ -159,7 +163,8 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($employees as $employee)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50" :class="selected.includes(@js($employee->uuid)) && 'bg-brand-50/60'">
+                            <td class="px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="{{ $employee->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :name', ['name' => $employee->full_name]) }}"></td>
                             <td class="px-4 py-3 text-gray-500">{{ $employees->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-3">{{ $employee->company?->establishment_name }}</td>
                             <td class="px-4 py-3 font-mono">{{ $employee->employee_code }}</td>
@@ -222,9 +227,9 @@
                         </tr>
                     @empty
                         @if ($filtering || request('search'))
-                            <x-empty-state colspan="16" icon="search" :title="__('No employees match these filters.')">{{ __('Try a different search or clear the filters.') }}</x-empty-state>
+                            <x-empty-state colspan="17" icon="search" :title="__('No employees match these filters.')">{{ __('Try a different search or clear the filters.') }}</x-empty-state>
                         @else
-                            <x-empty-state colspan="16" icon="users" :title="__('No employees yet')">
+                            <x-empty-state colspan="17" icon="users" :title="__('No employees yet')">
                                 {{ __('Add your first employee to start tracking attendance, payroll and compliance.') }}
                                 <x-slot name="action"><a href="{{ route('employees.create') }}" class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">+ {{ __('Add employee') }}</a></x-slot>
                             </x-empty-state>

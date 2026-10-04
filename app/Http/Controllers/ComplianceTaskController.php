@@ -98,6 +98,38 @@ class ComplianceTaskController extends Controller
         return back()->with('status', __('Reopened: :title', ['title' => $task->title]));
     }
 
+    /**
+     * Bulk actions on the selected tasks: complete, reopen or delete.
+     */
+    public function bulk(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:1000'],
+            'ids.*' => ['uuid'],
+            'action' => ['required', Rule::in(['complete', 'reopen', 'delete'])],
+        ], ['ids.required' => __('Select at least one task.')]);
+
+        $ids = ComplianceTask::whereIn('uuid', $data['ids'])->pluck('id')->all();
+        $tasks = fn () => ComplianceTask::whereKey($ids);
+
+        if ($data['action'] === 'delete') {
+            $tasks()->delete();
+
+            return back()->with('status', trans_choice(':count task deleted.|:count tasks deleted.', count($ids)))
+                ->with('undo', route('recently-deleted.restore-many', ['compliance-task', 'ids' => $ids]));
+        }
+
+        if ($data['action'] === 'complete') {
+            $tasks()->whereNull('completed_at')->update(['completed_at' => now(), 'completed_by' => $request->user()->id]);
+
+            return back()->with('status', trans_choice(':count task marked complete.|:count tasks marked complete.', count($ids)));
+        }
+
+        $tasks()->update(['completed_at' => null, 'completed_by' => null]);
+
+        return back()->with('status', trans_choice(':count task reopened.|:count tasks reopened.', count($ids)));
+    }
+
     public function destroy(ComplianceTask $task): RedirectResponse
     {
         $task->delete();
