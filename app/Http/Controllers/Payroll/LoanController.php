@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payroll;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
@@ -104,8 +105,8 @@ class LoanController extends Controller
         $employee = Employee::where('uuid', $request->input('employee'))->first();
 
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
-            'permitted_by' => ['required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $employee?->company_id)->whereNull('deleted_at')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
+            'permitted_by' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->where('company_id', $employee?->company_id)->whereNull('deleted_at')],
             'details' => ['nullable', 'string', 'max:2000'],
             'amount' => ['required', 'numeric', 'min:1', 'max:9999999999'],
             'approved_date' => ['required', 'date'],

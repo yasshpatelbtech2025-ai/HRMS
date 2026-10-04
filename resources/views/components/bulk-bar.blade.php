@@ -7,6 +7,8 @@
 
 @php
     [$one, $many] = explode('|', $noun);
+    // Only admins delete.
+    $actions = Gate::allows('delete-records') ? $actions : array_diff_key($actions, ['delete' => true]);
     $styles = [
         'default' => 'border border-white/20 bg-white/10 text-white hover:bg-white/20',
         'danger' => 'bg-red-600 text-white hover:bg-red-500',

@@ -49,11 +49,13 @@
             <td></td>
             @unless ($printing)
                 <td style="border: none;">
-                    <form method="POST" action="{{ route('compliance.entries.destroy', $entry) }}" data-confirm="{{ __('Delete this accident?') }}">
-                        @csrf
-                        @method('DELETE')
-                        <button class="text-xs font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
-                    </form>
+                    @can('delete-records')
+                        <form method="POST" action="{{ route('compliance.entries.destroy', $entry) }}" data-confirm="{{ __('Delete this accident?') }}">
+                            @csrf
+                            @method('DELETE')
+                            <button class="text-xs font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
+                        </form>
+                    @endcan
                 </td>
             @endunless
         </tr>

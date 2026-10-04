@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Employee;
@@ -83,7 +84,7 @@ class ShiftManagementController extends Controller
             'roster.*.parts.*' => [Rule::in(array_keys(self::PARTS))],
             'roster.*.iteration' => ['required', 'integer', Rule::in(self::ITERATIONS)],
             'roster.*.entries' => ['array'],
-            'roster.*.entries.*.uuid' => ['required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
+            'roster.*.entries.*.uuid' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
             'roster.*.entries.*.weeklyOff' => ['required', Rule::in(array_keys(config('employee.weekdays')))],
             'roster.*.entries.*.manual' => ['boolean'],
             'roster.*.entries.*.days' => ['array'],

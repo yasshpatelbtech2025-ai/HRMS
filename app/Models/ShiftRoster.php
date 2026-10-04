@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['company_id', 'sub_department_id', 'month', 'parts', 'iteration'])]
 class ShiftRoster extends Model
 {
+    use BelongsToCompany;
+
     protected function casts(): array
     {
         return ['month' => 'date', 'parts' => 'array', 'iteration' => 'integer'];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\CompOffUse;
@@ -64,7 +65,7 @@ class MonthlyAttendanceController extends Controller
     public function setTime(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
             'date' => ['required', 'date', 'before_or_equal:today'],
             'in_time' => ['required', 'date', 'before_or_equal:now'],
             'out_time' => ['required', 'date', 'after:in_time', 'before_or_equal:now'],
@@ -115,7 +116,7 @@ class MonthlyAttendanceController extends Controller
     public function useCompOff(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
             'date' => ['required', 'date', 'before_or_equal:today'],
         ]);
 
@@ -140,7 +141,7 @@ class MonthlyAttendanceController extends Controller
     public function reset(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')],
             'date' => ['required', 'date'],
         ]);
 

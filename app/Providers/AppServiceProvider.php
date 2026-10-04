@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Firm;
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->useFirmMailAccount();
+
+        // Roles (config/access.php): admins manage users and companies and can delete; users cannot.
+        Gate::define('admin', fn (User $user) => $user->isAdmin());
+        Gate::define('delete-records', fn (User $user) => $user->isAdmin());
     }
 
     /**

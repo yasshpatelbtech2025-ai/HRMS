@@ -16,7 +16,9 @@
                         @endforeach
                     </select>
                 </form>
-                <x-add-button modal="create-holiday">{{ __('Add holiday') }}</x-add-button>
+                @can('admin')
+                    <x-add-button modal="create-holiday">{{ __('Add holiday') }}</x-add-button>
+                @endcan
             </div>
         </div>
 
@@ -46,11 +48,13 @@
                             <td class="px-5 py-3">{{ $holiday->total_days }}</td>
                             <td class="px-5 py-3">{{ $holiday->companies_count }}</td>
                             <td class="px-5 py-3">
-                                <x-row-actions :edit-modal="$modal" :delete-url="route('attendance.leave.holiday-list.destroy', $holiday)"
+                                <x-row-actions :editable="Gate::allows('admin')" :edit-modal="$modal" :delete-url="route('attendance.leave.holiday-list.destroy', $holiday)"
                                                :delete-confirm="__('Delete holiday :name?', ['name' => $holiday->name])" />
-                                <x-modal :name="$modal" :show="old('_modal') === $modal" max-width="lg">
-                                    @include('attendance.leave._holiday-form')
-                                </x-modal>
+                                @can('admin')
+                                    <x-modal :name="$modal" :show="old('_modal') === $modal" max-width="lg">
+                                        @include('attendance.leave._holiday-form')
+                                    </x-modal>
+                                @endcan
                             </td>
                         </tr>
                     @empty
@@ -63,7 +67,9 @@
         <x-list-footer :paginator="$holidays" />
     </div>
 
-    <x-modal name="create-holiday" :show="old('_modal') === 'create-holiday'" max-width="lg">
-        @include('attendance.leave._holiday-form', ['holiday' => new \App\Models\Holiday, 'modal' => 'create-holiday'])
-    </x-modal>
+    @can('admin')
+        <x-modal name="create-holiday" :show="old('_modal') === 'create-holiday'" max-width="lg">
+            @include('attendance.leave._holiday-form', ['holiday' => new \App\Models\Holiday, 'modal' => 'create-holiday'])
+        </x-modal>
+    @endcan
 </x-app-layout>

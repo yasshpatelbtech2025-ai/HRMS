@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\AccessibleEmployee;
 use App\Models\Company;
 use App\Models\ComplianceFormValue;
 use App\Models\ComplianceRegisterEntry;
@@ -76,7 +77,7 @@ class ComplianceController extends Controller
         $data = $request->validate([
             'month' => ['required', 'date_format:Y-m'],
             'rows' => ['required', 'array', 'min:1'],
-            'rows.*.employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
+            'rows.*.employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
             'rows.*.type' => [$form === 'form-c' ? 'required' : 'nullable', Rule::in(config('compliance.recovery_types'))],
             'rows.*.particular' => ['nullable', 'string', 'max:255'],
             'rows.*.date' => ['nullable', 'date'],
@@ -167,7 +168,7 @@ class ComplianceController extends Controller
         $text = ['nullable', 'string', 'max:255'];
         $data = $request->validate([
             'rows' => ['required', 'array', 'min:1'],
-            'rows.*.employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
+            'rows.*.employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
             'rows.*.notice_at' => ['nullable', 'date'],
             'rows.*.esic' => ['nullable', 'string', 'max:30'],
             'rows.*.date' => ['required', 'date', 'before_or_equal:today'],
@@ -237,7 +238,7 @@ class ComplianceController extends Controller
             ->mapWithKeys(fn ($rules, $key) => ["details.{$key}" => $rules])->all();
 
         return $request->validate([
-            'employee' => [$examination ? 'nullable' : 'required', 'uuid', Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
+            'employee' => [$examination ? 'nullable' : 'required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->where('company_id', $company->id)],
             'examined_on' => ['required', 'date'],
             'result' => ['nullable', Rule::in(['fit', 'unfit'])],
             'certifying_surgeon' => ['nullable', 'string', 'max:255'],

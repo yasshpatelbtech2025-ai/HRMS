@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
@@ -47,7 +48,7 @@ class RawDataController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
             'time' => ['required', 'date', 'before_or_equal:now'],
             'type' => ['required', Rule::in([Attendance::IN, Attendance::OUT])],
         ]);
@@ -115,7 +116,7 @@ class RawDataController extends Controller
     public function correct(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')],
             'from_date' => ['required', 'date'],
             'to_date' => ['required', 'date', 'after_or_equal:from_date', function ($attribute, $value, $fail) use ($request) {
                 if (CarbonImmutable::parse($request->input('from_date'))->diffInDays($value) > 92) {

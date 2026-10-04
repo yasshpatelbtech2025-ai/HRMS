@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AccessibleCompany;
+use App\Rules\AccessibleEmployee;
 use App\Enums\EmploymentType;
 use App\Enums\Gender;
 use App\Models\PayrollSetting;
@@ -59,7 +61,7 @@ class EmployeeRequest extends FormRequest
             'country' => ['required', Rule::in(config('employee.countries'))],
 
             // Employee details
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'shift_id' => ['required', 'integer', Rule::exists('shifts', 'id')->where('company_id', $companyId)],
             'date_of_joining' => ['required', 'date'],
             'works_on_hazardous_process' => ['required', 'boolean'],
@@ -71,7 +73,7 @@ class EmployeeRequest extends FormRequest
             'employment_type' => ['required', Rule::enum(EmploymentType::class)],
             'reporting_officer_id' => [
                 'nullable', 'integer', Rule::notIn([$employee?->id]),
-                Rule::exists('employees', 'id')->where('company_id', $companyId)->whereNull('deleted_at'),
+                new AccessibleEmployee('id'), Rule::exists('employees', 'id')->where('company_id', $companyId)->whereNull('deleted_at'),
             ],
 
             // Addresses

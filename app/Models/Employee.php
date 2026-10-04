@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use App\Enums\EmployeeStatus;
 use App\Enums\EmploymentType;
 use App\Enums\Gender;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[UseFactory(EmployeeFactory::class)]
 class Employee extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use BelongsToCompany, HasFactory, HasUuids, SoftDeletes;
 
     /**
      * Only ever filled from validated form data; the id, uuid and per-company

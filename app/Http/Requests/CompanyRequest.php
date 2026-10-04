@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AccessibleCompany;
 use App\Models\Company;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,7 +18,7 @@ class CompanyRequest extends FormRequest
             'establishment_name' => ['required', 'string', 'max:255'],
             'parent_company_id' => [
                 'nullable', 'integer',
-                Rule::exists('companies', 'id')->whereNull('deleted_at'),
+                new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at'),
                 function (string $attribute, mixed $value, Closure $fail) use ($own) {
                     if ($own && Company::find($value)?->isWithin($own)) {
                         $fail(__('A company cannot be connected to itself or to one of its own connected companies.'));

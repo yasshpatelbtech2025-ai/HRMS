@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleCompany;
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Employee;
@@ -28,9 +30,9 @@ class SmartAttendanceController extends Controller
     public function store(Request $request, SmartAttendance $smart): RedirectResponse
     {
         $data = $request->validate([
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'employees' => ['required', 'array', 'min:1'],
-            'employees.*' => ['uuid', Rule::exists('employees', 'uuid')->where('company_id', $request->integer('company_id'))->whereNull('deleted_at')],
+            'employees.*' => ['uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->where('company_id', $request->integer('company_id'))->whereNull('deleted_at')],
             'year' => ['required', 'integer', 'between:2000,'.date('Y')],
             'month' => ['required', 'integer', 'between:1,12'],
         ], [], ['company_id' => 'company', 'employees' => 'employee']);

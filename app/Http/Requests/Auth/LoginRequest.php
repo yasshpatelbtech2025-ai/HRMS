@@ -42,15 +42,18 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // Only active accounts sign in.
+        if (! Auth::attempt($this->only('email', 'password') + ['is_active' => true], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
+            // Say the account is deactivated only once the password is right (no hint about which emails exist).
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => Auth::validate($this->only('email', 'password')) ? __('This account has been deactivated. Ask an admin.') : trans('auth.failed'),
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
+        Auth::user()->forceFill(['last_login_at' => now()])->saveQuietly();
     }
 
     /**

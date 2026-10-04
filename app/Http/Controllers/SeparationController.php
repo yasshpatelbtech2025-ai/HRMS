@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,7 +40,7 @@ class SeparationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')->whereNull('separation_date')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')->whereNull('separation_date')],
             'separation_date' => ['required', 'date'],
         ], ['employee.exists' => __('Choose an employee who is not already separated.')]);
 

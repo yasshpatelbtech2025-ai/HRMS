@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payroll;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
@@ -89,7 +90,7 @@ class SalaryAdvanceController extends Controller
     private function validated(Request $request, ?SalaryAdvance $advance = null): array
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
             'amount' => ['required', 'numeric', 'min:1', 'max:9999999999'],
             'salary_month' => ['required', 'date_format:Y-m'],
             'advance_date' => ['required', 'date'],

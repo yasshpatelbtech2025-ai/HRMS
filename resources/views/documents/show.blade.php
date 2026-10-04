@@ -40,11 +40,13 @@
                             <td class="px-5 py-3">{{ $file->created_at->format('d M Y H:i') }}</td>
                             <td class="px-5 py-3">{{ $file->uploader?->name ?? '—' }}</td>
                             <td class="px-5 py-3">
-                                <form method="POST" action="{{ route('documents.destroy', $file) }}" data-confirm="{{ __('Delete :name?', ['name' => $file->original_name]) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="text-sm font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
-                                </form>
+                                @can('delete-records')
+                                    <form method="POST" action="{{ route('documents.destroy', $file) }}" data-confirm="{{ __('Delete :name?', ['name' => $file->original_name]) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="text-sm font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                    </form>
+                                @endcan
                             </td>
                         </tr>
                     @empty

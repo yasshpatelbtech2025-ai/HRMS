@@ -6,7 +6,9 @@
 
 @php
     $tabs = collect($nested ? config('subnavigation')[$section] ?? [] : config("navigation.{$section}", []))
-        ->mapWithKeys(fn ($label, $key) => [($key === '' ? ($nested ? $section : "{$section}.index") : "{$section}.{$key}") => $label]);
+        ->mapWithKeys(fn ($label, $key) => [($key === '' ? ($nested ? $section : "{$section}.index") : "{$section}.{$key}") => $label])
+        // Admin-only tabs are not shown to users (config/access.php).
+        ->filter(fn ($label, $name) => \App\Support\CompanyAccess::canOpen($name));
 
     // A tab is active on its own route and the routes beneath it (e.g.
     // employees.departments.*); anything else in the section belongs to the

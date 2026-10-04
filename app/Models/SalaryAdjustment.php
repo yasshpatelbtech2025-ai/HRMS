@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'employee_id', 'title', 'amount', 'salary_month', 'type'])]
 class SalaryAdjustment extends Model
 {
-    use HasUuids, Trashable;
+    use BelongsToCompany, HasUuids, Trashable;
 
     public const TYPES = ['deduction' => 'Deduction', 'earning' => 'Earning'];
 

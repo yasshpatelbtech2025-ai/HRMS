@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Models\Employee;
 use App\Models\Firm;
@@ -54,7 +55,7 @@ class IdCardController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')->whereNull('id_card_assigned_on')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')->whereNull('id_card_assigned_on')],
             'assigned_on' => ['required', 'date', 'before_or_equal:today'],
         ], ['employee.exists' => __('Choose an employee who does not have an id card yet.')]);
 

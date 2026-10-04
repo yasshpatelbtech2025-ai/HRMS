@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payroll;
 
+use App\Rules\AccessibleCompany;
 use App\Http\Controllers\Controller;
 use App\Models\BonusSheet;
 use App\Models\Company;
@@ -43,7 +44,7 @@ class BonusController extends Controller
 
     public function generate(Request $request): RedirectResponse
     {
-        $data = $request->validate(['company' => ['required', 'uuid', 'exists:companies,uuid'], 'fy' => ['required', 'integer', 'between:2000,2100']]);
+        $data = $request->validate(['company' => ['required', 'uuid', new AccessibleCompany('uuid'), 'exists:companies,uuid'], 'fy' => ['required', 'integer', 'between:2000,2100']]);
         $company = Company::where('uuid', $data['company'])->firstOrFail();
         $sheet = $this->bonus->generate($company, (int) $data['fy'], $request->user());
         $count = $sheet->entries()->count();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\Employee;
+use App\Support\CompanyAccess;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class SearchController extends Controller
         foreach (config('navigation') as $section => $tabs) {
             foreach ($tabs as $key => $label) {
                 $name = $section.'.'.($key === '' ? 'index' : $key);
-                if (! Route::has($name)) {
+                if (! Route::has($name) || ! CompanyAccess::canOpen($name)) {
                     continue;
                 }
                 $haystack = mb_strtolower($label.' '.$sections[$section]);

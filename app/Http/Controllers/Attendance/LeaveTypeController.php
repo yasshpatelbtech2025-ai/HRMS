@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleCompany;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
@@ -61,7 +62,7 @@ class LeaveTypeController extends Controller
         $request->merge(['code' => strtoupper(trim((string) $request->input('code')))]);
 
         $data = $request->validate([
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:20', Rule::unique('leave_types')->where('company_id', $request->integer('company_id'))->whereNull('deleted_at')->ignore($leaveType)],
             'days' => ['required', 'numeric', 'min:0', 'max:366'],

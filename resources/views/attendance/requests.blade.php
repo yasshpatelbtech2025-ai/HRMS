@@ -89,11 +89,13 @@
                                             <button class="rounded-md bg-amber-500 px-2 py-1 text-xs font-semibold text-white hover:bg-amber-600">{{ __('Reject') }}</button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="{{ route('attendance.requests.destroy', $item) }}" data-confirm="{{ __('Delete this request?') }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                                    </form>
+                                    @can('delete-records')
+                                        <form method="POST" action="{{ route('attendance.requests.destroy', $item) }}" data-confirm="{{ __('Delete this request?') }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                        </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

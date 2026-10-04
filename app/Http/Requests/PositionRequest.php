@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AccessibleCompany;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +15,7 @@ class PositionRequest extends FormRequest
         $companyId = $position?->company_id ?? $this->integer('company_id');
 
         return [
-            'company_id' => $position ? ['prohibited'] : ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => $position ? ['prohibited'] : ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:255', Rule::unique('positions')->where('company_id', $companyId)->whereNull('deleted_at')->ignore($position)],
             'details' => ['required', 'string', 'max:255'],
             'is_active' => ['required', 'boolean'],

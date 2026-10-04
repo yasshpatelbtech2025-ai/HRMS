@@ -46,12 +46,14 @@
                                         <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-brand-700 hover:bg-brand-50">{{ __('Restore') }}</button>
                                     </form>
                                     @if ($row['expires'])
-                                        <form method="POST" action="{{ route('recently-deleted.destroy', [$row['type'], $row['model']->getKey()]) }}"
-                                              data-confirm="{{ __('Delete :name for good? This cannot be undone.', ['name' => $row['title']]) }}" data-confirm-button="{{ __('Delete for good') }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-red-50">{{ __('Delete for good') }}</button>
-                                        </form>
+                                        @can('delete-records')
+                                            <form method="POST" action="{{ route('recently-deleted.destroy', [$row['type'], $row['model']->getKey()]) }}"
+                                                  data-confirm="{{ __('Delete :name for good? This cannot be undone.', ['name' => $row['title']]) }}" data-confirm-button="{{ __('Delete for good') }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-red-50">{{ __('Delete for good') }}</button>
+                                            </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </td>

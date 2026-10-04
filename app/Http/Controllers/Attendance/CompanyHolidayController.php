@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleCompany;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Holiday;
@@ -37,7 +38,7 @@ class CompanyHolidayController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'holidays' => ['required', 'array', 'min:1'],
             'holidays.*' => ['uuid', Rule::exists('holidays', 'uuid')],
         ], [], ['company_id' => 'company', 'holidays' => 'holiday']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
@@ -62,7 +63,7 @@ class AttendanceRequestController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'employee' => ['required', 'uuid', Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
+            'employee' => ['required', 'uuid', new AccessibleEmployee('uuid'), Rule::exists('employees', 'uuid')->whereNull('deleted_at')],
             'date' => ['required', 'date', 'before_or_equal:today'],
             'requested_in' => ['required', 'date'],
             'requested_out' => ['required', 'date', 'after:requested_in'],

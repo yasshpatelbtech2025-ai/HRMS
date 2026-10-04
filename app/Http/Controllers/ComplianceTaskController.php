@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\AccessibleCompany;
 use App\Models\Company;
 use App\Models\ComplianceTask;
 use App\Models\User;
@@ -55,7 +56,7 @@ class ComplianceTaskController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'company' => ['required', 'uuid', Rule::exists('companies', 'uuid')],
+            'company' => ['required', 'uuid', new AccessibleCompany('uuid'), Rule::exists('companies', 'uuid')],
             'title' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::in(config('compliance.task_categories'))],
             'department' => ['required', Rule::in(config('compliance.task_departments'))],

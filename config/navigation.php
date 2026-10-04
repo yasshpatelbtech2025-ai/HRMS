@@ -19,6 +19,7 @@ return [
         'devices' => 'Devices',
         'firm' => 'Firm',
         'id-card-formats' => 'ID Card Formats',
+        'user-access' => 'User access',
     ],
 
     'attendance' => [

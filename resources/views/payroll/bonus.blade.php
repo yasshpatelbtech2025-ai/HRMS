@@ -71,11 +71,13 @@
                                 <input type="hidden" name="fy" value="{{ $fy }}">
                                 <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Work out again') }}</button>
                             </form>
-                            <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" data-confirm="{{ __('Delete this bonus sheet?') }}">
-                                @csrf
-                                @method('DELETE')
-                                <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                            </form>
+                            @can('delete-records')
+                                <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" data-confirm="{{ __('Delete this bonus sheet?') }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                </form>
+                            @endcan
                             <form method="POST" action="{{ route('payroll.bonus.approve', $sheet) }}" class="flex items-center gap-2">
                                 @csrf
                                 <input type="date" name="paid_on" value="{{ today()->toDateString() }}" class="{{ $select }}" aria-label="{{ __('Date paid') }}">

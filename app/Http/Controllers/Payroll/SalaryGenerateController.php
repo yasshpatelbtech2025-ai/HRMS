@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Payroll;
 
+use App\Rules\AccessibleCompany;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Payslip;
@@ -50,7 +51,7 @@ class SalaryGenerateController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'salary_month' => ['required', 'date_format:Y-m', 'before_or_equal:'.now()->format('Y-m')],
         ], ['salary_month.before_or_equal' => __('Salary can only be generated for this month or earlier.')], ['company_id' => 'company', 'salary_month' => 'salary month']);
 

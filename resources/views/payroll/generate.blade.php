@@ -68,11 +68,13 @@
                                     @endif
                                     <a href="{{ route('payroll.chart', $sheet) }}" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">{{ __('Employee Salary Chart') }}</a>
                                     @unless ($sheet->isApproved())
-                                        <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                                        </form>
+                                        @can('delete-records')
+                                            <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                            </form>
+                                        @endcan
                                     @endunless
                                 </div>
                                 @if ($sheet->isApproved())

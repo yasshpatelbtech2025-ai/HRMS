@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AccessibleCompany;
 use App\Models\Department;
 use App\Models\SubDepartment;
 use Illuminate\Foundation\Http\FormRequest;
@@ -14,7 +15,7 @@ class SubDepartmentRequest extends FormRequest
     {
         return [
             'department' => ['required', 'string', 'max:255'],
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:255'],
             'is_active' => ['required', 'boolean'],
         ];

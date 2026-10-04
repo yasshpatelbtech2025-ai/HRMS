@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
+use App\Models\Scopes\CompanyAccessScope;
 use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -17,7 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[UseFactory(CompanyFactory::class)]
 class Company extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use BelongsToCompany, HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
         'establishment_name',
@@ -42,7 +44,8 @@ class Company extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Company::class, 'parent_company_id');
+        // The contractor's name shows on its companies' forms even to users not assigned to it.
+        return $this->belongsTo(Company::class, 'parent_company_id')->withoutGlobalScope(CompanyAccessScope::class);
     }
 
     public function children(): HasMany

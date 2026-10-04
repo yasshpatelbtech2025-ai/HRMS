@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['company_id', 'form', 'period', 'data', 'signed_copy_path', 'signed_copy_name'])]
 class ComplianceFormValue extends Model
 {
+    use BelongsToCompany;
+
     protected function casts(): array
     {
         return ['data' => 'array'];

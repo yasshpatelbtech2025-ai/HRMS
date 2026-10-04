@@ -17,6 +17,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FirmController;
 use App\Http\Controllers\RecentlyDeletedController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\UserAccessController;
 use App\Http\Controllers\IdCardFormatController;
 use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\ComplianceTaskController;
@@ -58,6 +59,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     Route::get('company/id-card-formats', [IdCardFormatController::class, 'index'])->name('company.id-card-formats');
     Route::post('company/id-card-formats', [IdCardFormatController::class, 'select'])->name('company.id-card-formats.select');
+    Route::controller(UserAccessController::class)->prefix('company/user-access')->group(function () {
+        Route::get('/', 'index')->name('company.user-access');
+        Route::post('/', 'store')->name('company.user-access.store');
+        Route::put('{user}', 'update')->name('company.user-access.update');
+    });
     Route::resource('company', CompanyController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::controller(SubDepartmentController::class)->prefix('employees/departments')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\AccessibleCompany;
 use App\Models\Company;
 use App\Models\PayrollRule;
 use App\Models\PayrollSetting;
@@ -76,7 +77,7 @@ class PayrollSettingController extends Controller
     private function validatedRule(Request $request): array
     {
         $data = $request->validate([
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'type' => ['required', Rule::in(array_keys(PayrollRule::TYPES))],
             'name' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0', $request->boolean('is_percent') ? 'max:100' : 'max:9999999999'],

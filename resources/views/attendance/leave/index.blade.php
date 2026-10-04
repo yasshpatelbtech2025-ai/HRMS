@@ -83,11 +83,13 @@
                                             <button class="rounded-md bg-amber-500 px-2 py-1 text-xs font-semibold text-white hover:bg-amber-600">{{ __('Reject') }}</button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="{{ route('attendance.leave.destroy', $leave) }}" data-confirm="{{ __('Delete this leave application?') }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                                    </form>
+                                    @can('delete-records')
+                                        <form method="POST" action="{{ route('attendance.leave.destroy', $leave) }}" data-confirm="{{ __('Delete this leave application?') }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                        </form>
+                                    @endcan
                                 </div>
 
                                 @unless ($approved)

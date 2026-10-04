@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'employee_id', 'work_date', 'requested_in', 'requested_out', 'reason', 'status', 'decided_by', 'decided_at'])]
 class AttendanceRequest extends Model
 {
-    use HasUuids, Trashable;
+    use BelongsToCompany, HasUuids, Trashable;
 
     protected function casts(): array
     {

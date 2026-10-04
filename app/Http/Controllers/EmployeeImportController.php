@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\AccessibleCompany;
 use App\Actions\SaveEmployee;
 use App\Http\Requests\EmployeeRequest;
 use App\Models\Company;
@@ -29,7 +30,7 @@ class EmployeeImportController extends Controller
     public function store(Request $request, SaveEmployee $save): RedirectResponse
     {
         $request->validate([
-            'company_id' => ['required', 'integer', Rule::exists('companies', 'id')->whereNull('deleted_at')],
+            'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'file' => ['required', 'file', 'mimes:xlsx,csv,txt', 'max:10240'],
         ], ['file.mimes' => __('The file must be an .xlsx or .csv file. Save .xls files as .xlsx first.')]);
 

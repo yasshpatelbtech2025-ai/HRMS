@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'employee_id', 'amount', 'released_amount', 'salary_month', 'advance_date', 'attachment_path', 'is_active'])]
 class SalaryAdvance extends Model
 {
-    use HasUuids, Trashable;
+    use BelongsToCompany, HasUuids, Trashable;
 
     protected function casts(): array
     {

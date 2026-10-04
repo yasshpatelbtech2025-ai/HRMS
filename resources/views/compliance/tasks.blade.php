@@ -112,11 +112,13 @@
                                             @csrf
                                             <button class="rounded-md px-2 py-1 text-xs font-semibold {{ $task->completed_at ? 'text-gray-600 hover:bg-gray-100' : 'text-green-700 hover:bg-green-50' }}">{{ $task->completed_at ? __('Reopen') : __('Complete') }}</button>
                                         </form>
-                                        <form method="POST" action="{{ route('compliance.tasks.destroy', $task) }}" data-confirm="{{ __('Delete this task? It will not come back.') }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                                        </form>
+                                        @can('delete-records')
+                                            <form method="POST" action="{{ route('compliance.tasks.destroy', $task) }}" data-confirm="{{ __('Delete this task? It will not come back.') }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                                 <td class="px-3 py-3"><p class="text-gray-900">{{ $task->category }}</p><p class="text-xs text-gray-500">{{ $task->department }}</p></td>

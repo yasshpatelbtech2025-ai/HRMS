@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['company_id', 'fy', 'status', 'generated_by', 'approved_by', 'approved_at', 'paid_on'])]
 class BonusSheet extends Model
 {
-    use HasUuids;
+    use BelongsToCompany, HasUuids;
 
     protected function casts(): array
     {

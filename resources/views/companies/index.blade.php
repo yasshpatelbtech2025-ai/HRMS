@@ -6,7 +6,9 @@
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Company List') }}</h2>
-            <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
+            @can('admin')
+                <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
+            @endcan
         </div>
 
         <x-list-toolbar :action="route('company.index')" :per-page="$perPage" print
@@ -31,7 +33,7 @@
                             <td class="px-5 py-3">{{ $company->employees_count }}</td>
                             <td class="px-5 py-3">{{ $company->parent?->establishment_name ?? '-' }}</td>
                             <td class="px-5 py-3 print:hidden">
-                                <x-row-actions :edit-modal="'edit-company-'.$company->uuid" :delete-url="route('company.destroy', $company)"
+                                <x-row-actions :editable="Gate::allows('admin')" :edit-modal="'edit-company-'.$company->uuid" :delete-url="route('company.destroy', $company)"
                                                :delete-confirm="__('Delete :name? This cannot be undone from here.', ['name' => $company->establishment_name])">
                                     <a href="{{ route('compliance.index', ['company' => $company->uuid]) }}" title="{{ __('Compliance') }}"
                                        class="rounded-md p-2 text-gray-600 hover:bg-gray-100">
@@ -40,9 +42,11 @@
                                     </a>
                                 </x-row-actions>
 
-                                <x-modal name="edit-company-{{ $company->uuid }}" :show="old('_modal') === 'edit-company-'.$company->uuid" max-width="2xl">
-                                    @include('companies._form', ['modal' => 'edit-company-'.$company->uuid])
-                                </x-modal>
+                                @can('admin')
+                                    <x-modal name="edit-company-{{ $company->uuid }}" :show="old('_modal') === 'edit-company-'.$company->uuid" max-width="2xl">
+                                        @include('companies._form', ['modal' => 'edit-company-'.$company->uuid])
+                                    </x-modal>
+                                @endcan
                             </td>
                         </tr>
                     @empty
@@ -51,7 +55,9 @@
                         @else
                             <x-empty-state colspan="5" icon="building" :title="__('No companies yet')">
                                 {{ __('Add the companies you manage; employees, attendance and payroll are kept per company.') }}
-                                <x-slot name="action"><x-add-button modal="create-company">{{ __('Add company') }}</x-add-button></x-slot>
+                                <x-slot name="action">
+                                    @can('admin')<x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>@endcan
+                                </x-slot>
                             </x-empty-state>
                         @endif
                     @endforelse
@@ -62,9 +68,11 @@
         <x-list-footer :paginator="$companies" />
     </div>
 
-    <x-modal name="create-company" :show="old('_modal') === 'create-company'" max-width="2xl">
-        @include('companies._form', ['company' => new \App\Models\Company, 'modal' => 'create-company'])
-    </x-modal>
+    @can('admin')
+        <x-modal name="create-company" :show="old('_modal') === 'create-company'" max-width="2xl">
+            @include('companies._form', ['company' => new \App\Models\Company, 'modal' => 'create-company'])
+        </x-modal>
+    @endcan
 
     {{-- Shared suggestions for the State / District / Taluka fields; any new value can be typed. --}}
     <datalist id="company-states">@foreach ($states as $option)<option value="{{ $option }}"></option>@endforeach</datalist>

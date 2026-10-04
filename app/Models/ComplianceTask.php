@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable(['company_id', 'type', 'employee_id', 'period', 'title', 'category', 'department', 'due_on', 'priority', 'assigned_to', 'notes', 'completed_at', 'completed_by'])]
 class ComplianceTask extends Model
 {
-    use HasUuids, SoftDeletes;
+    use BelongsToCompany, HasUuids, SoftDeletes;
 
     public const PRIORITIES = ['high' => 'High', 'medium' => 'Medium', 'low' => 'Low'];
 
