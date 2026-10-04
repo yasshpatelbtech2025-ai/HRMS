@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use Illuminate\Support\Facades\DB;
 use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
@@ -54,7 +55,7 @@ class LeaveController extends Controller
             'reason' => ['nullable', 'string', 'max:1000'],
         ], [], ['leave_type_id' => 'leave type', 'start_date' => 'from date', 'end_date' => 'end date', 'days' => 'total days', 'hard_copy' => 'application hard copy']);
 
-        $leave = LeaveApplication::create([
+        $leave = DB::transaction(fn () => tap(LeaveApplication::create([
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'leave_type_id' => $data['leave_type_id'],
@@ -63,13 +64,13 @@ class LeaveController extends Controller
             'days' => $data['days'] ?? $this->daysBetween($data['start_date'], $data['end_date']),
             'reason' => $data['reason'] ?? null,
             'status' => LeaveApplication::PENDING,
-        ]);
-
-        if ($request->hasFile('hard_copy')) {
-            $file = $request->file('hard_copy');
-            $leave->update(['hard_copy_path' => Storage::disk(config('filesystems.employee_files'))
-                ->putFileAs("leave-applications/{$leave->uuid}", $file, 'hard-copy-'.Str::random(8).'.'.$file->guessExtension())]);
-        }
+        ]), function (LeaveApplication $leave) use ($request) {
+            if ($request->hasFile('hard_copy')) {
+                $file = $request->file('hard_copy');
+                $leave->update(['hard_copy_path' => Storage::disk(config('filesystems.employee_files'))
+                    ->putFileAs("leave-applications/{$leave->uuid}", $file, 'hard-copy-'.Str::random(8).'.'.$file->guessExtension())]);
+            }
+        }));
 
         return back()->with('status', __('Leave application added for :name.', ['name' => $employee->full_name]));
     }
@@ -115,10 +116,7 @@ class LeaveController extends Controller
 
     public function destroy(LeaveApplication $leave): RedirectResponse
     {
-        if ($leave->hard_copy_path) {
-            Storage::disk(config('filesystems.employee_files'))->delete($leave->hard_copy_path);
-        }
-        $leave->delete();
+        $leave->delete(); // the hard copy stays until it is removed for good (LeaveApplication::pruning)
 
         return $this->deleted($leave, __('Leave application deleted.'));
     }

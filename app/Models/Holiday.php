@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Fillable(['name', 'start_date', 'end_date'])]
 class Holiday extends Model
 {
-    use HasFactory, HasUuids, Trashable;
+    use Auditable, HasFactory, HasUuids, Trashable;
 
     protected function casts(): array
     {

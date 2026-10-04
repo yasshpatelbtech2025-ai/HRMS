@@ -81,11 +81,11 @@ class EmployeeImport
             $writer->addRow(Row::fromValues(array_keys(self::COLUMNS)));
 
             $writer->addNewSheetAndMakeItCurrent()->setName('Lists');
-            $writer->addRow(Row::fromValues(array_keys($lists)));
+            $writer->addRow(TableExport::row(array_keys($lists)));
             $longest = max(array_map('count', $lists));
 
             for ($i = 0; $i < $longest; $i++) {
-                $writer->addRow(Row::fromValues(array_map(fn ($values) => $values[$i] ?? '', array_values($lists))));
+                $writer->addRow(TableExport::row(array_map(fn ($values) => $values[$i] ?? '', array_values($lists))));
             }
 
             $writer->close();

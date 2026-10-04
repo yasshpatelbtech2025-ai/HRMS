@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Activity;
 use App\Actions\SaveEmployee;
 use App\Enums\EmployeeStatus;
 use App\Http\Controllers\Concerns\ListsRecords;
@@ -119,6 +120,8 @@ class EmployeeController extends Controller
         if ($data['action'] !== 'delete') {
             $status = $data['action'] === 'activate' ? EmployeeStatus::Active : EmployeeStatus::Inactive;
             Employee::whereKey($employees->modelKeys())->update(['status' => $status]);
+            Activity::record('bulk', description: __('Marked :count employee(s) :status', ['count' => $employees->count(), 'status' => strtolower($status->label())]),
+                changes: ['employees' => $employees->map->full_name->all()]);
 
             return back()->with('status', trans_choice(':count employee is now :status.|:count employees are now :status.', $employees->count(), ['status' => strtolower($status->label())]));
         }

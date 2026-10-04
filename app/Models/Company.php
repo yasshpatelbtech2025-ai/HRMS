@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Scopes\CompanyAccessScope;
 use Database\Factories\CompanyFactory;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[UseFactory(CompanyFactory::class)]
 class Company extends Model
 {
-    use BelongsToCompany, HasFactory, HasUuids, SoftDeletes;
+    use Auditable, BelongsToCompany, HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
         'establishment_name',

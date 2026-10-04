@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Money paid to an employee ahead of salary, recovered from a month's salary.
@@ -15,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'employee_id', 'amount', 'released_amount', 'salary_month', 'advance_date', 'attachment_path', 'is_active'])]
 class SalaryAdvance extends Model
 {
-    use BelongsToCompany, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasUuids, Trashable;
 
     protected function casts(): array
     {
@@ -35,5 +37,13 @@ class SalaryAdvance extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class)->withTrashed();
+    }
+
+    /** When the record is finally removed (30 days after deletion), so is the attachment. */
+    public function pruning(): void
+    {
+        if ($this->attachment_path) {
+            Storage::disk(config('filesystems.employee_files'))->delete($this->attachment_path);
+        }
     }
 }

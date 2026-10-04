@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'department_id', 'name', 'is_active'])]
 class SubDepartment extends Model
 {
-    use BelongsToCompany, HasFactory, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasFactory, HasUuids, Trashable;
 
     protected function casts(): array
     {

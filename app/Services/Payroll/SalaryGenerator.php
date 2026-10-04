@@ -2,6 +2,7 @@
 
 namespace App\Services\Payroll;
 
+use App\Support\Activity;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Loan;
@@ -45,7 +46,7 @@ class SalaryGenerator
 
         $this->revisions->applyDue();
 
-        return DB::transaction(function () use ($company, $month, $user, $sheet) {
+        $result = Activity::quietly(fn () => DB::transaction(function () use ($company, $month, $user, $sheet) {
             $sheet ??= new SalarySheet(['company_id' => $company->id, 'month' => $month->toDateString()]);
             $sheet->fill(['generated_by' => $user->id, 'generated_at' => now(), 'status' => 'not_approved'])->save();
             $sheet->payslips()->delete();
@@ -65,7 +66,11 @@ class SalaryGenerator
             }
 
             return ['sheet' => $sheet, 'skipped' => $skipped];
-        });
+        }));
+
+        Activity::record('generated', $result['sheet'], __(':month salary · :count payslips', ['month' => $month->format('F Y'), 'count' => $result['sheet']->payslips()->count()]));
+
+        return $result;
     }
 
     /**
@@ -84,11 +89,14 @@ class SalaryGenerator
         $employee = $employees->firstOrFail();
         $grid = $this->attendance->forMonth($employees, $month);
 
-        return DB::transaction(function () use ($payslip, $sheet, $employee, $month, $grid, $setting, $size) {
+        $fresh = Activity::quietly(fn () => DB::transaction(function () use ($payslip, $sheet, $employee, $month, $grid, $setting, $size) {
             $payslip->delete();
 
             return $this->store($sheet, $employee, $month, $grid[$employee->id], $setting, $size);
-        });
+        }));
+        Activity::record('generated', $fresh, __('Payslip worked out again: :name, :month', ['name' => $employee->full_name, 'month' => $month->format('F Y')]));
+
+        return $fresh;
     }
 
     /**

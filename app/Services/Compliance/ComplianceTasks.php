@@ -2,6 +2,7 @@
 
 namespace App\Services\Compliance;
 
+use App\Support\Activity;
 use App\Models\Company;
 use App\Models\ComplianceFormValue;
 use App\Models\ComplianceTask;
@@ -37,10 +38,15 @@ class ComplianceTasks
         }
     }
 
+    /**
+     * Created and completed by the system, so not in the activity log.
+     */
     public function sync(Company $company): void
     {
-        $this->create($company);
-        $this->complete($company);
+        Activity::quietly(function () use ($company) {
+            $this->create($company);
+            $this->complete($company);
+        });
     }
 
     private function create(Company $company): void

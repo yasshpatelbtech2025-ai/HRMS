@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * A leave application. Once approved, the approved dates count as LEAVE on
@@ -21,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class LeaveApplication extends Model
 {
-    use BelongsToCompany, HasFactory, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasFactory, HasUuids, Trashable;
 
     public const PENDING = 'pending';
 
@@ -75,5 +77,13 @@ class LeaveApplication extends Model
         $query->where('status', self::APPROVED)
             ->whereDate('approved_start_date', '<=', $to)
             ->whereDate('approved_end_date', '>=', $from);
+    }
+
+    /** When the record is finally removed (30 days after deletion), so is the hard copy. */
+    public function pruning(): void
+    {
+        if ($this->hard_copy_path) {
+            Storage::disk(config('filesystems.employee_files'))->delete($this->hard_copy_path);
+        }
     }
 }

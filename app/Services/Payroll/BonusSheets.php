@@ -2,6 +2,7 @@
 
 namespace App\Services\Payroll;
 
+use App\Support\Activity;
 use App\Models\BonusEntry;
 use App\Models\BonusSheet;
 use App\Models\Company;
@@ -21,7 +22,7 @@ class BonusSheets
 {
     public function generate(Company $company, int $fy, User $user): BonusSheet
     {
-        return DB::transaction(function () use ($company, $fy, $user) {
+        $sheet = Activity::quietly(fn () => DB::transaction(function () use ($company, $fy, $user) {
             $sheet = BonusSheet::firstOrCreate(['company_id' => $company->id, 'fy' => $fy], ['generated_by' => $user->id]);
             abort_if($sheet->isApproved(), 422, 'An approved bonus sheet cannot be regenerated.');
             $sheet->entries()->delete();
@@ -32,7 +33,10 @@ class BonusSheets
             $sheet->update(['generated_by' => $user->id]);
 
             return $sheet;
-        });
+        }));
+        Activity::record('generated', $sheet, __('Bonus sheet FY :fy', ['fy' => $fy.'-'.substr((string) ($fy + 1), -2)]));
+
+        return $sheet;
     }
 
     /**

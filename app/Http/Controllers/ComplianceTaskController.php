@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Activity;
 use App\Rules\AccessibleCompany;
 use App\Models\Company;
 use App\Models\ComplianceTask;
@@ -110,8 +111,11 @@ class ComplianceTaskController extends Controller
             'action' => ['required', Rule::in(['complete', 'reopen', 'delete'])],
         ], ['ids.required' => __('Select at least one task.')]);
 
-        $ids = ComplianceTask::whereIn('uuid', $data['ids'])->pluck('id')->all();
+        $selected = ComplianceTask::whereIn('uuid', $data['ids'])->get(['id', 'title']);
+        $ids = $selected->modelKeys();
         $tasks = fn () => ComplianceTask::whereKey($ids);
+        Activity::record('bulk', description: __(':action :count task(s)', ['action' => ucfirst($data['action']), 'count' => count($ids)]),
+            changes: ['tasks' => $selected->pluck('title')->all()]);
 
         if ($data['action'] === 'delete') {
             $tasks()->delete();

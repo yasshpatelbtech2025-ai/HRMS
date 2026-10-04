@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class Attendance extends Model
 {
-    use BelongsToCompany, HasFactory, HasUuids;
+    use Auditable, BelongsToCompany, HasFactory, HasUuids;
 
     public const IN = 'in';
 

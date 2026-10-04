@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attendance;
 
+use App\Support\Activity;
 use App\Rules\AccessibleEmployee;
 use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Controllers\Controller;
@@ -103,6 +104,7 @@ class RawDataController extends Controller
         $locked = ! $attendance->is_locked;
 
         Attendance::where('employee_id', $attendance->employee_id)->whereDate('work_date', $attendance->work_date)->update(['is_locked' => $locked]);
+        Activity::record('updated', $attendance, $attendance->auditLabel(), ['old' => ['is_locked' => ! $locked], 'new' => ['is_locked' => $locked, 'work_date' => $attendance->work_date->toDateString()]]);
 
         return back()->with('status', $locked
             ? __('Attendance for :date locked.', ['date' => $attendance->work_date->format('d M Y')])

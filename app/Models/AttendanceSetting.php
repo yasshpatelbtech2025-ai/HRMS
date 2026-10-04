@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'punch_buffer_minutes'])]
 class AttendanceSetting extends Model
 {
-    use BelongsToCompany;
+    use Auditable, BelongsToCompany;
 
     protected $attributes = ['punch_buffer_minutes' => 30];
 

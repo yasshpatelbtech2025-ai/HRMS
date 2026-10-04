@@ -4,6 +4,8 @@ namespace App\Support;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use OpenSpout\Common\Entity\Cell;
+use OpenSpout\Common\Entity\Cell\StringCell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\XLSX\Writer;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -23,15 +25,16 @@ class TableExport
     public static function download(string $format, string $basename, array $headings, iterable $rows, ?string $title = null): StreamedResponse
     {
         abort_unless(in_array($format, self::FORMATS, true), 404);
+        Activity::record('exported', description: "{$basename}.{$format}");
 
         return match ($format) {
             'xlsx' => response()->streamDownload(function () use ($headings, $rows) {
                 $writer = new Writer;
                 $writer->openToFile('php://output');
-                $writer->addRow(Row::fromValues($headings));
+                $writer->addRow(self::row($headings));
 
                 foreach ($rows as $row) {
-                    $writer->addRow(Row::fromValues(array_map(fn ($value) => $value ?? '', $row)));
+                    $writer->addRow(self::row(array_map(fn ($value) => $value ?? '', $row)));
                 }
 
                 $writer->close();
@@ -43,15 +46,40 @@ class TableExport
 
             default => response()->streamDownload(function () use ($headings, $rows) {
                 $out = fopen('php://output', 'w');
-                fputcsv($out, $headings);
+                fputcsv($out, self::cells($headings));
 
                 foreach ($rows as $row) {
-                    fputcsv($out, $row);
+                    fputcsv($out, self::cells($row));
                 }
 
                 fclose($out);
             }, "{$basename}.csv", ['Content-Type' => 'text/csv']),
         };
+    }
+
+    /**
+     * CSV cells safe to open in a spreadsheet: text starting with = + - @ or
+     * a tab/return would run as a formula (e.g. a name typed as
+     * =HYPERLINK(...)), so it gets a leading apostrophe. Numbers, including
+     * negative ones, are left alone.
+     *
+     * @param  array<scalar|null>  $values
+     * @return array<scalar|null>
+     */
+    public static function cells(array $values): array
+    {
+        return array_map(fn ($value) => is_string($value) && ! is_numeric($value) && preg_match('/^[=+\-@\t\r]/', $value) ? "'".$value : $value, $values);
+    }
+
+    /**
+     * An Excel row whose text is always text: OpenSpout would otherwise turn
+     * a value starting with = into a live formula.
+     *
+     * @param  array<scalar|null>  $values
+     */
+    public static function row(array $values): Row
+    {
+        return new Row(array_map(fn ($value) => is_string($value) && str_starts_with($value, '=') ? new StringCell($value) : Cell::fromValue($value), $values));
     }
 
     /**

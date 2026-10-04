@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Shift extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use Auditable, BelongsToCompany, HasFactory;
 
     /** Rule fields and their defaults for a new shift. */
     public const RULE_DEFAULTS = [

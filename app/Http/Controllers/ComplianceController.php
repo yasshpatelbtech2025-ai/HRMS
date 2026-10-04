@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Rules\AccessibleEmployee;
 use App\Models\Company;
 use App\Models\ComplianceFormValue;
@@ -128,25 +130,19 @@ class ComplianceController extends Controller
 
         $value = ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => $data['period']]);
         $value->data = array_filter($data['raw_data'] ?? [], fn ($v) => $v !== null && $v !== '');
+        $replaced = $this->attachSignedCopy($value, $request, "compliance/{$company->uuid}/{$view}");
 
-        if ($request->hasFile('doc')) {
-            $disk = Storage::disk(config('filesystems.employee_files'));
-            if ($value->signed_copy_path) {
-                $disk->delete($value->signed_copy_path);
+        DB::transaction(function () use ($value, $view, $company) {
+            $value->save();
+
+            // The police station is the same for every employee of the company.
+            if ($view === 'police-verification') {
+                $station = ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => 'company']);
+                $station->data = array_filter(['station_name' => $value->value('station_name'), 'station_phone' => $value->value('station_phone')]);
+                $station->save();
             }
-            $file = $request->file('doc');
-            $value->signed_copy_path = $disk->putFileAs("compliance/{$company->uuid}/{$view}", $file, Str::random(12).'.'.$file->guessExtension());
-            $value->signed_copy_name = $file->getClientOriginalName();
-        }
-
-        $value->save();
-
-        // The police station is the same for every employee of the company.
-        if ($view === 'police-verification') {
-            $station = ComplianceFormValue::firstOrNew(['company_id' => $company->id, 'form' => $view, 'period' => 'company']);
-            $station->data = array_filter(['station_name' => $value->value('station_name'), 'station_phone' => $value->value('station_phone')]);
-            $station->save();
-        }
+        });
+        $this->removeFile($replaced);
 
         return back()->with('status', __('Saved.'));
     }
@@ -260,17 +256,34 @@ class ComplianceController extends Controller
             'details' => array_filter($data['details'] ?? [], fn ($v) => $v !== null && $v !== ''),
         ]);
 
-        if ($request->hasFile('doc')) {
-            $disk = Storage::disk(config('filesystems.employee_files'));
-            if ($examination->signed_copy_path) {
-                $disk->delete($examination->signed_copy_path);
-            }
-            $file = $request->file('doc');
-            $examination->signed_copy_path = $disk->putFileAs("compliance/{$company->uuid}/examinations", $file, Str::random(12).'.'.$file->guessExtension());
-            $examination->signed_copy_name = $file->getClientOriginalName();
+        $replaced = $this->attachSignedCopy($examination, $request, "compliance/{$company->uuid}/examinations");
+        $examination->save();
+        $this->removeFile($replaced);
+    }
+
+    /**
+     * Store an uploaded signed copy ("doc") on the record, returning the path
+     * of the copy it replaces; that one is removed only after the save.
+     */
+    private function attachSignedCopy(Model $record, Request $request, string $directory): ?string
+    {
+        if (! $request->hasFile('doc')) {
+            return null;
         }
 
-        $examination->save();
+        $old = $record->signed_copy_path;
+        $file = $request->file('doc');
+        $record->signed_copy_path = Storage::disk(config('filesystems.employee_files'))->putFileAs($directory, $file, Str::random(12).'.'.$file->guessExtension());
+        $record->signed_copy_name = $file->getClientOriginalName();
+
+        return $old;
+    }
+
+    private function removeFile(?string $path): void
+    {
+        if ($path) {
+            Storage::disk(config('filesystems.employee_files'))->delete($path);
+        }
     }
 
     /**

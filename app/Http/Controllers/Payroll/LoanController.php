@@ -63,10 +63,7 @@ class LoanController extends Controller
             return back()->with('error', __('Loan :no has repayments recorded. Mark it inactive instead.', ['no' => $loan->loan_no]));
         }
 
-        if ($loan->attachment_path) {
-            Storage::disk(config('filesystems.employee_files'))->delete($loan->attachment_path);
-        }
-        $loan->delete();
+        $loan->delete(); // the attachment stays until it is removed for good (Loan::pruning)
 
         return $this->deleted($loan, __('Loan deleted.'));
     }

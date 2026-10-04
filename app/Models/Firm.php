@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Cache;
 ])]
 class Firm extends Model
 {
+    use Auditable;
+
     public const SECTORS = [
         'Central Govt. Controlled', 'Central Govt. Department', 'Central Public Sector Undertaking', 'Co-operative Society', 'Firms Run By Trust', 'HUF',
         'Limited Liability Partnership', 'Local Bodies / Municipal Corporations', 'Partnership Firms', 'Private Ltd Company', 'Proprietory Firms',

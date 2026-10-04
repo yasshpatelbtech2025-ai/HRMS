@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Roles: admin-only pages, no deletes for users, deactivated accounts signed out.
         $middleware->appendToGroup('web', \App\Http\Middleware\EnforceRoleAccess::class);
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

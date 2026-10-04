@@ -33,7 +33,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Files are only served through the app, behind sign-in and company access.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

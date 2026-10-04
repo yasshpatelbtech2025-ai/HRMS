@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['company_id', 'form', 'month', 'employee_id', 'data'])]
 class ComplianceRegisterEntry extends Model
 {
-    use BelongsToCompany, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasUuids, Trashable;
 
     protected function casts(): array
     {

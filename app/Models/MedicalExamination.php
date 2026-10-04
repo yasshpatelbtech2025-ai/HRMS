@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 #[Fillable(['company_id', 'employee_id', 'examined_on', 'result', 'certifying_surgeon', 'signs_symptoms', 'extended_until', 'details', 'signed_copy_path', 'signed_copy_name'])]
 class MedicalExamination extends Model
 {
-    use BelongsToCompany, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasUuids, Trashable;
 
     /** The `details` fields, as label => input type, grouped as on the examination form. */
     public const DETAILS = [

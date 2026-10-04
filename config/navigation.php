@@ -74,5 +74,6 @@ return [
         '' => 'Attendance',
         'payroll' => 'Payroll',
         'recently-deleted' => 'Recently deleted',
+        'activity-log' => 'Activity log',
     ],
 ];

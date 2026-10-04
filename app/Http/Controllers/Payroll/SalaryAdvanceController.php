@@ -53,10 +53,7 @@ class SalaryAdvanceController extends Controller
 
     public function destroy(SalaryAdvance $advance): RedirectResponse
     {
-        if ($advance->attachment_path) {
-            Storage::disk(config('filesystems.employee_files'))->delete($advance->attachment_path);
-        }
-        $advance->delete();
+        $advance->delete(); // the attachment stays until it is removed for good (SalaryAdvance::pruning)
 
         return $this->deleted($advance, __('Salary advance deleted.'));
     }

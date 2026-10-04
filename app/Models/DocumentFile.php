@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['slot', 'category', 'company_id', 'path', 'original_name', 'mime_type', 'size', 'uploaded_by'])]
 class DocumentFile extends Model
 {
-    use BelongsToCompany, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasUuids, Trashable;
 
     public function uniqueIds(): array
     {

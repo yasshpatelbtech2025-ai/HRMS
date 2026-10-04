@@ -86,7 +86,13 @@ class EmployeeRequest extends FormRequest
             'passport_no' => ['nullable', 'string', 'max:20'],
             'driving_license_no' => ['nullable', 'string', 'max:30'],
             'photo' => ['nullable', 'image', 'max:2048'],
-            'photo_data' => ['nullable', 'string', 'max:2000000', 'regex:/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/'],
+            'photo_data' => ['nullable', 'string', 'max:2000000', 'regex:/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/',
+                // The bytes themselves must be a picture, not just labelled as one.
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (\App\Actions\SaveEmployee::photoExtension((string) $value) === null) {
+                        $fail(__('The captured photo could not be read. Please capture or choose it again.'));
+                    }
+                }],
             'aadhar_attachment' => $document,
             'pan_attachment' => $document,
 

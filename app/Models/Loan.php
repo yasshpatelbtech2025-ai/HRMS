@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use App\Models\Concerns\Trashable;
 use Carbon\CarbonImmutable;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * A loan to an employee, repaid in monthly installments from salary.
@@ -19,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class Loan extends Model
 {
-    use BelongsToCompany, HasUuids, Trashable;
+    use Auditable, BelongsToCompany, HasUuids, Trashable;
 
     protected function casts(): array
     {
@@ -74,5 +76,13 @@ class Loan extends Model
         $due = $this->is_active && ! $this->isRepaid() && $month->gte($this->repayment_start->startOfMonth());
 
         return $due ? (float) min($this->installment, $this->repayment_amount - $this->installment * $this->installments_cleared) : 0.0;
+    }
+
+    /** When the record is finally removed (30 days after deletion), so is the attachment. */
+    public function pruning(): void
+    {
+        if ($this->attachment_path) {
+            Storage::disk(config('filesystems.employee_files'))->delete($this->attachment_path);
+        }
     }
 }

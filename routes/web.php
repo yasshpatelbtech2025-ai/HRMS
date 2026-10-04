@@ -15,6 +15,7 @@ use App\Http\Controllers\Attendance\SmartAttendanceController;
 use App\Http\Controllers\AttendanceSettingController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FirmController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\RecentlyDeletedController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserAccessController;
@@ -45,10 +46,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
 
-Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified', 'throttle:app'])->name('dashboard');
 Route::get('/search', SearchController::class)->middleware(['auth', 'verified', 'throttle:60,1'])->name('search');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'throttle:app'])->group(function () {
     Route::get('company/export', [CompanyController::class, 'export'])->name('company.export');
     // Before the company resource, so "firm" is not taken for a company.
     Route::controller(FirmController::class)->prefix('company/firm')->group(function () {
@@ -306,6 +307,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     }
 
     Route::get('configs', [AttendanceSettingController::class, 'index'])->name('configs.index');
+    Route::get('configs/activity-log', ActivityLogController::class)->name('configs.activity-log');
     Route::controller(RecentlyDeletedController::class)->prefix('configs/recently-deleted')->group(function () {
         Route::get('/', 'index')->name('configs.recently-deleted');
         Route::post('{type}/restore', 'restoreMany')->name('recently-deleted.restore-many');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class SalaryRevision extends Model
 {
-    use BelongsToCompany, HasUuids;
+    use Auditable, BelongsToCompany, HasUuids;
 
     protected function casts(): array
     {

@@ -77,6 +77,18 @@ class SaveEmployee
         return $employee->refresh();
     }
 
+    /**
+     * The file extension for a photo sent as a data: URL, from its actual
+     * bytes, or null when they are not a JPEG, PNG or WebP image.
+     */
+    public static function photoExtension(string $dataUrl): ?string
+    {
+        $bytes = base64_decode(explode(',', $dataUrl, 2)[1] ?? '', true);
+        $type = $bytes ? (@getimagesizefromstring($bytes)[2] ?? null) : null;
+
+        return [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp'][$type] ?? null;
+    }
+
     private function store(Employee $employee, string $field, UploadedFile|string $file): string
     {
         $disk = Storage::disk(config('filesystems.employee_files'));
@@ -84,10 +96,9 @@ class SaveEmployee
 
         if (is_string($file)) {
             // A photo captured or resized in the browser, sent as a data: URL.
-            [$meta, $payload] = explode(',', $file, 2);
-            $extension = Str::between($meta, 'image/', ';') === 'png' ? 'png' : 'jpg';
+            $extension = self::photoExtension($file) ?? throw new \InvalidArgumentException('Not an image.');
             $path = "{$directory}/{$field}-".Str::random(12).".{$extension}";
-            $disk->put($path, base64_decode($payload));
+            $disk->put($path, base64_decode(explode(',', $file, 2)[1], true));
 
             return $path;
         }
