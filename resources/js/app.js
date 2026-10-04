@@ -3,6 +3,7 @@ import { employeeForm, photoCapture } from './employee-form';
 import { shiftRoster } from './shift-roster';
 import { toasts } from './toasts';
 import { globalSearch } from './global-search';
+import './inline-validation';
 import { confirmDialog } from './confirm-dialog';
 import { bulkSelect } from './bulk-select';
 import './loading';
