@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Payslip;
 use App\Models\TdsOverride;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 
 /**
  * TDS on salary: estimates an employee's tax for the financial year (April
@@ -17,6 +18,34 @@ use Carbon\CarbonImmutable;
  */
 class IncomeTax
 {
+    /** @var array<int, array{payslips: Collection, bonus: Collection, overrides: Collection, ids: Collection}> by financial year, from preload() */
+    private array $preloaded = [];
+
+    public function forgetPreloaded(): void
+    {
+        $this->preloaded = [];
+    }
+
+    /**
+     * Load a list's payslips, bonus and TDS overrides for the year in three
+     * queries, instead of three per employee in project().
+     *
+     * @param  Collection<int, Employee>  $employees
+     */
+    public function preload(Collection $employees, int $fy): void
+    {
+        $ids = $employees->pluck('id');
+
+        $this->preloaded[$fy] = [
+            'payslips' => Payslip::whereIn('employee_id', $ids)->whereDate('month', '>=', CarbonImmutable::create($fy, 4, 1))
+                ->whereDate('month', '<=', CarbonImmutable::create($fy + 1, 3, 1))->orderBy('month')->get()->groupBy('employee_id'),
+            'bonus' => BonusEntry::whereIn('employee_id', $ids)->whereHas('sheet', fn ($q) => $q->where('fy', $fy))
+                ->groupBy('employee_id')->selectRaw('employee_id, sum(amount) as total')->pluck('total', 'employee_id'),
+            'overrides' => TdsOverride::whereIn('employee_id', $ids)->where('fy', $fy)->get()->keyBy('employee_id'),
+            'ids' => $ids->flip(),
+        ];
+    }
+
     /** The financial year a month falls in, by its starting year. */
     public static function fy(CarbonImmutable $month): int
     {
@@ -65,8 +94,11 @@ class IncomeTax
         $end = CarbonImmutable::create($fy + 1, 3, 1);
         $regime = $employee->tax_regime === 'old' ? 'old' : 'new';
 
-        $earlier = Payslip::where('employee_id', $employee->id)->whereDate('month', '>=', $start)
-            ->whereDate('month', $current ? '<' : '<=', $current ? $month : $end)->orderBy('month')->get();
+        $loaded = isset($this->preloaded[$fy]['ids'][$employee->id]) ? $this->preloaded[$fy] : null;
+        $earlier = $loaded
+            ? ($loaded['payslips'][$employee->id] ?? collect())->filter(fn (Payslip $p) => $current ? $p->month->lt($month) : true)->values()
+            : Payslip::where('employee_id', $employee->id)->whereDate('month', '>=', $start)
+                ->whereDate('month', $current ? '<' : '<=', $current ? $month : $end)->orderBy('month')->get();
         $sum = fn (string $list, array $keys) => $earlier->sum(fn (Payslip $p) => collect($keys)->sum(fn ($k) => $p->amount($list, $k)));
         $paidGross = (float) $earlier->sum('gross_earnings');
         $paidTds = $sum('deductions', ['tds']);
@@ -76,7 +108,9 @@ class IncomeTax
         $monthsLeft = $from->gt($end) ? 0 : (int) $from->diffInMonths($end) + 1;
         $monthly = $this->monthlyGross($employee);
         $restGross = $current ? $current['gross'] + $monthly * max(0, $monthsLeft - 1) : $monthly * $monthsLeft;
-        $bonus = (float) BonusEntry::where('employee_id', $employee->id)->whereHas('sheet', fn ($q) => $q->where('fy', $fy))->sum('amount');
+        $bonus = (float) ($loaded
+            ? ($loaded['bonus'][$employee->id] ?? 0)
+            : BonusEntry::where('employee_id', $employee->id)->whereHas('sheet', fn ($q) => $q->where('fy', $fy))->sum('amount'));
 
         $gross = round($paidGross + $restGross + $bonus, 2);
         $standard = (float) config("tds.standard_deduction.{$regime}");
@@ -90,7 +124,7 @@ class IncomeTax
         $annualTax = $this->tax($taxable, $regime);
         $balance = max(0, $annualTax - $paidTds);
         $estimate = $monthsLeft > 0 ? round($balance / $monthsLeft) : 0;
-        $override = TdsOverride::where('employee_id', $employee->id)->where('fy', $fy)->first();
+        $override = $loaded ? ($loaded['overrides'][$employee->id] ?? null) : TdsOverride::where('employee_id', $employee->id)->where('fy', $fy)->first();
 
         return [
             'fy' => $fy,

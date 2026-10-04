@@ -94,6 +94,7 @@ Route::middleware(['auth', 'verified', 'throttle:app'])->group(function () {
 
         Route::post('import', [EmployeeImportController::class, 'store'])->name('employees.import');
         Route::get('import/template/{company}', [EmployeeImportController::class, 'template'])->name('employees.import.template');
+        Route::get('import/{run}', [EmployeeImportController::class, 'status'])->name('employees.import.status');
 
         Route::controller(IdCardController::class)->prefix('id-cards')->group(function () {
             Route::get('/', 'index')->name('employees.id-cards');

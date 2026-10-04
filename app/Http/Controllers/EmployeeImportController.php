@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Rules\AccessibleCompany;
-use App\Actions\SaveEmployee;
-use App\Http\Requests\EmployeeRequest;
+use App\Jobs\ImportEmployees;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Models\EmployeeImportRun;
 use App\Support\EmployeeImport;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * "Import Employees (Excel)": a company-specific template, and adding every
- * row of a filled-in sheet as an employee of that company. Nothing is saved
- * unless every row is valid.
+ * row of a filled-in sheet as an employee of that company, in the
+ * background. Nothing is saved unless every row is valid.
  */
 class EmployeeImportController extends Controller
 {
@@ -27,7 +27,11 @@ class EmployeeImportController extends Controller
         return (new EmployeeImport($company))->template();
     }
 
-    public function store(Request $request, SaveEmployee $save): RedirectResponse
+    /**
+     * Keep the upload and import it in the background (ImportEmployees); the
+     * employee list shows its progress and outcome.
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
@@ -35,42 +39,29 @@ class EmployeeImportController extends Controller
         ], ['file.mimes' => __('The file must be an .xlsx or .csv file. Save .xls files as .xlsx first.')]);
 
         $file = $request->file('file');
-        $rows = (new EmployeeImport(Company::findOrFail($request->integer('company_id'))))
-            ->read($file->getRealPath(), strtolower($file->getClientOriginalExtension()) === 'csv' ? 'csv' : 'xlsx');
+        $extension = strtolower($file->getClientOriginalExtension()) === 'csv' ? 'csv' : 'xlsx';
+        $run = EmployeeImportRun::create([
+            'company_id' => $request->integer('company_id'),
+            'user_id' => $request->user()->id,
+            'original_name' => mb_substr(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME), 0, 200).'.'.$extension,
+            'path' => Storage::disk(config('filesystems.employee_files'))->putFileAs('imports', $file, Str::random(24).'.'.$extension),
+        ]);
 
-        if ($rows === []) {
-            return back()->with('error', __('The file has no employee rows under the headings.'));
-        }
+        ImportEmployees::dispatch($run);
 
-        $errors = [];
-        $emails = [];
+        return back()->with('status', __('Import started. Its progress is shown at the top of the list.'));
+    }
 
-        foreach ($rows as $number => $data) {
-            $rules = (new EmployeeRequest)->merge($data);
-            $validator = Validator::make($data, $rules->rules(), [], $rules->attributes())->after($rules->after());
-            $messages = $validator->errors()->all();
+    /** Progress of an import, polled by the employee list. */
+    public function status(Request $request, EmployeeImportRun $run): JsonResponse
+    {
+        abort_unless($run->user_id === $request->user()->id || $request->user()->isAdmin(), 404);
 
-            if (filled($data['email']) && in_array(mb_strtolower($data['email']), $emails, true)) {
-                $messages[] = __('The email is used on an earlier row of this file.');
-            }
-            $emails[] = mb_strtolower((string) $data['email']);
-
-            if ($messages) {
-                $errors[] = __('Row :row: :errors', ['row' => $number, 'errors' => implode(' ', $messages)]);
-            }
-        }
-
-        if ($errors) {
-            return back()->with('import_errors', $errors)
-                ->with('error', __('Nothing was imported. Fix the rows below and upload the file again.'));
-        }
-
-        DB::transaction(function () use ($rows, $save) {
-            foreach ($rows as $data) {
-                $save(new Employee, $data);
-            }
-        });
-
-        return back()->with('status', trans_choice(':count employee imported.|:count employees imported.', count($rows)));
+        return response()->json([
+            'status' => $run->status,
+            'finished' => $run->isFinished(),
+            'imported' => $run->imported,
+            'errors' => $run->errors ?? [],
+        ]);
     }
 }

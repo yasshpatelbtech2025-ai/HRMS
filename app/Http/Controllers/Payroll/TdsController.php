@@ -99,6 +99,7 @@ class TdsController extends Controller
         return Employee::where('company_id', $company->id)
             ->where(fn ($q) => $q->current()->orWhereHas('payslips', fn ($p) => $p->whereDate('month', '>=', CarbonImmutable::create($fy, 4, 1))->whereDate('month', '<=', CarbonImmutable::create($fy + 1, 3, 1))))
             ->with('salaryElements')->orderBy('employee_code')->get()
+            ->tap(fn (Collection $employees) => $this->tax->preload($employees, $fy))
             ->map(fn (Employee $e) => ['employee' => $e] + $this->tax->project($e, $asOf));
     }
 }

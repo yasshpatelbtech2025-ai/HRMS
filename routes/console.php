@@ -17,3 +17,8 @@ Illuminate\Support\Facades\Schedule::command('compliance:sync-tasks')->dailyAt('
 
 // Recently deleted records older than 30 days are removed for good (App\Models\Concerns\Trashable).
 Illuminate\Support\Facades\Schedule::command('model:prune')->dailyAt('03:00');
+
+// Background jobs (employee imports, emails). Production should run a queue worker
+// (php artisan queue:work, kept alive by Supervisor or the host); this also works
+// through anything left in the queue each minute on hosts with only the scheduler cron.
+Illuminate\Support\Facades\Schedule::command('queue:work --stop-when-empty --max-time=55 --tries=1')->everyMinute()->withoutOverlapping();

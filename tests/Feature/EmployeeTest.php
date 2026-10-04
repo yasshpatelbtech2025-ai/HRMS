@@ -6,6 +6,7 @@ use App\Enums\EmployeeStatus;
 use App\Models\Company;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\EmployeeImportRun;
 use App\Models\Position;
 use App\Models\Shift;
 use App\Models\SubDepartment;
@@ -345,13 +346,22 @@ class EmployeeTest extends TestCase
         ];
         $csv = fn (array ...$rows) => UploadedFile::fake()->createWithContent('employees.csv', implode("\n", [implode(',', $headings), ...array_map($row, $rows)]));
 
-        // One bad row (unknown designation) means nothing is imported.
+        // Imports run as a background job (synchronously in tests). One bad
+        // row (unknown designation) means nothing is imported.
         $this->post(route('employees.import'), ['company_id' => $this->company->id, 'file' => $csv($good, ['Email *' => 'x@example.com', 'Designation *' => 'Astronaut'] + $good)])
-            ->assertSessionHas('import_errors', fn ($errors) => count($errors) === 1 && str_starts_with($errors[0], 'Row 3:'));
+            ->assertSessionHas('status', 'Import started. Its progress is shown at the top of the list.');
         $this->assertSame(0, Employee::count());
+        $run = EmployeeImportRun::latest('id')->first();
+        $this->assertSame('invalid', $run->status);
+        $this->assertCount(1, $run->errors);
+        $this->assertStringStartsWith('Row 3:', $run->errors[0]);
+        Storage::disk('local')->assertMissing($run->path);
+        $this->get(route('employees.index'))->assertSee('Nothing was imported from employees.csv')->assertSee('Row 3:');
+        $this->getJson(route('employees.import.status', $run))->assertJson(['status' => 'invalid', 'finished' => true]);
 
-        $this->post(route('employees.import'), ['company_id' => $this->company->id, 'file' => $csv($good, ['Email *' => 'mahesh@example.com', 'First Name *' => 'Mahesh'] + $good)])
-            ->assertSessionHas('status', '2 employees imported.');
+        $this->post(route('employees.import'), ['company_id' => $this->company->id, 'file' => $csv($good, ['Email *' => 'mahesh@example.com', 'First Name *' => 'Mahesh'] + $good)]);
+        $this->assertSame(['status' => 'done', 'imported' => 2], EmployeeImportRun::latest('id')->first()->only('status', 'imported'));
+        $this->get(route('employees.index'))->assertSee('Import finished: employees.csv.');
 
         $this->assertSame(['0001', '0002'], Employee::orderBy('id')->pluck('employee_code')->all());
         $ravi = Employee::where('email', 'ravi@example.com')->sole();

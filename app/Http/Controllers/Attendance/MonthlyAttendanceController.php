@@ -43,8 +43,10 @@ class MonthlyAttendanceController extends Controller
             ->values();
 
         $grid = $this->attendance->forMonth($employees, $month);
-        $compOff = $employees->mapWithKeys(fn (Employee $e) => [$e->id => in_array('A', array_column($grid[$e->id]['days'], 'status'), true)
-            ? $this->attendance->compOffBalance($e, $month->year) : 0]);
+        // Only asked for employees with an absence to cover.
+        $compOff = collect($this->attendance->compOffBalances(
+            $employees->filter(fn (Employee $e) => in_array('A', array_column($grid[$e->id]['days'], 'status'), true))->values(), $month->year,
+        ))->union($employees->mapWithKeys(fn (Employee $e) => [$e->id => 0]));
 
         return view('attendance.monthly', [
             'companies' => $companies,

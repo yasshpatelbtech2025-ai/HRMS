@@ -10,14 +10,8 @@
         $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
-    @if (session('import_errors'))
-        <div role="alert" class="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">
-            <ul class="list-disc space-y-1 ps-5">
-                @foreach (session('import_errors') as $message)
-                    <li>{{ $message }}</li>
-                @endforeach
-            </ul>
-        </div>
+    @if ($importRun)
+        @include('employees._import-status', ['run' => $importRun])
     @endif
 
     <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200" x-data="{ filtersOpen: @js($filtering) }">

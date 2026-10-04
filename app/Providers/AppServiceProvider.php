@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Firm;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Support\Activity;
 use Illuminate\Auth\Events\Failed;
@@ -36,6 +37,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->useFirmMailAccount();
+
+        // N+1 guard: outside production a relation loaded lazily in a loop throws,
+        // so missing eager loads show up in development and the tests.
+        Model::preventLazyLoading(! $this->app->isProduction());
 
         // Roles (config/access.php): admins manage users and companies and can delete; users cannot.
         Gate::define('admin', fn (User $user) => $user->isAdmin());

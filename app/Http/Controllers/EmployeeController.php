@@ -10,6 +10,7 @@ use App\Http\Requests\EmployeeRequest;
 use App\Models\Company;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\EmployeeImportRun;
 use App\Models\EmployeeAddress;
 use App\Models\Position;
 use App\Models\Shift;
@@ -53,6 +54,9 @@ class EmployeeController extends Controller
                 'positions' => Position::orderBy('name')->get(),
             ],
             'importCompanies' => Company::with('parent')->orderBy('establishment_name')->get(),
+            // The signed-in user's latest Excel import, while recent.
+            'importRun' => EmployeeImportRun::where('user_id', $request->user()->id)->where('created_at', '>=', now()->subMinutes(30))
+                ->with('company:id,establishment_name')->latest('id')->first(),
         ]);
     }
 

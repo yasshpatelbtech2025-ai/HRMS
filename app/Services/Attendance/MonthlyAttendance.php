@@ -58,6 +58,7 @@ class MonthlyAttendance
         $compOffs = CompOffUse::whereIn('employee_id', $ids)->whereDate('work_date', '>=', $first)->whereDate('work_date', '<=', $last)
             ->get()->groupBy('employee_id')->map(fn ($uses) => $uses->keyBy(fn ($u) => $u->work_date->toDateString()));
         $today = CarbonImmutable::today();
+        $this->calendar->preloadRosters($employees, $first, $last);
 
         $result = [];
 
@@ -156,23 +157,44 @@ class MonthlyAttendance
      */
     public function compOffBalance(Employee $employee, int $year): int
     {
-        if (($employee->shift?->wo_ph_work_pay ?? 'coff') !== 'coff') {
-            return 0;
+        return $this->compOffBalances(new Collection([$employee]), $year)[$employee->id];
+    }
+
+    /**
+     * compOffBalance() for a whole list, in a few queries.
+     *
+     * @param  Collection<int, Employee>  $employees  with shift loaded
+     * @return array<int, int> by employee id
+     */
+    public function compOffBalances(Collection $employees, int $year): array
+    {
+        $earning = $employees->filter(fn (Employee $e) => ($e->shift?->wo_ph_work_pay ?? 'coff') === 'coff');
+        $balances = $employees->mapWithKeys(fn (Employee $e) => [$e->id => 0])->all();
+        if ($earning->isEmpty()) {
+            return $balances;
         }
 
         $first = CarbonImmutable::create($year, 1, 1);
         $last = CarbonImmutable::create($year, 12, 31)->min(CarbonImmutable::today());
-        $holidays = $this->calendar->holidays($employee->company_id, $first, $last);
+        $ids = $earning->pluck('id');
+        $this->calendar->preloadRosters($earning, $first, $last);
 
-        $earned = $employee->attendances()->where('type', Attendance::IN)->where('is_missing', false)
+        $worked = Attendance::whereIn('employee_id', $ids)->where('type', Attendance::IN)->where('is_missing', false)
             ->whereDate('work_date', '>=', $first)->whereDate('work_date', '<=', $last)
-            ->pluck('work_date')->map(fn ($d) => CarbonImmutable::parse($d))->unique(fn ($d) => $d->toDateString())
-            ->filter(fn (CarbonImmutable $d) => $holidays->has($d->toDateString()) || $this->calendar->isWeeklyOff($employee, $d))
-            ->count();
+            ->get(['employee_id', 'work_date'])->groupBy('employee_id');
+        $used = CompOffUse::whereIn('employee_id', $ids)->whereYear('work_date', $year)
+            ->groupBy('employee_id')->selectRaw('employee_id, count(*) as total')->pluck('total', 'employee_id');
 
-        $used = CompOffUse::where('employee_id', $employee->id)->whereYear('work_date', $year)->count();
+        foreach ($earning as $employee) {
+            $holidays = $this->calendar->holidays($employee->company_id, $first, $last);
+            $earned = ($worked[$employee->id] ?? collect())
+                ->map(fn (Attendance $a) => CarbonImmutable::parse($a->work_date))->unique(fn ($d) => $d->toDateString())
+                ->filter(fn (CarbonImmutable $d) => $holidays->has($d->toDateString()) || $this->calendar->isWeeklyOff($employee, $d))
+                ->count();
+            $balances[$employee->id] = max(0, $earned - (int) ($used[$employee->id] ?? 0));
+        }
 
-        return max(0, $earned - $used);
+        return $balances;
     }
 
     /**

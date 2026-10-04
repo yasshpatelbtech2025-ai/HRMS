@@ -54,15 +54,32 @@ class SalaryGenerator
             $skipped = [];
             [$employees, $setting, $size] = $this->inputs($company, $month);
             $grid = $this->attendance->forMonth($employees, $month);
+            $this->calculator->preload($employees, $month);
 
-            foreach ($employees as $employee) {
-                if (! $this->hasSalary($employee)) {
-                    $skipped[] = $employee->full_name;
+            $payslips = [];
+            try {
+                foreach ($employees as $employee) {
+                    if (! $this->hasSalary($employee)) {
+                        $skipped[] = $employee->full_name;
 
-                    continue;
+                        continue;
+                    }
+
+                    $payslips[] = $this->make($sheet, $employee, $month, $grid[$employee->id], $setting, $size);
                 }
+            } finally {
+                $this->calculator->forgetPreloaded();
+            }
 
-                $this->store($sheet, $employee, $month, $grid[$employee->id], $setting, $size);
+            // Inserted in batches: one round trip to the database per 200
+            // payslips rather than per payslip.
+            foreach (array_chunk($payslips, 200) as $batch) {
+                Payslip::insert(array_map(function (Payslip $payslip) {
+                    $payslip->setUniqueIds();
+                    $payslip->updateTimestamps();
+
+                    return $payslip->getAttributes();
+                }, $batch));
             }
 
             return ['sheet' => $sheet, 'skipped' => $skipped];
@@ -92,7 +109,7 @@ class SalaryGenerator
         $fresh = Activity::quietly(fn () => DB::transaction(function () use ($payslip, $sheet, $employee, $month, $grid, $setting, $size) {
             $payslip->delete();
 
-            return $this->store($sheet, $employee, $month, $grid[$employee->id], $setting, $size);
+            return tap($this->make($sheet, $employee, $month, $grid[$employee->id], $setting, $size))->save();
         }));
         Activity::record('generated', $fresh, __('Payslip worked out again: :name, :month', ['name' => $employee->full_name, 'month' => $month->format('F Y')]));
 
@@ -124,17 +141,19 @@ class SalaryGenerator
 
     private function settle(SalarySheet $sheet, int $direction): void
     {
-        foreach ($sheet->payslips as $payslip) {
-            foreach ($payslip->deductions as $line) {
-                [$kind, $uuid] = array_pad(explode(':', $line['key'], 2), 2, null);
+        $lines = $sheet->payslips->flatMap(fn (Payslip $p) => $p->deductions)
+            ->map(fn (array $line) => [...array_pad(explode(':', $line['key'], 2), 2, null), $line['amount']]);
+        // The sheet's advances and loans in one query each.
+        $advances = SalaryAdvance::whereIn('uuid', $lines->where(0, 'advance')->pluck(1))->get()->keyBy('uuid');
+        $loans = Loan::whereIn('uuid', $lines->where(0, 'loan')->pluck(1))->get()->keyBy('uuid');
 
-                if ($kind === 'advance' && ($advance = SalaryAdvance::where('uuid', $uuid)->first())) {
-                    $advance->update(['released_amount' => max(0, (float) $advance->released_amount + $direction * $line['amount'])]);
-                }
+        foreach ($lines as [$kind, $uuid, $amount]) {
+            if ($kind === 'advance' && ($advance = $advances[$uuid] ?? null)) {
+                $advance->update(['released_amount' => max(0, (float) $advance->released_amount + $direction * $amount)]);
+            }
 
-                if ($kind === 'loan' && ($loan = Loan::where('uuid', $uuid)->first())) {
-                    $loan->update(['installments_cleared' => max(0, $loan->installments_cleared + $direction)]);
-                }
+            if ($kind === 'loan' && ($loan = $loans[$uuid] ?? null)) {
+                $loan->update(['installments_cleared' => max(0, $loan->installments_cleared + $direction)]);
             }
         }
     }
@@ -163,11 +182,12 @@ class SalaryGenerator
         return $employee->salaryElements->isNotEmpty() || (float) $employee->daily_rate > 0 || (float) $employee->hourly_rate > 0;
     }
 
-    private function store(SalarySheet $sheet, Employee $employee, CarbonImmutable $month, array $attendance, PayrollSetting $setting, int $size): Payslip
+    /** The employee's payslip for the month, worked out but not yet saved. */
+    private function make(SalarySheet $sheet, Employee $employee, CarbonImmutable $month, array $attendance, PayrollSetting $setting, int $size): Payslip
     {
         $result = $this->calculator->calculate($employee, $month, $attendance, $setting, $size);
 
-        return Payslip::create([
+        return new Payslip([
             'salary_sheet_id' => $sheet->id, 'company_id' => $employee->company_id, 'employee_id' => $employee->id,
             'month' => $month->toDateString(), 'pay_frequency' => $employee->pay_frequency,
             'attendance' => $result['attendance'], 'earnings' => $result['earnings'], 'deductions' => $result['deductions'],

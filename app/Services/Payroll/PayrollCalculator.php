@@ -9,6 +9,7 @@ use App\Models\PayrollSetting;
 use App\Models\SalaryAdjustment;
 use App\Models\SalaryAdvance;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 
 /**
  * Works out one employee's salary for a month from their salary structure,
@@ -46,7 +47,52 @@ class PayrollCalculator
     /** Gross elements paid in full rather than pro-rated. */
     private const FIXED_ELEMENTS = ['performance_bonus', 'joining_bonus'];
 
+    /** @var array{month: string, ids: Collection, rules: Collection, adjustments: Collection, advances: Collection, loans: Collection}|null from preload() */
+    private ?array $preloaded = null;
+
     public function __construct(private IncomeTax $incomeTax) {}
+
+    /**
+     * Load the month's rules, adjustments, advances, loans and tax inputs
+     * for a whole salary sheet in a few queries, instead of several per
+     * employee in calculate().
+     *
+     * @param  Collection<int, Employee>  $employees
+     */
+    public function preload(Collection $employees, CarbonImmutable $month): void
+    {
+        $ids = $employees->pluck('id');
+
+        $this->preloaded = [
+            'month' => $month->toDateString(),
+            'ids' => $ids->flip(),
+            'rules' => PayrollRule::whereIn('company_id', $employees->pluck('company_id')->unique())->where('is_active', true)->whereDate('month', $month)->get()->groupBy('company_id'),
+            'adjustments' => SalaryAdjustment::whereIn('employee_id', $ids)->whereDate('salary_month', $month)->get()->groupBy('employee_id'),
+            'advances' => SalaryAdvance::whereIn('employee_id', $ids)->where('is_active', true)->whereDate('salary_month', $month)->get()->groupBy('employee_id'),
+            'loans' => Loan::whereIn('employee_id', $ids)->where('is_active', true)->get()->groupBy('employee_id'),
+        ];
+        $this->incomeTax->preload($employees, IncomeTax::fy($month));
+    }
+
+    /** Drop the preloaded data once the sheet is done, so later calculations read fresh rows. */
+    public function forgetPreloaded(): void
+    {
+        $this->preloaded = null;
+        $this->incomeTax->forgetPreloaded();
+    }
+
+    /**
+     * One of the preloaded lists for this employee, or null when calculate()
+     * runs without preload() (then it queries as before).
+     */
+    private function preloaded(string $list, Employee $employee, CarbonImmutable $month, ?int $key = null): ?Collection
+    {
+        if ($this->preloaded === null || $this->preloaded['month'] !== $month->toDateString() || ! isset($this->preloaded['ids'][$employee->id])) {
+            return null;
+        }
+
+        return $this->preloaded[$list][$key ?? $employee->id] ?? new Collection;
+    }
 
     /**
      * @param  array{days: array<string, array>, totals: array<string, float>}  $attendance  from MonthlyAttendance
@@ -132,12 +178,15 @@ class PayrollCalculator
 
         // Variable bonus rules for the month.
         $earnedGross = $this->sum($earnings, config('employee.gross_salary_elements'));
-        foreach (PayrollRule::where('company_id', $employee->company_id)->where('is_active', true)->whereDate('month', $month)->get() as $rule) {
+        $rules = $this->preloaded('rules', $employee, $month, $employee->company_id)
+            ?? PayrollRule::where('company_id', $employee->company_id)->where('is_active', true)->whereDate('month', $month)->get();
+        foreach ($rules as $rule) {
             $amount = $rule->is_percent ? ($rule->effect_on === 'gross' ? $earnedGross : $earnedBasic) * (float) $rule->amount / 100 : (float) $rule->amount;
             $earnings[] = $this->line("rule:{$rule->uuid}", $rule->name, $amount);
         }
 
-        $adjustments = SalaryAdjustment::where('employee_id', $employee->id)->whereDate('salary_month', $month)->get();
+        $adjustments = $this->preloaded('adjustments', $employee, $month)
+            ?? SalaryAdjustment::where('employee_id', $employee->id)->whereDate('salary_month', $month)->get();
         foreach ($adjustments->where('type', 'earning') as $adjustment) {
             $earnings[] = $this->line("adjustment:{$adjustment->uuid}", $adjustment->title, (float) $adjustment->amount);
         }
@@ -189,14 +238,16 @@ class PayrollCalculator
             $deductions[] = $this->line('notice_period_recovery', 'NOTICE PERIOD RECOVERY', $monthly('notice_period_recovery'));
         }
 
-        foreach (SalaryAdvance::where('employee_id', $employee->id)->where('is_active', true)->whereDate('salary_month', $month)->get() as $advance) {
+        $advances = $this->preloaded('advances', $employee, $month)
+            ?? SalaryAdvance::where('employee_id', $employee->id)->where('is_active', true)->whereDate('salary_month', $month)->get();
+        foreach ($advances as $advance) {
             $due = (float) $advance->amount - (float) $advance->released_amount;
             if ($due > 0) {
                 $deductions[] = $this->line("advance:{$advance->uuid}", 'SALARY ADVANCE', $due);
             }
         }
 
-        foreach (Loan::where('employee_id', $employee->id)->where('is_active', true)->get() as $loan) {
+        foreach ($this->preloaded('loans', $employee, $month) ?? Loan::where('employee_id', $employee->id)->where('is_active', true)->get() as $loan) {
             $installment = $loan->installmentFor($month);
             if ($installment > 0) {
                 $deductions[] = $this->line("loan:{$loan->uuid}", "LOAN {$loan->loan_no} (".($loan->installments_cleared + 1)."/{$loan->installment_period})", $installment);

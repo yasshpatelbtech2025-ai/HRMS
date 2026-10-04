@@ -63,6 +63,34 @@ class WorkCalendar
     }
 
     /**
+     * Load the rosters of many employees for the months from $first to
+     * $last in one query, instead of one query per employee and month when
+     * a whole list is worked out.
+     *
+     * @param  Collection<int, Employee>  $employees
+     */
+    public function preloadRosters(Collection $employees, CarbonInterface $first, CarbonInterface $last): void
+    {
+        $ids = $employees->pluck('id')->all();
+        $from = CarbonImmutable::parse($first)->startOfMonth();
+        $to = CarbonImmutable::parse($last)->startOfMonth();
+
+        $entries = ShiftRosterEntry::whereIn('employee_id', $ids)
+            ->whereHas('roster', fn ($q) => $q->whereDate('month', '>=', $from)->whereDate('month', '<=', $to))
+            ->with('roster:id,month')->get(['shift_roster_id', 'employee_id', 'days']);
+
+        // Not on a roster that month: remembered too, so it isn't asked again.
+        for ($month = $from; $month->lte($to); $month = $month->addMonth()) {
+            foreach ($ids as $id) {
+                $this->rosters[$id.':'.$month->format('Y-m')] ??= null;
+            }
+        }
+        foreach ($entries as $entry) {
+            $this->rosters[$entry->employee_id.':'.$entry->roster->month->format('Y-m')] = $entry->days;
+        }
+    }
+
+    /**
      * The shift code (or WO) the roster gives the employee that day, if
      * they're on a roster that month.
      */
