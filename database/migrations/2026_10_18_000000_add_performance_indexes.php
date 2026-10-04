@@ -55,6 +55,10 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'pgsql') {
+            // Supabase keeps extensions in their own schema; a plain PostgreSQL install has none yet.
+            if (! DB::selectOne("select 1 as found from pg_namespace where nspname = 'extensions'")) {
+                DB::statement('create schema extensions');
+            }
             DB::statement('create extension if not exists pg_trgm with schema extensions');
             foreach (self::SEARCHED as $table => $columns) {
                 foreach ($columns as $column) {
