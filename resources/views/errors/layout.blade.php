@@ -9,15 +9,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
-    <title>@yield('title') · {{ config('app.name', 'SRYMPEX') }}</title>
+    <title>@yield('title') · {{ config('branding.name') }}</title>
     <style>
-        :root { --brand: #d4141f; --brand-dark: #b20f19; --ink: #111827; --muted: #6b7280; --line: #e5e7eb; --bg: #f9fafb; }
+        :root { --brand: #0b6b5e; --brand-dark: #095a4f; --ink: #16181d; --muted: #6b6e76; --line: #e4e4df; --bg: #f7f7f4; }
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 24px 16px;
-               background: var(--bg); color: var(--ink); font: 15px/1.5 "Funnel Display", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+               background: var(--bg); color: var(--ink); font: 14px/1.5 "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
         .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
-        .mark { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: var(--brand); color: #fff; font-weight: 900; font-size: 18px; }
-        .name { font-size: 20px; font-weight: 800; letter-spacing: .12em; }
+        .mark { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 7px; background: var(--brand); color: #fff; font-weight: 500; font-size: 15px; font-family: ui-monospace, monospace; }
+        .name { font-size: 16px; font-weight: 600; }
         .card { width: 100%; max-width: 460px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 32px 28px; text-align: center; box-shadow: 0 1px 2px rgb(16 24 40 / .05); }
         .code { margin: 0; font-size: 44px; font-weight: 800; line-height: 1; color: var(--brand); letter-spacing: .02em; }
         h1 { margin: 12px 0 8px; font-size: 22px; line-height: 1.3; }
@@ -31,7 +31,7 @@
     </style>
 </head>
 <body>
-    <a href="{{ url('/') }}" class="logo" aria-label="{{ config('app.name', 'SRYMPEX') }}"><span class="mark" aria-hidden="true">S</span><span class="name">SRYMPEX</span></a>
+    <a href="{{ url('/') }}" class="logo" aria-label="{{ config('branding.name') }}"><span class="mark" aria-hidden="true">{{ config('branding.mark') }}</span><span class="name">{{ config('branding.name') }}</span></a>
     <main class="card">
         <p class="code">@yield('code')</p>
         <h1>@yield('title')</h1>

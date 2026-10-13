@@ -38,9 +38,9 @@
 <aside id="sidebar" aria-label="{{ __('Main') }}" :data-open="drawer"
        class="app-sidebar fixed inset-y-0 start-0 z-50 flex flex-col border-e border-line bg-rail transition-[transform,width] duration-200 print:hidden max-lg:shadow-pop">
     <div class="flex h-[var(--topbar-h)] shrink-0 items-center justify-between gap-2 px-3.5">
-        <a href="{{ route('dashboard') }}" class="min-w-0 rounded-md" aria-label="{{ __('SRYMPEX home') }}">
+        <a href="{{ route('dashboard') }}" class="min-w-0 rounded-md" aria-label="{{ __(':name home', ['name' => config('branding.name')]) }}">
             <x-brand-logo class="rail-hide" />
-            <span class="rail-show hidden h-8 w-8 items-center justify-center rounded-md bg-[#d4141f] text-lg font-bold text-white" aria-hidden="true">S</span>
+            <x-brand-logo compact class="rail-show hidden" />
         </a>
         <button type="button" class="rounded-md p-1.5 text-ink-3 hover:bg-sunken hover:text-ink lg:hidden" @click="drawer = false" aria-label="{{ __('Close menu') }}"><x-icon name="x" class="size-4" /></button>
     </div>

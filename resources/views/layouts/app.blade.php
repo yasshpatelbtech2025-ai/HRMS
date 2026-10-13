@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('app.name', 'SRYMPEX') }}</title>
+        <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('branding.name') }}</title>
         {{-- Apply the remembered sidebar width before first paint (no jump). --}}
         <script>try { if (localStorage.getItem('_x_sidebar:rail') === 'true') document.documentElement.classList.add('rail'); } catch (e) {}</script>
 
