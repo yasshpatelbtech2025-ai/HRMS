@@ -31,7 +31,7 @@
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if ($company && ! $deducting)
-            <div class="mx-5 mt-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
+            <div class="mx-5 mt-4 rounded-md bg-warn-soft px-4 py-3 text-sm text-warn ring-1 ring-amber-200">
                 {{ __(':company does not deduct TDS from salary, so payroll leaves it out. Turn on "Employee Tax Deduction" in', ['company' => $company->establishment_name]) }}
                 <a href="{{ route('configs.payroll', ['company' => $company->uuid]) }}" class="font-semibold underline">{{ __('Configs › Payroll') }}</a>
                 {{ __('to deduct the monthly TDS below.') }}

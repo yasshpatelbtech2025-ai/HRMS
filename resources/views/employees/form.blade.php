@@ -62,7 +62,7 @@
     </div>
 
     @if ($errors->any())
-        <div role="alert" class="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">
+        <div role="alert" class="mb-4 rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger ring-1 ring-red-200">
             {{ trans_choice('There is :count problem with the form. The sections that need attention are open below.|There are :count problems with the form. The sections that need attention are open below.', $errors->count()) }}
         </div>
     @endif

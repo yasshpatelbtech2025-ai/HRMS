@@ -6,18 +6,19 @@
     @php
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $badges = [
-            'created' => 'bg-emerald-50 text-emerald-700', 'updated' => 'bg-amber-50 text-amber-800', 'deleted' => 'bg-red-50 text-red-700',
-            'purged' => 'bg-red-100 text-red-800', 'restored' => 'bg-emerald-50 text-emerald-700', 'sign-in-failed' => 'bg-red-50 text-red-700',
-            'locked-out' => 'bg-red-100 text-red-800',
+            'created' => 'bg-success-soft text-success', 'updated' => 'bg-warn-soft text-warn', 'deleted' => 'bg-danger-soft text-danger',
+            'purged' => 'bg-danger-soft text-danger', 'restored' => 'bg-success-soft text-success', 'sign-in-failed' => 'bg-danger-soft text-danger',
+            'locked-out' => 'bg-danger-soft text-danger',
         ];
         $show = fn ($value) => is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : (is_bool($value) ? ($value ? __('Yes') : __('No')) : (string) ($value ?? '—'));
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Activity log') }}</h2>
             <p class="text-sm text-gray-500">{{ __('Who created, changed, deleted, exported or signed in, and when. Entries are kept for :days days. Passwords and ID numbers are never shown.', ['days' => config('access.activity_retention_days')]) }}</p>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('configs.activity-log') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-xs font-medium text-gray-600">{{ __('Person') }}
@@ -94,7 +95,7 @@
                                                     <div class="break-words">
                                                         <dt class="inline font-semibold text-gray-700">{{ \Illuminate\Support\Str::headline($field) }}:</dt>
                                                         <dd class="inline text-gray-600">
-                                                            @if (array_key_exists($field, $entry->changes['old'] ?? []))<span class="text-red-700 line-through">{{ $show($entry->changes['old'][$field]) }}</span> → @endif
+                                                            @if (array_key_exists($field, $entry->changes['old'] ?? []))<span class="text-danger line-through">{{ $show($entry->changes['old'][$field]) }}</span> → @endif
                                                             <span class="text-gray-900">{{ $show($new) }}</span>
                                                         </dd>
                                                     </div>
@@ -117,5 +118,6 @@
         </div>
 
         <x-list-footer :paginator="$entries" />
+    </div>
     </div>
 </x-app-layout>

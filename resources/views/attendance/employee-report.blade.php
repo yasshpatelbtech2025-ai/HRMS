@@ -84,7 +84,7 @@
                                 <td class="px-4 py-2 font-semibold">
                                     {{ $d['status'] ? ($d['missing'] && $d['status'] === 'A' ? 'MP' : $labels[$d['status']]) : '-' }}
                                     @if ($d['late'])<span class="text-xs font-normal text-violet-700">({{ __('late') }})</span>@endif
-                                    @if ($d['holiday'])<span class="text-xs font-normal text-blue-700">{{ $d['holiday'] }}</span>@endif
+                                    @if ($d['holiday'])<span class="text-xs font-normal text-info">{{ $d['holiday'] }}</span>@endif
                                 </td>
                                 <td class="px-4 py-2">{{ $d['shift'] }}</td>
                                 <td class="px-4 py-2 font-mono">{{ $d['code'] }}</td>

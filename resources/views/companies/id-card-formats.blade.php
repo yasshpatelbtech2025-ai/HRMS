@@ -17,7 +17,7 @@
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $firm->logo_path || ! ($firm->stamp_signature_path || $firm->signature_path || $firm->stamp_path))
-            <div class="mx-5 mt-4 rounded-md bg-sky-50 px-4 py-3 text-sm text-sky-800 ring-1 ring-sky-200">
+            <div class="mx-5 mt-4 rounded-md bg-info-soft px-4 py-3 text-sm text-info ring-1 ring-info/30">
                 {{ __('Cards show the firm\'s name, address, logo and the issuing authority\'s stamp and signature. Add the logo and stamp / signature in') }}
                 <a href="{{ route('company.firm') }}" class="font-semibold underline">{{ __('Company › Firm') }}</a>.
             </div>

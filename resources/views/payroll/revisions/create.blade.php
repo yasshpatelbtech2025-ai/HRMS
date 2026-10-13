@@ -19,12 +19,12 @@
         <a href="{{ route('payroll.revisions', ['employee' => $employee->uuid]) }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Back to salary revision list') }}</a>
     </div>
 
-    <form method="POST" action="{{ route('payroll.revisions.store', $employee) }}" class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200"
+    <form method="POST" action="{{ route('payroll.revisions.store', $employee) }}"
           x-data="{ rows: @js($rows), pct: '',
                     applyPct() { const p = Number(this.pct) || 0; Object.entries(this.rows).forEach(([k, r]) => { if (k === 'bonus' || k in @js(config('employee.deduction_elements'))) return; r.monthly = Math.round(r.current * (1 + p / 100) * 100) / 100; r.yearly = Math.round(r.monthly * 12 * 100) / 100; }) },
                     total(field) { return @js(config('employee.gross_salary_elements')).reduce((s, k) => s + (Number(this.rows[k]?.[field === 'current' ? 'current' : field]) || 0), 0) } }">
         @csrf
-        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-gray-200 px-5 py-4">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('Add salary revision') }}</h2>
                 <p class="text-sm text-gray-500">{{ $employee->employee_code }} · {{ $employee->full_name }} · {{ $employee->company?->establishment_name }}</p>
@@ -37,6 +37,7 @@
                 </span>
             </label>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="grid grid-cols-1 gap-4 px-5 py-4 sm:grid-cols-2">
             <x-form-row :label="__('Effective from')" for="effective_from" required :messages="$errors->get('effective_from')" class="!block">
@@ -86,5 +87,6 @@
             <a href="{{ route('payroll.revisions', ['employee' => $employee->uuid]) }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
             <x-primary-button>{{ __('Save revision') }}</x-primary-button>
         </div>
+    </div>
     </form>
 </x-app-layout>

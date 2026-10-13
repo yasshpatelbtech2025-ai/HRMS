@@ -6,10 +6,10 @@
 
     @php
         $statuses = [
-            'overdue' => ['label' => __('Overdue'), 'badge' => 'bg-red-100 text-red-800', 'accent' => 'bg-[#d03b3b]'],
-            'week' => ['label' => __('Due this week'), 'badge' => 'bg-amber-100 text-amber-800', 'accent' => 'bg-[#fab219]'],
-            'upcoming' => ['label' => __('Upcoming'), 'badge' => 'bg-sky-100 text-sky-800', 'accent' => 'bg-sky-500'],
-            'completed' => ['label' => __('Completed'), 'badge' => 'bg-green-100 text-green-800', 'accent' => 'bg-[#0ca30c]'],
+            'overdue' => ['label' => __('Overdue'), 'badge' => 'bg-danger-soft text-danger', 'accent' => 'bg-danger'],
+            'week' => ['label' => __('Due this week'), 'badge' => 'bg-warn-soft text-warn', 'accent' => 'bg-warn'],
+            'upcoming' => ['label' => __('Upcoming'), 'badge' => 'bg-info-soft text-info', 'accent' => 'bg-info'],
+            'completed' => ['label' => __('Completed'), 'badge' => 'bg-success-soft text-success', 'accent' => 'bg-success'],
         ];
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $filter = fn (array $change) => route('compliance.to-do', array_filter(array_merge(request()->only(['company', 'status', 'department', 'type']), $change)));
@@ -110,13 +110,13 @@
                                         @endif
                                         <form method="POST" action="{{ route($task->completed_at ? 'compliance.tasks.reopen' : 'compliance.tasks.complete', $task) }}">
                                             @csrf
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold {{ $task->completed_at ? 'text-gray-600 hover:bg-gray-100' : 'text-green-700 hover:bg-green-50' }}">{{ $task->completed_at ? __('Reopen') : __('Complete') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold {{ $task->completed_at ? 'text-gray-600 hover:bg-gray-100' : 'text-success hover:bg-success-soft' }}">{{ $task->completed_at ? __('Reopen') : __('Complete') }}</button>
                                         </form>
                                         @can('delete-records')
                                             <form method="POST" action="{{ route('compliance.tasks.destroy', $task) }}" data-confirm="{{ __('Delete this task? It will not come back.') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     </div>
@@ -126,7 +126,7 @@
                                 <td class="whitespace-nowrap px-3 py-3">
                                     <p class="font-semibold text-gray-900">{{ $task->due_on->format('d M Y') }}</p>
                                     @if ($status === 'overdue')<p class="text-xs font-medium text-red-600">{{ trans_choice(':count day overdue|:count days overdue', (int) $task->due_on->diffInDays(today())) }}</p>@endif
-                                    @if ($status === 'week')<p class="text-xs font-medium text-amber-700">{{ $task->due_on->isToday() ? __('Due today') : __('Due soon') }}</p>@endif
+                                    @if ($status === 'week')<p class="text-xs font-medium text-warn">{{ $task->due_on->isToday() ? __('Due today') : __('Due soon') }}</p>@endif
                                 </td>
                                 <td class="px-3 py-3 text-gray-700">{{ \App\Models\ComplianceTask::PRIORITIES[$task->priority] ?? $task->priority }}</td>
                                 <td class="px-3 py-3">

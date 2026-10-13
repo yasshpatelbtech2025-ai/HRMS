@@ -76,7 +76,7 @@
                                             @endif
                                         </h5>
                                         <button type="button" x-on:click="$dispatch('open-modal', @js($modal))"
-                                                class="rounded-md border px-3 py-1.5 text-sm font-medium {{ $slotErrors ? 'border-red-300 text-red-700' : 'border-gray-300 text-gray-700' }} hover:bg-gray-50">
+                                                class="rounded-md border px-3 py-1.5 text-sm font-medium {{ $slotErrors ? 'border-red-300 text-danger' : 'border-gray-300 text-gray-700' }} hover:bg-gray-50">
                                             {{ __('Shift Settings') }}
                                         </button>
                                     </div>

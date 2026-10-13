@@ -56,7 +56,7 @@
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->generated_at->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">{{ $sheet->generator?->name }}</td>
                             <td class="px-4 py-3">
-                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $sheet->isApproved() ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800' }}">{{ $sheet->isApproved() ? __('Approved') : __('Not approved') }}</span>
+                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $sheet->isApproved() ? 'bg-success-soft text-success' : 'bg-warn-soft text-warn' }}">{{ $sheet->isApproved() ? __('Approved') : __('Not approved') }}</span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->approved_at?->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">{{ $sheet->approver?->name }}</td>
@@ -73,7 +73,7 @@
                                             <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     @endunless

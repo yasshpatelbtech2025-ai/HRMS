@@ -38,7 +38,7 @@
                         </tr>
                         <tr>
                             @foreach (range(1, $month->daysInMonth) as $day)
-                                <th class="border border-gray-200 px-1 py-1 {{ $month->setDay($day)->isSunday() ? 'text-orange-600' : '' }}">{{ sprintf('%02d', $day) }}</th>
+                                <th class="border border-gray-200 px-1 py-1 {{ $month->setDay($day)->isSunday() ? 'text-warn' : '' }}">{{ sprintf('%02d', $day) }}</th>
                             @endforeach
                         </tr>
                     </thead>

@@ -6,11 +6,11 @@
     @php
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $styles = [
-            'P' => 'bg-green-100 text-green-800 border-green-200',
+            'P' => 'bg-success-soft text-success border-success/30',
             'HD' => 'bg-violet-100 text-violet-800 border-violet-200',
-            'A' => 'bg-red-100 text-red-700 border-red-200',
-            'WO' => 'bg-orange-100 text-orange-700 border-orange-200',
-            'PH' => 'bg-blue-100 text-blue-800 border-blue-200',
+            'A' => 'bg-danger-soft text-danger border-red-200',
+            'WO' => 'bg-warn-soft text-warn border-warn/30',
+            'PH' => 'bg-blue-100 text-info border-info/30',
             'LEAVE' => 'bg-teal-100 text-teal-800 border-teal-200',
             'COFF' => 'bg-gray-200 text-gray-700 border-gray-300',
         ];
@@ -19,7 +19,7 @@
         $employeeOptions = $allEmployees->when(request('sub_department'), fn ($c) => $c->where('sub_department_id', (int) request('sub_department')));
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200"
+    <div
          x-data="{
              cell: {},
              leave: { start: '', end: '', days: 1 },
@@ -44,9 +44,10 @@
                  this.leave.days = days > 0 ? days : '';
              },
          }">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Monthly present report') }}</h2>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.index') }}" class="grid grid-cols-1 gap-3 border-b border-gray-200 px-5 py-4 sm:grid-cols-3 lg:grid-cols-6 print:hidden">
             <select name="company" onchange="this.form.querySelectorAll('[data-reset]').forEach(el => el.value = ''); this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -94,7 +95,7 @@
                         <tr>
                             <th class="sticky left-0 z-30 min-w-52 border-b border-gray-200 bg-gray-50 px-3 py-2 text-left">{{ __('Employee') }}</th>
                             @foreach ($days as $day)
-                                <th class="border-b border-gray-200 px-1 py-2 {{ $day->isSunday() ? 'text-orange-600' : '' }}">{{ $day->format('d') }}<br><span class="font-normal">{{ $day->format('D') }}</span></th>
+                                <th class="border-b border-gray-200 px-1 py-2 {{ $day->isSunday() ? 'text-warn' : '' }}">{{ $day->format('d') }}<br><span class="font-normal">{{ $day->format('D') }}</span></th>
                             @endforeach
                             @foreach (['P' => 'P', 'A' => 'LOP', 'PH' => 'PH', 'WO' => 'WO', 'HD' => 'HD', 'LEAVE' => 'LEAVE', 'COFF' => 'COFF'] as $total)
                                 <th class="border-b border-l border-gray-200 bg-gray-100 px-2 py-2">{{ $total }}</th>
@@ -151,7 +152,7 @@
                                                 ];
                                             @endphp
                                             <select x-on:change="choose($event, @js($cell))" title="{{ $title }}" aria-label="{{ $employee->full_name }} {{ $date }}"
-                                                    class="w-16 cursor-pointer rounded border px-1 py-1 text-center text-xs font-semibold {{ $d['missing'] && $status === 'A' ? 'bg-amber-100 text-amber-800 border-amber-300' : $styles[$status] }} {{ $d['locked'] ? 'ring-1 ring-gray-500' : '' }}">
+                                                    class="w-16 cursor-pointer rounded border px-1 py-1 text-center text-xs font-semibold {{ $d['missing'] && $status === 'A' ? 'bg-warn-soft text-warn border-amber-300' : $styles[$status] }} {{ $d['locked'] ? 'ring-1 ring-gray-500' : '' }}">
                                                 @foreach ($options as $value => $label)
                                                     <option value="{{ $value === 'P_EDIT' ? 'P' : $value }}" @selected($value === $status) class="bg-white text-gray-900">
                                                         {{ $value === $status && $status === 'A' && $d['missing'] ? 'MP' : $label }}
@@ -161,7 +162,7 @@
                                         @endif
                                     </td>
                                 @endforeach
-                                @foreach (['P' => 'text-green-700', 'A' => 'text-red-600', 'PH' => 'text-blue-800', 'WO' => 'text-orange-600', 'HD' => 'text-violet-700', 'LEAVE' => 'text-teal-700', 'COFF' => 'text-gray-700'] as $key => $color)
+                                @foreach (['P' => 'text-success', 'A' => 'text-red-600', 'PH' => 'text-info', 'WO' => 'text-warn', 'HD' => 'text-violet-700', 'LEAVE' => 'text-teal-700', 'COFF' => 'text-gray-700'] as $key => $color)
                                     <td class="border-b border-l border-gray-100 bg-gray-50 px-2 text-center text-sm font-bold {{ $color }}">{{ $row['totals'][$key] + 0 }}</td>
                                 @endforeach
                             </tr>
@@ -250,5 +251,6 @@
             <input type="hidden" name="employee" :value="cell.employee">
             <input type="hidden" name="date" :value="cell.date">
         </form>
+    </div>
     </div>
 </x-app-layout>

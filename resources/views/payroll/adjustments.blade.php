@@ -37,7 +37,7 @@
                             <td class="px-4 py-3">{{ $adjustment->title }}</td>
                             <td class="px-4 py-3">{{ number_format((float) $adjustment->amount, 2) }}</td>
                             <td class="px-4 py-3">{{ $adjustment->salary_month->format('Y-m') }}</td>
-                            <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $adjustment->type === 'earning' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700' }}">{{ \App\Models\SalaryAdjustment::TYPES[$adjustment->type] }}</span></td>
+                            <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $adjustment->type === 'earning' ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger' }}">{{ \App\Models\SalaryAdjustment::TYPES[$adjustment->type] }}</span></td>
                             <td class="px-4 py-3">
                                 <x-row-actions :edit-modal="$modal" :delete-url="route('payroll.adjustments.destroy', $adjustment)" :delete-confirm="__('Delete this adjustment?')" />
                                 <x-modal :name="$modal" :show="old('_modal') === $modal" max-width="2xl">

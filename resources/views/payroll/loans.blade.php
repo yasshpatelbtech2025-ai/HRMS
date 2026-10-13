@@ -8,14 +8,15 @@
         $exportQuery = request()->only('employee', 'search');
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200" x-data="{ filtersOpen: @js(request()->filled('employee')) }">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div x-data="{ filtersOpen: @js(request()->filled('employee')) }">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Loan list') }}</h2>
             <div class="flex gap-2">
                 <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Filter') }}</button>
                 <x-add-button modal="create-loan">{{ __('Add loan') }}</x-add-button>
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('payroll.loans') }}" x-show="filtersOpen" x-transition class="flex flex-wrap items-end gap-3 border-b border-gray-200 bg-gray-50 px-5 py-4" style="display: none;">
             <div class="min-w-72">
@@ -88,6 +89,7 @@
         </div>
 
         <x-list-footer :paginator="$loans" />
+    </div>
     </div>
 
     <x-modal name="create-loan" :show="old('_modal') === 'create-loan'" max-width="2xl">

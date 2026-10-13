@@ -26,7 +26,7 @@
                 <h1 class="text-xl font-bold tracking-wide text-gray-900">{{ __('EMPLOYEE DETAILS FORM') }}</h1>
                 <p class="mt-1 text-gray-600">{{ $e->company?->establishment_name }} · {{ __('Employee id') }} <span class="font-mono">{{ $e->employee_code }}</span></p>
                 <p class="mt-1"><x-status-badge :active="$e->status === \App\Enums\EmployeeStatus::Active" />
-                    @if ($e->separation_date)<span class="ms-2 text-xs text-orange-700">{{ __('Separation date: :date', ['date' => $date($e->separation_date)]) }}</span>@endif
+                    @if ($e->separation_date)<span class="ms-2 text-xs text-warn">{{ __('Separation date: :date', ['date' => $date($e->separation_date)]) }}</span>@endif
                 </p>
             </div>
             <figure class="text-center">

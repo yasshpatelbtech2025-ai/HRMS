@@ -30,7 +30,7 @@
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
         @else
             @if ($frequency === 'monthly')
-                <div class="mx-5 mt-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
+                <div class="mx-5 mt-4 rounded-md bg-warn-soft px-4 py-3 text-sm text-warn ring-1 ring-amber-200">
                     {{ __(':company pays bonus monthly with salary (Configs › Payroll), so a yearly bonus sheet is usually not needed.', ['company' => $company->establishment_name]) }}
                 </div>
             @endif
@@ -50,10 +50,10 @@
                 <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                     <div class="text-sm">
                         @if ($approved)
-                            <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">{{ __('Approved') }}</span>
+                            <span class="inline-flex rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-medium text-success">{{ __('Approved') }}</span>
                             <span class="ms-2 text-gray-600">{{ __('by :name on :date', ['name' => $sheet->approver?->name ?? '-', 'date' => $sheet->approved_at?->format('d M Y')]) }}{{ $sheet->paid_on ? ' · '.__('paid :date', ['date' => $sheet->paid_on->format('d M Y')]) : '' }}</span>
                         @else
-                            <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">{{ __('Draft') }}</span>
+                            <span class="inline-flex rounded-full bg-warn-soft px-2.5 py-0.5 text-xs font-medium text-warn">{{ __('Draft') }}</span>
                             <span class="ms-2 text-gray-600">{{ __('Check the amounts, then approve with the date paid.') }}</span>
                         @endif
                     </div>
@@ -76,7 +76,7 @@
                                 <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" data-confirm="{{ __('Delete this bonus sheet?') }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
                                 </form>
                             @endcan
                             <form method="POST" action="{{ route('payroll.bonus.approve', $sheet) }}" class="flex items-center gap-2">
@@ -118,7 +118,7 @@
                                         <td class="px-3 py-3 text-right">{{ $entry->rate + 0 }}%</td>
                                         <td class="px-3 py-3">
                                             @if ($entry->eligible)
-                                                <span class="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">{{ __('Yes') }}</span>
+                                                <span class="inline-flex rounded-full bg-success-soft px-2 py-0.5 text-xs font-medium text-success">{{ __('Yes') }}</span>
                                             @else
                                                 <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">{{ __('No') }}</span>
                                                 <p class="mt-1 text-xs text-gray-500">{{ $entry->reason }}</p>
