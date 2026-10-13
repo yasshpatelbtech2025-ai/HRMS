@@ -59,4 +59,10 @@ Route::middleware('auth')->group(function () {
     }
 });
 
+// Component reference and the attendance grid prototype: local environment only.
+Route::middleware('auth')->prefix('_ui')->group(function () {
+    Route::get('/', fn () => app()->isLocal() ? view('ui-kit.index') : abort(404))->name('ui-kit');
+    Route::get('/attendance', fn () => app()->isLocal() ? view('ui-kit.attendance') : abort(404))->name('ui-kit.attendance');
+});
+
 require __DIR__.'/auth.php';

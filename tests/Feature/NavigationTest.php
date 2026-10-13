@@ -46,4 +46,16 @@ class NavigationTest extends TestCase
             ->assertSeeText('Total compliances')
             ->assertSeeText('Overdue');
     }
+
+    public function test_component_reference_is_hidden_outside_local(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $this->get(route('ui-kit'))->assertNotFound();
+        $this->get(route('ui-kit.attendance'))->assertNotFound();
+
+        $this->app['env'] = 'local';
+        $this->get(route('ui-kit'))->assertOk()->assertSee('Components');
+        $this->get(route('ui-kit.attendance'))->assertOk()->assertSee('Design prototype');
+    }
 }

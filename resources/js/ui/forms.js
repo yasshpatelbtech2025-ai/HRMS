@@ -24,7 +24,8 @@ export function installFormHelpers() {
     });
 
     // Restore buttons if the page comes back from bfcache.
-    window.addEventListener('pageshow', () => {
+    window.addEventListener('pageshow', (e) => {
+        if (!e.persisted) return;
         document.querySelectorAll('form[data-submitting]').forEach((f) => delete f.dataset.submitting);
         document.querySelectorAll('[aria-busy=true]').forEach((b) => b.removeAttribute('aria-busy'));
     });

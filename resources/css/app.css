@@ -122,3 +122,34 @@
 [data-table][data-density="compact"] td { padding-block: 4px; }
 [data-table] tbody tr:has(input[type="checkbox"]:checked) { background: rgb(var(--primary-soft) / .6); }
 [data-table][data-density="compact"] th { padding-block: 7px; }
+
+/* ---------------------------------------------------------------
+   Attendance grid. Status colour is always paired with its letter,
+   so it reads without colour too.
+---------------------------------------------------------------- */
+.att-grid { border-collapse: separate; border-spacing: 0; font-size: 12px; }
+.att-grid th, .att-grid td { border-bottom: 1px solid rgb(var(--line)); border-right: 1px solid rgb(var(--line) / .6); }
+.att-grid thead th { position: sticky; top: 0; z-index: 2; background: rgb(var(--sunken)); }
+.att-grid .att-name { position: sticky; inset-inline-start: 0; z-index: 1; background: rgb(var(--surface)); box-shadow: 1px 0 0 rgb(var(--line)); }
+.att-grid thead .att-name { z-index: 3; background: rgb(var(--sunken)); }
+.att-grid .att-sum { position: sticky; z-index: 1; background: rgb(var(--surface)); text-align: center; width: 44px; min-width: 44px; }
+.att-grid thead .att-sum { z-index: 3; background: rgb(var(--sunken)); }
+.att-grid td[data-day] {
+    width: 34px; min-width: 34px; height: 32px; padding: 0; text-align: center; cursor: cell;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 500; user-select: none;
+}
+.att-grid td[data-day]:focus { outline: 2px solid rgb(var(--primary)); outline-offset: -2px; position: relative; z-index: 1; }
+.att-grid .is-weekend { background: rgb(var(--sunken) / .7); }
+.att-grid .is-today { box-shadow: inset 0 2px 0 rgb(var(--primary)); }
+.att-grid td.is-sel { background: rgb(var(--primary) / .14) !important; }
+.att-grid tbody tr:hover td.att-name { background: rgb(var(--sunken)); }
+
+[data-s="P"] { background: rgb(var(--success-soft)); color: rgb(var(--success)); }
+[data-s="A"] { background: rgb(var(--danger-soft)); color: rgb(var(--danger)); }
+[data-s="H"] { background: rgb(var(--warn-soft)); color: rgb(var(--warn)); }
+[data-s="L"] { background: rgb(var(--info-soft)); color: rgb(var(--info)); }
+[data-s="W"] { background: rgb(var(--sunken)); color: rgb(var(--ink-3)); }
+[data-s="F"] { background: rgb(var(--primary-soft)); color: rgb(var(--primary-ink)); }
+[data-s="M"] { color: rgb(var(--warn)); background: repeating-linear-gradient(135deg, rgb(var(--warn-soft)) 0 4px, rgb(var(--surface)) 4px 8px); }
+.att-grid .att-sum-first { box-shadow: -1px 0 0 rgb(var(--line-strong)), -8px 0 10px -8px rgb(0 0 0 / .18); }
+.att-grid .att-name { box-shadow: 1px 0 0 rgb(var(--line-strong)), 8px 0 10px -8px rgb(0 0 0 / .18); }

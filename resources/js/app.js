@@ -17,6 +17,7 @@ import confirmDialog from './ui/confirm';
 import dataTable from './ui/data-table';
 import palette from './ui/palette';
 import steppedForm from './ui/stepped-form';
+import { attendanceGrid, STATUSES } from './ui/attendance-grid';
 import { installFormHelpers } from './ui/forms';
 import { installInlineValidation } from './ui/validate';
 
@@ -29,6 +30,19 @@ Alpine.data('confirmDialog', confirmDialog);
 Alpine.data('dataTable', dataTable);
 Alpine.data('palette', palette);
 Alpine.data('steppedForm', steppedForm);
+Alpine.data('attendancePrototype', () => ({
+    grid: null,
+    statuses: STATUSES,
+    changes: 0,
+    where: '',
+    init() {
+        this.grid = attendanceGrid(this.$root, { onChange: (n) => { this.changes = n; } });
+        this.$root.addEventListener('grid:focus', (e) => {
+            const { row, day, count } = e.detail;
+            this.where = count > 1 ? `${count} cells selected` : `${row} · day ${day}`;
+        });
+    },
+}));
 
 installFormHelpers();
 installInlineValidation();
