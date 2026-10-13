@@ -5,14 +5,15 @@
 
     @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary list') }}</h2>
             <div class="flex gap-2">
                 <a href="{{ route('payroll.export', 'csv') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
                 <a href="{{ route('payroll.export', 'xlsx') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4">
             @csrf
@@ -108,5 +109,6 @@
         @if ($sheets->hasPages())
             <div class="border-t border-gray-200 px-5 py-4">{{ $sheets->links() }}</div>
         @endif
+    </div>
     </div>
 </x-app-layout>

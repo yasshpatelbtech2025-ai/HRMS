@@ -3,11 +3,12 @@
 
     <x-section-tabs section="employees" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Sub department list') }}</h2>
             <x-add-button modal="create-sub-department">{{ __('Add sub department') }}</x-add-button>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @php($exportQuery = request()->only('search', 'sort', 'direction'))
         <x-list-toolbar :action="route('employees.departments')" :per-page="$perPage" :exports="[
@@ -60,6 +61,7 @@
         </div>
 
         <x-list-footer :paginator="$subDepartments" />
+    </div>
     </div>
 
     <x-modal name="create-sub-department" :show="old('_modal') === 'create-sub-department'" max-width="2xl">

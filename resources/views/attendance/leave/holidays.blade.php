@@ -6,8 +6,8 @@
 
     @php($select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500')
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Holiday list') }}</h2>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave.holidays') }}" class="flex gap-2">
@@ -27,6 +27,7 @@
                 @endif
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -70,6 +71,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 
     @if ($company)

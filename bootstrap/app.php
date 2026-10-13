@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Roles: admin-only pages, no deletes for users, deactivated accounts signed out.
         $middleware->appendToGroup('web', \App\Http\Middleware\EnforceRoleAccess::class);
+        // The top-bar company carries across pages (?company=).
+        $middleware->appendToGroup('web', \App\Http\Middleware\UseCurrentCompany::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         // Behind a forwarding proxy (e.g. a GitHub Codespaces link) the app must trust its

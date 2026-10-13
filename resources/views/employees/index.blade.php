@@ -5,7 +5,10 @@
 
     @php
         $filterKeys = ['company_id', 'name', 'employee_code', 'employment_type', 'department_id', 'sub_department_id', 'position_id', 'blood_group', 'country', 'gender', 'marital_status'];
-        $filtering = collect(request()->only($filterKeys))->filter(fn ($v) => filled($v))->isNotEmpty();
+        // A company that came from the top-bar picker isn't a filter the user opened.
+        $filtering = collect(request()->only($filterKeys))
+            ->when(request()->attributes->get('company_from_picker'), fn ($f) => $f->except('company_id'))
+            ->filter(fn ($v) => filled($v))->isNotEmpty();
         $exportQuery = request()->only([...$filterKeys, 'search', 'sort', 'direction']);
         $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
@@ -14,8 +17,8 @@
         @include('employees._import-status', ['run' => $importRun])
     @endif
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200" x-data="{ filtersOpen: @js($filtering) }">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div x-data="{ filtersOpen: @js($filtering) }">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee list') }}</h2>
             <div class="flex flex-wrap items-center gap-2 print:hidden">
                 <button type="button" x-on:click="filtersOpen = ! filtersOpen" :aria-expanded="filtersOpen"
@@ -57,6 +60,7 @@
                 </x-dropdown>
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         {{-- Filter panel --}}
         <form method="GET" action="{{ route('employees.index') }}" x-show="filtersOpen" x-transition
@@ -169,7 +173,7 @@
                             <td class="px-4 py-3">{{ $employee->subDepartment?->name ?? $employee->department?->name }}</td>
                             <td class="px-4 py-3"><x-status-badge :active="$employee->status === \App\Enums\EmployeeStatus::Active" /></td>
                             <td class="px-4 py-3">
-                                <div class="flex items-center gap-0.5">
+                                <x-row-menu>
                                     @php $makeInactive = $employee->status === \App\Enums\EmployeeStatus::Active; @endphp
                                     <form method="POST" action="{{ route('employees.status', $employee) }}">
                                         @csrf
@@ -191,7 +195,7 @@
                                         <form method="POST" action="{{ route('employees.destroy', $employee) }}" data-confirm="{{ __('Delete employee :name?', ['name' => $employee->full_name]) }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button title="{{ __('Delete') }}" class="rounded-md p-2 text-red-600 hover:bg-red-50">
+                                            <button title="{{ __('Delete') }}" class="rounded-md p-2 row-menu-danger text-red-600 hover:bg-red-50">
                                                 <span class="sr-only">{{ __('Delete') }}</span>
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                             </button>
@@ -206,7 +210,7 @@
                                         <span class="sr-only">{{ __('Separation') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
                                     </button>
-                                </div>
+                                </x-row-menu>
                             </td>
                             <td class="px-4 py-3">
                                 <button type="button" title="{{ __('Letters') }}" class="rounded-md p-2 text-gray-600 hover:bg-gray-100"
@@ -236,6 +240,7 @@
         </div>
 
         <x-list-footer :paginator="$employees" />
+    </div>
     </div>
 
     @include('employees._separation-modal')

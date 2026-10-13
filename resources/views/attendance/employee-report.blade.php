@@ -9,8 +9,8 @@
         $hours = fn (float $h) => $h > 0 ? sprintf('%d:%02d', floor($h), round(($h - floor($h)) * 60)) : '--';
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee wise attendance report') }}</h2>
             <div class="flex gap-2 print:hidden">
                 @if ($employee)
@@ -19,6 +19,7 @@
                 <button type="button" onclick="window.print()" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Print') }}</button>
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.employee-report') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-sm text-gray-700">
@@ -108,5 +109,6 @@
 
             @include('attendance._correction-modal', ['employee' => $employee, 'from' => $month, 'to' => $month->endOfMonth()])
         @endif
+    </div>
     </div>
 </x-app-layout>

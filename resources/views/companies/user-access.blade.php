@@ -3,8 +3,8 @@
 
     <x-section-tabs section="company" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('User access') }}</h2>
                 <p class="text-sm text-gray-500">
@@ -15,6 +15,7 @@
             </div>
             <x-add-button modal="create-user">{{ __('Add login') }}</x-add-button>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -62,6 +63,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 
     <x-modal name="create-user" :show="old('_modal') === 'create-user'" max-width="2xl">

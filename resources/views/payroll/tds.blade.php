@@ -9,8 +9,8 @@
         $exportQuery = ['company' => $company?->uuid, 'fy' => $fy];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('TDS (Income Tax)') }}</h2>
                 <p class="text-sm text-gray-500">{{ __('Financial year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
@@ -28,6 +28,7 @@
                 @endif
             </form>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if ($company && ! $deducting)
             <div class="mx-5 mt-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
@@ -91,5 +92,6 @@
         <p class="border-t border-gray-100 px-5 py-3 text-xs text-gray-500">
             {{ __('How it works: the year\'s gross is what was paid so far plus the monthly gross for the months left and any yearly bonus. Less the standard deduction (₹75,000 new regime, ₹50,000 old; the old regime also allows PT and employee PF under 80C up to ₹1.5 lakh), tax is worked out on the regime\'s slabs with the 87A rebate (no tax up to ₹12 lakh in the new regime) and 4% cess. The tax not yet deducted is spread over the months left and deducted in payroll each month. Set a monthly amount to use instead, e.g. after investment proofs. Tax regime is set on each employee.') }}
         </p>
+    </div>
     </div>
 </x-app-layout>

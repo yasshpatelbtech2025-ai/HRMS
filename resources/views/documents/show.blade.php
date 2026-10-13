@@ -5,8 +5,8 @@
         <a href="{{ route('documents.index') }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Back to documents') }}</a>
     </div>
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <p class="text-xs font-semibold uppercase text-gray-500">{{ $category }}</p>
                 <h2 class="text-2xl font-bold text-gray-900">{{ $slot['name'] }}</h2>
@@ -19,6 +19,7 @@
                 </label>
             </form>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <x-input-error class="px-5 pt-3" :messages="array_merge($errors->get('files'), $errors->get('files.*'))" />
 
         <div class="overflow-x-auto">
@@ -55,5 +56,6 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 </x-app-layout>

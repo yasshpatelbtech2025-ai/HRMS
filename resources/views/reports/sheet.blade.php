@@ -5,14 +5,15 @@
 
     @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('Monthly attendance sheet') }}</h2>
                 <p class="hidden text-sm text-gray-600 print:block">{{ $company?->establishment_name }} · {{ $month->format('F Y') }}</p>
             </div>
             @include('reports._exports')
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('reports.index') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <input type="month" name="month" value="{{ $month->format('Y-m') }}" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Month') }}">
@@ -66,5 +67,6 @@
             </div>
             <p class="px-5 py-3 text-xs text-gray-500 print:hidden">{{ __('Blank in-time cells are absent or not punched; WO, PH, LEAVE and COFF are shown where there was no punch.') }}</p>
         @endif
+    </div>
     </div>
 </x-app-layout>

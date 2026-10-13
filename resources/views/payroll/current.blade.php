@@ -8,8 +8,8 @@
         $types = config('employee.pay_frequencies');
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Current Salary List') }}</h2>
             <form method="GET" action="{{ route('payroll.current') }}">
                 <select name="company" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Company') }}">
@@ -19,6 +19,7 @@
                 </select>
             </form>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $employees)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
@@ -68,5 +69,6 @@
 
             <x-list-footer :paginator="$employees" />
         @endif
+    </div>
     </div>
 </x-app-layout>

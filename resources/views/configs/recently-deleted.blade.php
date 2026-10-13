@@ -3,8 +3,8 @@
 
     <x-section-tabs section="configs" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('Recently deleted') }}</h2>
                 <p class="text-sm text-gray-500">{{ __('Restore anything deleted by mistake. Records are removed for good :days days after deletion; employees and companies are kept until restored.', ['days' => $retention]) }}</p>
@@ -16,6 +16,7 @@
                 </select>
             </form>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -64,5 +65,6 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 </x-app-layout>

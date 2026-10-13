@@ -17,7 +17,8 @@ import './inline-validation';
 import { confirmDialog } from './confirm-dialog';
 import { bulkSelect } from './bulk-select';
 import './loading';
-import menu from './ui/menu';
+import menu, { placeBelow } from './ui/menu';
+import tableTools from './ui/table-tools';
 
 window.Alpine = Alpine;
 
@@ -31,5 +32,7 @@ Alpine.data('globalSearch', globalSearch);
 Alpine.data('confirmDialog', confirmDialog);
 Alpine.data('bulkSelect', bulkSelect);
 Alpine.data('menu', menu);
+Alpine.data('tableTools', tableTools);
+window.placeBelow = placeBelow;
 
 Alpine.start();

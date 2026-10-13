@@ -8,8 +8,8 @@
         $badge = ['pending' => 'bg-amber-100 text-amber-800', 'approved' => 'bg-green-100 text-green-800', 'rejected' => 'bg-red-100 text-red-700'];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Attendance request') }}</h2>
             <div class="flex flex-wrap gap-2 print:hidden">
                 @if ($company)
@@ -18,6 +18,7 @@
                 <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance form') }}</a>
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.requests') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -109,6 +110,7 @@
         @if ($requests)
             <x-list-footer :paginator="$requests" />
         @endif
+    </div>
     </div>
 
     @if ($company)

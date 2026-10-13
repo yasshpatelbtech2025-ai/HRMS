@@ -8,8 +8,8 @@
         $exportQuery = ['employee' => $employee?->uuid, 'month' => $month->format('Y-m')];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee attendance raw data') }}</h2>
             @if ($employee)
                 <div class="flex flex-wrap gap-2 print:hidden">
@@ -21,6 +21,7 @@
                 </div>
             @endif
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.raw-data') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-sm text-gray-700">
@@ -129,6 +130,7 @@
 
             <x-list-footer :paginator="$punches" />
         @endif
+    </div>
     </div>
 
     @if ($employee)

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Throwable;
 
@@ -37,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->useFirmMailAccount();
+
+        // Compact page numbers everywhere (the "Showing x to y" text is in components/list-footer).
+        Paginator::defaultView('components.ui.pagination');
 
         // N+1 guard: outside production a relation loaded lazily in a loop throws,
         // so missing eager loads show up in development and the tests.

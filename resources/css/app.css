@@ -151,20 +151,20 @@ main table.text-sm > tbody > tr:hover {
 }
 
 /* Form controls (not inside statutory forms or grids). */
-main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):not(.sheet *, table.text-xs *) {
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *, table.text-xs *)) {
     font-size: 14px;
 }
 
-main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):not(.sheet *, table *) {
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):where(:not(.sheet *, table *)) {
     padding: 7px 12px;
     border-radius: 6px;
 }
 
-main select:not(.sheet *, table.text-xs *) {
+main :where(select):where(:not(.sheet *, table.text-xs *)) {
     border-radius: 6px;
 }
 
-:is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):not(.sheet *) {
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *)) {
     border-color: rgb(var(--line-strong));
 }
 
@@ -231,4 +231,44 @@ main table.text-sm > tbody td :is(a, button).rounded-md.p-2:hover {
 }
 @media print {
     .app-main { padding-inline-start: 0 !important; }
+}
+
+/* ---------------------------------------------------------------
+   Row "⋯" menus: the icon actions listed with their labels.
+---------------------------------------------------------------- */
+.row-menu-panel :is(a, button).rounded-md.p-2,
+main table.text-sm > tbody td .row-menu-panel :is(a, button).rounded-md.p-2 {
+    display: flex;
+    width: 100%;
+    height: auto;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: rgb(var(--ink));
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+.row-menu-panel :is(a, button).rounded-md.p-2 > svg { color: rgb(var(--ink-3)); flex-shrink: 0; }
+.row-menu-panel :is(a, button).rounded-md.p-2:is(:hover, :focus-visible) { background: rgb(var(--sunken)); outline: none; }
+.row-menu-panel :is(a, button).row-menu-danger,
+.row-menu-panel :is(a, button).row-menu-danger > svg { color: rgb(var(--danger)); }
+.row-menu-panel :is(a, button).row-menu-danger:hover { background: rgb(var(--danger-soft)); }
+.row-menu-panel .sr-only {
+    position: static; width: auto; height: auto; margin: 0; padding: 0;
+    overflow: visible; clip: auto; white-space: nowrap;
+}
+.row-menu-panel form { display: block; }
+
+/* ---------------------------------------------------------------
+   List tables: compact density and a header that stays in view.
+---------------------------------------------------------------- */
+main table.text-sm[data-density="compact"] > tbody td { padding-top: 4px; padding-bottom: 4px; }
+main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; padding-bottom: 7px; }
+@media (min-width: 1024px) {
+    main .overflow-x-auto:has(> table.text-sm > thead) { max-height: calc(100dvh - 14rem); overflow: auto; }
+    main .overflow-x-auto > table.text-sm > thead th { position: sticky; top: 0; z-index: 2; }
 }

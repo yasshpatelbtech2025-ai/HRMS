@@ -34,7 +34,7 @@
                x-on:keydown.arrow-down.prevent="move(1)" x-on:keydown.arrow-up.prevent="move(-1)" x-on:keydown.enter.prevent="go()"
                placeholder="{{ __('Search employees, companies, pages…') }}" aria-label="{{ __('Search') }}" autocomplete="off"
                class="block h-9 w-full rounded-md border-line bg-surface/70 pe-12 ps-9 text-sm placeholder:text-ink-3 hover:border-line-strong focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/20">
-        <kbd class="pointer-events-none absolute end-2 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-sunken px-1.5 font-mono text-[11px] text-ink-3 lg:block">/</kbd>
+        <kbd class="pointer-events-none absolute end-2 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-sunken px-1.5 font-mono text-[11px] text-ink-3 lg:block">Ctrl K</kbd>
         <div x-show="open && query.trim().length >= 2" x-transition.opacity.duration.150ms style="display: none;"
              class="absolute inset-x-0 top-full z-50 mt-1.5 max-h-[70vh] overflow-y-auto rounded-lg border border-line bg-surface py-1 shadow-pop">
             {!! $results !!}

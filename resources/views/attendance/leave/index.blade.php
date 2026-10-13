@@ -10,8 +10,8 @@
         $badge = ['pending' => 'bg-amber-100 text-amber-800', 'approved' => 'bg-green-100 text-green-800', 'rejected' => 'bg-red-100 text-red-700'];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave list') }}</h2>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave') }}">
@@ -25,6 +25,7 @@
                 <x-add-button modal="create-leave">{{ __('Add leave application') }}</x-add-button>
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('attendance.leave')" :per-page="$perPage" :exports="[
             __('CSV') => route('attendance.leave.export', ['format' => 'csv'] + $exportQuery),
@@ -135,6 +136,7 @@
         </div>
 
         <x-list-footer :paginator="$leaves" />
+    </div>
     </div>
 
     <x-modal name="create-leave" :show="$errors->hasAny(['employee', 'leave_type_id', 'start_date', 'end_date', 'days', 'hard_copy'])" max-width="2xl">

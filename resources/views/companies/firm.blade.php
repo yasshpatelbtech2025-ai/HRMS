@@ -33,13 +33,14 @@
         @method('PUT')
         <input type="hidden" name="step" :value="step">
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+        <div>
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900">{{ __('Contractor firm') }}</h2>
                     <p class="text-sm text-gray-500">{{ __('Your own firm: its details, owners and factory manager, and the email account the HRMS sends from.') }}</p>
                 </div>
             </div>
+            <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
             {{-- Steps --}}
             <nav class="flex flex-wrap gap-2 border-b border-gray-200 px-5 py-3" aria-label="{{ __('Steps') }}">
@@ -194,6 +195,7 @@
                 </div>
                 <x-primary-button>{{ __('Save') }}</x-primary-button>
             </div>
+        </div>
         </div>
     </form>
 

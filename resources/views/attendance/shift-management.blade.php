@@ -9,10 +9,11 @@
         $codeStyles = "{ 'WO': 'bg-orange-100 text-orange-700', 'NS': 'bg-brand-100 text-brand-800', 'SS': 'bg-sky-100 text-sky-800', 'FS': 'bg-green-100 text-green-800', 'DS': 'bg-green-100 text-green-800', 'GS': 'bg-gray-100 text-gray-800' }";
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Shift management') }}</h2>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.shifts') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4">
             <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -141,5 +142,6 @@
                 </div>
             </form>
         @endif
+    </div>
     </div>
 </x-app-layout>

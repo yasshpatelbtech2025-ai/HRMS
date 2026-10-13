@@ -31,7 +31,7 @@ export default ({ align = 'end' } = {}) => ({
         this.open = false;
         if (refocus) this.$refs.trigger.querySelector('button, a')?.focus();
     },
-    items() { return [...this.$refs.panel.querySelectorAll('[role=menuitem], input, button:not([disabled])')]; },
+    items() { return [...this.$refs.panel.querySelectorAll('[role=menuitem], a[href], input, button:not([disabled])')]; },
     openAndFocus() {
         this.show();
         this.$nextTick(() => this.items()[0]?.focus());

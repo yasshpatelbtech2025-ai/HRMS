@@ -47,6 +47,10 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/dashboard');
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified', 'throttle:app'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/context/companies', [\App\Http\Controllers\CompanyContextController::class, 'index'])->name('context.companies');
+    Route::post('/context/company', [\App\Http\Controllers\CompanyContextController::class, 'update'])->name('context.company');
+});
 Route::get('/search', SearchController::class)->middleware(['auth', 'verified', 'throttle:60,1'])->name('search');
 
 Route::middleware(['auth', 'verified', 'throttle:app'])->group(function () {

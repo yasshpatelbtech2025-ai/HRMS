@@ -3,13 +3,14 @@
 
     <x-section-tabs section="company" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Company List') }}</h2>
             @can('admin')
                 <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
             @endcan
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('company.index')" :per-page="$perPage" print
                         :exports="[__('CSV') => route('company.export', request()->only('search', 'sort', 'direction'))]" />
@@ -66,6 +67,7 @@
         </div>
 
         <x-list-footer :paginator="$companies" />
+    </div>
     </div>
 
     @can('admin')

@@ -8,5 +8,5 @@
             {{ __('Showing 0 entries') }}
         @endif
     </p>
-    {{ $paginator->onEachSide(1)->links() }}
+    {{ $paginator->onEachSide(1)->links('components.ui.pagination') }}
 </div>
