@@ -14,6 +14,7 @@ import { shiftRoster } from './shift-roster';
 import { toasts } from './toasts';
 import { globalSearch } from './global-search';
 import './inline-validation';
+import formSteps from './ui/form-steps';
 import { confirmDialog } from './confirm-dialog';
 import { bulkSelect } from './bulk-select';
 import './loading';
@@ -33,6 +34,7 @@ Alpine.data('confirmDialog', confirmDialog);
 Alpine.data('bulkSelect', bulkSelect);
 Alpine.data('menu', menu);
 Alpine.data('tableTools', tableTools);
+Alpine.data('formSteps', formSteps);
 window.placeBelow = placeBelow;
 
 Alpine.start();

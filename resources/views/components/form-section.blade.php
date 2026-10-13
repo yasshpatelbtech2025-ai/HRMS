@@ -1,11 +1,14 @@
-{{-- A collapsible section of the employee form. Opens itself when it holds a validation error. --}}
+{{-- A collapsible section of the employee form. Opens itself when it holds a validation error.
+     It is also one step of the stepped form (resources/js/ui/form-steps.js). --}}
 @props(['title', 'required' => false, 'open' => false, 'fields' => []])
 
 @php
     $hasError = collect($errors->keys())->contains(fn ($key) => collect($fields)->contains(fn ($field) => $key === $field || str_starts_with($key, $field.'.')));
 @endphp
 
-<section x-data="{ open: @js($open || $hasError) }" class="rounded-lg border bg-surface shadow-hairline {{ $hasError ? 'border-danger/40' : 'border-line' }}">
+<section x-data="{ open: @js($open || $hasError) }" x-on:form-step-open="open = true"
+         data-step-section data-step-title="{{ $title }}" data-has-error="{{ $hasError ? 1 : 0 }}" @if ($required) data-step-required @endif
+         class="scroll-mt-24 rounded-lg border bg-surface shadow-hairline {{ $hasError ? 'border-danger/40' : 'border-line' }}">
     <h2>
         <button type="button" x-on:click="open = ! open" :aria-expanded="open"
                 class="flex w-full items-center justify-between px-5 py-3.5 text-start text-sm font-semibold text-ink">
