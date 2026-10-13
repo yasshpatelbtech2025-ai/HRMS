@@ -22,7 +22,7 @@
                 </ol>
             </nav>
         @endif
-        <h1 class="truncate text-xl font-semibold text-ink">{{ $title }}</h1>
+        <h1 class="truncate text-2xl font-semibold tracking-tight text-ink">{{ $title }}</h1>
         @if ($description)<p class="mt-1 text-sm text-ink-3">{{ $description }}</p>@endif
     </div>
     @isset($actions)

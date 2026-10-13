@@ -84,6 +84,11 @@
 }
 
 @layer components {
+    /* A white card on the page canvas. */
+    .card {
+        @apply rounded-lg border border-line bg-surface shadow-hairline;
+    }
+
     /* A spinner for buttons and loading areas (inherits the text colour). */
     .spinner {
         display: inline-block;
