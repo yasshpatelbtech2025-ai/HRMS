@@ -3,5 +3,6 @@
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "postCreateCommand": "bash .devcontainer/install-php-extensions.sh && composer install --no-interaction && npm install && npm run build",
   "postStartCommand": "bash .devcontainer/install-php-extensions.sh",
-  "forwardPorts": [8000]
+  "forwardPorts": [8000],
+  "remoteEnv": { "TRUSTED_PROXIES": "*" }
 }
