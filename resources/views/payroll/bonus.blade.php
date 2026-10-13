@@ -150,7 +150,7 @@
                     </div>
                     @if (! $approved && $sheet->entries->isNotEmpty())
                         <div class="flex justify-end border-t border-gray-100 px-5 py-3">
-                            <button class="rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-900">{{ __('Save amounts') }}</button>
+                            <button class="rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-4 py-2 text-sm font-medium">{{ __('Save amounts') }}</button>
                         </div>
                     @endif
                 </form>

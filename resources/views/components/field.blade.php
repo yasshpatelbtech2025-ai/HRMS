@@ -13,16 +13,16 @@
 @endphp
 
 <div>
-    <label for="{{ $id }}" class="block text-[15px] font-bold text-gray-700">
-        {{ $label }} @if ($required)<span class="text-red-600">*</span>@endif
+    <label for="{{ $id }}" class="block text-13 font-medium text-ink-2">
+        {{ $label }} @if ($required)<span class="text-danger" aria-hidden="true">*</span>@endif
     </label>
     <input id="{{ $id }}" name="{{ $inputName }}" type="{{ $type }}" @if ($type !== 'file') value="{{ $current instanceof \DateTimeInterface ? $current->format('Y-m-d') : $current }}" @endif
            @if ($required) required @endif placeholder="{{ $type === 'file' ? '' : $label }}"
            {{ $attributes->merge(['class' => $type === 'file'
-               ? 'mt-1 block w-full text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-200'
-               : 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500']) }}>
+               ? 'mt-1.5 block w-full text-sm text-ink-2 file:me-3 file:rounded-md file:border file:border-line-strong file:bg-surface file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink hover:file:bg-sunken'
+               : 'mt-1.5 block w-full rounded-md border-line-strong bg-surface text-sm text-ink shadow-none placeholder:text-ink-3 focus:border-primary focus:ring-2 focus:ring-primary/20']) }}>
     @if ($hint)
-        <p class="mt-1 text-xs text-gray-500">{{ $hint }}</p>
+        <p class="mt-1 text-xs text-ink-3">{{ $hint }}</p>
     @endif
     <x-input-error class="mt-1" :messages="$errors->get($name)" />
 </div>

@@ -19,14 +19,16 @@
 @endphp
 
 @if ($tabs->count() > 1)
-    <nav class="{{ $nested ? 'mb-4' : 'mb-6' }} -mx-1 overflow-x-auto print:hidden" aria-label="{{ $nested ? __('Sub-section') : __('Section') }}">
-        <ul class="flex w-max gap-1 rounded-lg p-1 {{ $nested ? 'bg-gray-100' : 'bg-white shadow-sm ring-1 ring-gray-200' }}">
+    <nav class="{{ $nested ? 'mb-4' : 'mb-5' }} overflow-x-auto print:hidden" aria-label="{{ $nested ? __('Sub-section') : __('Section') }}">
+        <ul class="flex w-max {{ $nested ? 'gap-0.5 rounded-md bg-sunken p-0.5' : 'gap-4 border-b border-line' }}">
             @foreach ($tabs as $name => $label)
                 @php $active = $name === $activeTab; @endphp
                 <li>
                     <a href="{{ route($name) }}" @if ($active) aria-current="page" @endif
-                       class="block whitespace-nowrap rounded-md font-medium transition {{ $nested ? 'px-2.5 py-[5px] text-[15px]' : 'px-2.5 py-[5px] text-[15px]' }}
-                              {{ $active ? ($nested ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-900 text-white') : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                       class="block whitespace-nowrap text-sm transition {{ $nested ? 'rounded-[5px] px-2.5 py-1' : '-mb-px border-b-2 px-0.5 pb-2.5 pt-1' }}
+                              {{ $nested
+                                  ? ($active ? 'bg-surface font-medium text-ink shadow-hairline' : 'text-ink-2 hover:text-ink')
+                                  : ($active ? 'border-primary font-medium text-ink' : 'border-transparent text-ink-2 hover:border-line-strong hover:text-ink') }}">
                         {{ __($label) }}
                     </a>
                 </li>

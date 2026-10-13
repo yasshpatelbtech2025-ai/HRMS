@@ -21,15 +21,15 @@
             <div class="sticky start-5" style="width: min(100%, calc(100vw - 5rem));">
 @endif
 <div {{ $attributes->merge(['class' => 'mx-auto flex max-w-md flex-col items-center text-center']) }}>
-    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600 ring-8 ring-brand-50/50">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$icon] ?? $icons['inbox'] }}" /></svg>
+    <span class="flex h-11 w-11 items-center justify-center rounded-full bg-sunken text-ink-3">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$icon] ?? $icons['inbox'] }}" /></svg>
     </span>
     @if ($title)
-        <p class="mt-4 text-base font-semibold text-gray-900">{{ $title }}</p>
+        <p class="mt-3 text-sm font-semibold text-ink">{{ $title }}</p>
     @endif
-    <div class="{{ $title ? 'mt-1' : 'mt-4' }} text-sm text-gray-500">{{ $slot }}</div>
+    <div class="{{ $title ? 'mt-1' : 'mt-3' }} max-w-sm text-13 text-ink-3">{{ $slot }}</div>
     @isset ($action)
-        <div class="mt-5">{{ $action }}</div>
+        <div class="mt-4">{{ $action }}</div>
     @endisset
 </div>
 @if ($colspan)

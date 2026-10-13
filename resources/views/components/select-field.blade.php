@@ -12,11 +12,11 @@
 @endphp
 
 <div>
-    <label for="{{ $id }}" class="block text-[15px] font-bold text-gray-700">
-        {{ $label }} @if ($required)<span class="text-red-600">*</span>@endif
+    <label for="{{ $id }}" class="block text-13 font-medium text-ink-2">
+        {{ $label }} @if ($required)<span class="text-danger" aria-hidden="true">*</span>@endif
     </label>
     <select id="{{ $id }}" name="{{ $inputName }}" @if ($required) required @endif
-            {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-gray-100']) }}>
+            {{ $attributes->merge(['class' => 'mt-1.5 block w-full rounded-md border-line-strong bg-surface text-sm text-ink shadow-none placeholder:text-ink-3 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-sunken']) }}>
         @if ($placeholder !== null)
             <option value="">{{ $placeholder }}</option>
         @endif

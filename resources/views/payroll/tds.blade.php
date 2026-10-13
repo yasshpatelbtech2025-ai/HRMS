@@ -75,7 +75,7 @@
                                     <input type="hidden" name="fy" value="{{ $fy }}">
                                     <input type="number" name="monthly_amount" step="0.01" min="0" value="{{ $r['override']?->monthly_amount }}" placeholder="{{ $money($r['estimate']) }}"
                                            class="{{ $select }} w-28 py-1" aria-label="{{ __('Monthly TDS for :name', ['name' => $e->full_name]) }}">
-                                    <button class="rounded-md bg-gray-800 px-2 py-1 text-xs font-semibold text-white hover:bg-gray-900">{{ __('Set') }}</button>
+                                    <button class="rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-2 py-1 text-xs font-medium">{{ __('Set') }}</button>
                                 </form>
                                 <p class="mt-1 text-xs {{ $r['override'] ? 'font-medium text-brand-700' : 'text-gray-500' }}">
                                     {{ $r['override'] ? __('Set by hand (estimate :amount) — clear and Set to estimate again', ['amount' => $money($r['estimate'])]) : __('Estimated · :months month(s) left', ['months' => $r['months_left']]) }}

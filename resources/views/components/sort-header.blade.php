@@ -13,7 +13,12 @@
 @endphp
 
 <th {{ $attributes->merge(['class' => 'px-5 py-3']) }} @if ($active) aria-sort="{{ $direction === 'asc' ? 'ascending' : 'descending' }}" @endif>
-    <a href="{{ $url }}" class="inline-flex items-center gap-1 hover:text-gray-900">
-        {{ $slot }} <span class="text-xs">{{ $active ? ($direction === 'asc' ? '▲' : '▼') : '' }}</span>
+    <a href="{{ $url }}" class="group inline-flex items-center gap-1 rounded hover:text-ink {{ $active ? 'text-ink' : '' }}">
+        {{ $slot }}
+        @if ($active)
+            <x-icon :name="$direction === 'asc' ? 'arrow-up' : 'arrow-down'" class="size-3" stroke="2" />
+        @else
+            <x-icon name="sort" class="size-3 opacity-0 transition group-hover:opacity-60" />
+        @endif
     </a>
 </th>

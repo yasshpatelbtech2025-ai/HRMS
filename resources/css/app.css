@@ -4,26 +4,51 @@
 
 /*
  * Global styles on top of the design tokens (tailwind.config.js).
- * Typography and sizing follow the old HRMS: Funnel Display at 15px, 28px
- * bold page titles, uppercase 14px table headings over 15px cells with
- * 12px padding, 15px form controls and round 40px row-action buttons.
- * Statutory forms (.sheet), the attendance and roster grids (text-xs
- * tables) and print keep their compact layout.
+ * "Ledger": IBM Plex Sans at 14px, 24px semibold page titles, sentence-case
+ * 12px table headings over 13.5px cells, compact square row actions and
+ * one teal focus ring. Statutory forms (.sheet), the attendance and roster
+ * grids (text-xs tables) and print keep their compact layout.
  */
 @layer base {
+    /* Semantic colours as RGB channels (Tailwind opacity modifiers work). */
+    :root {
+        --canvas: 247 247 244;       /* page background */
+        --surface: 255 255 255;      /* cards, tables, menus */
+        --sunken: 240 240 236;       /* table headings, wells */
+        --rail: 251 251 249;         /* sidebar */
+        --line: 228 228 223;         /* borders */
+        --line-strong: 207 207 200;
+        --ink: 22 24 29;             /* main text */
+        --ink-2: 74 77 85;           /* secondary text */
+        --ink-3: 107 110 118;        /* hints (AA on canvas) */
+        --primary: 11 107 94;        /* #0b6b5e */
+        --primary-hover: 9 90 79;
+        --primary-soft: 230 242 239;
+        --primary-ink: 6 78 68;
+        --on-primary: 255 255 255;
+        --success: 21 128 61;   --success-soft: 228 244 233;
+        --warn: 180 83 9;       --warn-soft: 253 241 220;
+        --danger: 180 35 24;    --danger-hover: 150 28 19; --danger-soft: 252 233 231;
+        --info: 29 78 216;      --info-soft: 230 237 252;
+        --sidebar-w: 248px;
+        --sidebar-rail-w: 64px;
+        --topbar-h: 56px;
+    }
+
     html {
         -webkit-tap-highlight-color: transparent;
     }
 
     body {
-        font-size: 15px;
-        color: #101828;
-        background-color: #f4f6f8;
+        font-size: 14px;
+        color: rgb(var(--ink));
+        background-color: rgb(var(--canvas));
+        font-feature-settings: "ss02";
     }
 
-    /* One visible focus style for keyboard users, in the brand colour. */
+    /* One visible focus style for keyboard users, in the primary colour. */
     :focus-visible {
-        outline: 2px solid theme('colors.brand.500');
+        outline: 2px solid rgb(var(--primary));
         outline-offset: 2px;
     }
 
@@ -37,6 +62,8 @@
         transition-duration: 150ms;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    td, .tabular { font-variant-numeric: tabular-nums; }
 
     /* Scroll boxes contain their absolutely positioned content (e.g. the
        screen-reader labels on row actions), so a wide table scrolls inside
@@ -73,7 +100,7 @@
         position: relative;
         overflow: hidden;
         border-radius: 6px;
-        background-color: theme('colors.gray.200');
+        background-color: rgb(var(--sunken));
     }
 
     .skeleton::after {
@@ -94,63 +121,72 @@
 
 /* Page titles. */
 main h2.text-2xl {
-    font-size: 28px;
+    font-size: 24px;
     line-height: 1.25;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.015em;
 }
 
-/* List tables. */
+/* List tables: quiet sentence-case headings on a tinted band, dense rows. */
 main table.text-sm > thead th {
-    font-size: 13px;
-    font-weight: 600;
-    color: theme('colors.gray.600');
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgb(var(--ink-2));
+    background-color: rgb(var(--sunken));
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 9px 12px;
     white-space: nowrap;
+    border-bottom: 1px solid rgb(var(--line));
 }
 
 main table.text-sm > tbody td {
-    font-size: 15px;
-    padding: 12px;
+    font-size: 13.5px;
+    padding: 9px 12px;
     vertical-align: middle;
+}
+
+main table.text-sm > tbody > tr:hover {
+    background-color: rgb(var(--sunken) / 0.6);
 }
 
 /* Form controls (not inside statutory forms or grids). */
 main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):not(.sheet *, table.text-xs *) {
-    font-size: 15px;
+    font-size: 14px;
 }
 
 main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):not(.sheet *, table *) {
-    padding: 8px 14px;
-    border-radius: 8px;
+    padding: 7px 12px;
+    border-radius: 6px;
 }
 
 main select:not(.sheet *, table.text-xs *) {
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
-/* Row action buttons: 40px white circles with a soft shadow. */
+:is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):not(.sheet *) {
+    border-color: rgb(var(--line-strong));
+}
+
+:is(input, select, textarea):not(.sheet *):focus {
+    border-color: rgb(var(--primary));
+    --tw-ring-color: rgb(var(--primary) / 0.2);
+}
+
+/* Row action buttons: compact ghost squares that fill on hover. */
 main table.text-sm > tbody td :is(a, button).rounded-md.p-2 {
-    width: 40px;
-    height: 40px;
-    border-radius: 9999px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #fff;
-    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.1);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background-color: transparent;
+    box-shadow: none;
 }
 
 main table.text-sm > tbody td :is(a, button).rounded-md.p-2:hover {
-    transform: scale(1.06);
-    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.14);
-}
-
-/* Table rows lift slightly on hover. */
-main table.text-sm > tbody > tr {
-    transition: background-color 150ms ease;
+    background-color: rgb(var(--sunken));
 }
 
 @keyframes spin {
@@ -175,4 +211,24 @@ main table.text-sm > tbody > tr {
         padding: 6px;
         font-size: 11px;
     }
+}
+
+/* ---------------------------------------------------------------
+   App shell. html.rail = sidebar collapsed to icons (desktop only).
+---------------------------------------------------------------- */
+.app-sidebar { width: var(--sidebar-w); }
+@media (max-width: 1023.98px) {
+    .app-sidebar { transform: translateX(-100%); }
+    .app-sidebar[data-open="true"] { transform: none; }
+}
+@media (min-width: 1024px) {
+    .app-main { padding-inline-start: var(--sidebar-w); }
+    html.rail .app-main { padding-inline-start: var(--sidebar-rail-w); }
+    html.rail .app-sidebar { width: var(--sidebar-rail-w); }
+    html.rail .app-sidebar .rail-hide { display: none !important; }
+    html.rail .app-sidebar .rail-show { display: flex !important; }
+    html.rail .app-sidebar .rail-center { justify-content: center; }
+}
+@media print {
+    .app-main { padding-inline-start: 0 !important; }
 }

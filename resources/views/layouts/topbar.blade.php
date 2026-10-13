@@ -1,53 +1,37 @@
-<header class="print:hidden sticky top-0 z-20 flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-200">
-    <div class="flex items-center gap-3">
-        <!-- Mobile sidebar toggle -->
-        <button type="button" @click="sidebarOpen = true"
-                class="lg:hidden -ms-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <span class="sr-only">{{ __('Open sidebar') }}</span>
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-        </button>
+<header class="sticky top-0 z-30 flex h-[var(--topbar-h)] items-center gap-2 border-b border-line bg-canvas px-3 sm:gap-3 sm:px-6 lg:px-8 print:hidden">
+    <button type="button" @click="drawer = true" aria-controls="sidebar"
+            class="-ms-1 rounded-md p-2 text-ink-2 hover:bg-sunken hover:text-ink lg:hidden">
+        <span class="sr-only">{{ __('Open menu') }}</span>
+        <x-icon name="menu" />
+    </button>
 
-        @isset($header)
-            <div class="text-lg font-semibold text-gray-800">{{ $header }}</div>
-        @endisset
+    @isset($header)
+        <div class="hidden min-w-0 truncate text-sm font-medium text-ink-2 md:block md:max-w-[12rem]">{{ $header }}</div>
+        <span class="hidden h-5 border-s border-line md:block" aria-hidden="true"></span>
+    @endisset
+
+    <div class="min-w-0 flex-1">
+        <x-global-search />
     </div>
 
-    <div class="flex items-center gap-2 sm:gap-4">
-    <x-global-search />
-
-    <!-- User menu -->
-    <x-dropdown align="right" width="48">
-        <x-slot name="trigger">
-            <button class="inline-flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 focus:outline-none transition">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white text-sm font-semibold">
-                    {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
-                </span>
-                <span class="hidden sm:block">{{ Auth::user()->name }}</span>
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+    <x-ui.menu width="w-60">
+        <x-slot:trigger>
+            <button type="button" class="flex items-center gap-2 rounded-md p-1 hover:bg-sunken" aria-label="{{ __('Account menu') }}" aria-haspopup="menu">
+                <span class="flex size-7 items-center justify-center rounded-full bg-ink text-xs font-semibold text-canvas">{{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                <span class="hidden max-w-[10rem] truncate text-sm font-medium text-ink-2 md:block">{{ Auth::user()->name }}</span>
+                <x-icon name="chevron-down" class="hidden size-3.5 text-ink-3 md:block" />
             </button>
-        </x-slot>
-
-        <x-slot name="content">
-            <div class="px-4 py-2 border-b border-gray-100">
-                <div class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</div>
-            </div>
-
-            <x-dropdown-link :href="route('profile.edit')">
-                {{ __('Profile') }}
-            </x-dropdown-link>
-
-            <!-- Authentication -->
+        </x-slot:trigger>
+        <div class="border-b border-line px-2.5 pb-2 pt-1.5">
+            <p class="truncate text-sm font-medium text-ink">{{ Auth::user()->name }}</p>
+            <p class="truncate text-xs text-ink-3">{{ Auth::user()->email }}</p>
+        </div>
+        <div class="pt-1">
+            <x-ui.menu-item :href="route('profile.edit')" icon="user">{{ __('Profile') }}</x-ui.menu-item>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-
-                <x-dropdown-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                    this.closest('form').submit();">
-                    {{ __('Log Out') }}
-                </x-dropdown-link>
+                <x-ui.menu-item type="submit" icon="logout">{{ __('Log Out') }}</x-ui.menu-item>
             </form>
-        </x-slot>
-    </x-dropdown>
-    </div>
+        </div>
+    </x-ui.menu>
 </header>
