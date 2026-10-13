@@ -1,7 +1,7 @@
 {{-- Neutral logo tile + product name from config/branding.php --}}
 @props(['compact' => false])
 <span {{ $attributes->class(['flex items-center gap-2.5']) }}>
-    <span class="flex size-8 shrink-0 items-center justify-center rounded-[7px] bg-primary font-mono text-[15px] font-medium text-white shadow-hairline" aria-hidden="true">
+    <span class="flex size-8 shrink-0 items-center justify-center rounded-[7px] bg-primary font-mono text-[15px] font-medium text-on-primary shadow-hairline" aria-hidden="true">
         {{ config('branding.mark') }}
     </span>
     @unless ($compact)

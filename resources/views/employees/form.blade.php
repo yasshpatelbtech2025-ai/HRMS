@@ -66,7 +66,7 @@
                                 <span class="flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
                                       :class="{
                                           'border-danger bg-danger-soft text-danger': state({{ $i }}) === 'error',
-                                          'border-primary bg-primary text-white': state({{ $i }}) === 'current',
+                                          'border-primary bg-primary text-on-primary': state({{ $i }}) === 'current',
                                           'border-primary/30 bg-primary-soft text-primary': state({{ $i }}) === 'done',
                                           'border-line-strong text-ink-3': state({{ $i }}) === 'todo',
                                       }">

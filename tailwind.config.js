@@ -41,6 +41,7 @@ export default {
                 line: { DEFAULT: token('line'), strong: token('line-strong') },
                 ink: { DEFAULT: token('ink'), 2: token('ink-2'), 3: token('ink-3') },
                 primary: { DEFAULT: token('primary'), hover: token('primary-hover'), soft: token('primary-soft'), ink: token('primary-ink') },
+                'on-primary': token('on-primary'),
                 success: { DEFAULT: token('success'), soft: token('success-soft') },
                 warn: { DEFAULT: token('warn'), soft: token('warn-soft') },
                 danger: { DEFAULT: token('danger'), hover: token('danger-hover'), soft: token('danger-soft') },

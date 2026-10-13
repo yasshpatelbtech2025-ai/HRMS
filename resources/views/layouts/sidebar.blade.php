@@ -1,10 +1,10 @@
 {{-- Sidebar: grouped sections from config/navigation.php. Desktop can collapse to an icon rail (remembered);
      below lg it is an off-canvas drawer. --}}
-<div x-show="drawer" x-transition.opacity @click="drawer = false" class="fixed inset-0 z-40 bg-ink/40 lg:hidden" x-cloak></div>
+<div x-show="drawer" x-transition.opacity @click="drawer = false" class="fixed inset-0 z-40 bg-black/40 lg:hidden" x-cloak></div>
 
 <aside id="sidebar" aria-label="{{ __('Main') }}"
-       :class="drawer ? 'translate-x-0' : 'max-lg:-translate-x-full'"
-       class="app-sidebar fixed inset-y-0 start-0 z-50 flex flex-col border-e border-line bg-rail transition-[transform,width] duration-200 max-lg:-translate-x-full max-lg:shadow-pop">
+       :data-open="drawer"
+       class="app-sidebar fixed inset-y-0 start-0 z-50 flex flex-col border-e border-line bg-rail transition-[transform,width] duration-200 max-lg:shadow-pop">
     <div class="flex h-[var(--topbar-h)] shrink-0 items-center justify-between gap-2 px-3.5">
         <a href="{{ route('dashboard') }}" class="min-w-0 rounded-control">
             <x-ui.brand class="rail-hide" />

@@ -79,6 +79,19 @@
                 <p class="truncate text-sm font-medium text-ink">{{ Auth::user()->name }}</p>
                 <p class="truncate text-xs text-ink-3">{{ Auth::user()->email }}</p>
             </div>
+            {{-- Theme: remembered per browser; applied before first paint by layouts/partials/head --}}
+            <div x-data="{ theme: $persist('light').as('theme') }" x-effect="applyTheme(theme)" class="border-b border-line px-2.5 py-2">
+                <p class="mb-1.5 text-xs text-ink-3">{{ __('Appearance') }}</p>
+                <div class="grid grid-cols-3 gap-0.5 rounded-control bg-sunken p-0.5" role="radiogroup" aria-label="{{ __('Appearance') }}">
+                    @foreach (['light' => [__('Light'), 'sun'], 'dark' => [__('Dark'), 'moon'], 'system' => [__('Auto'), 'cog']] as $value => [$label, $icon])
+                        <button type="button" role="radio" :aria-checked="theme === '{{ $value }}'" @click="theme = '{{ $value }}'"
+                                :class="theme === '{{ $value }}' ? 'bg-surface text-ink shadow-hairline' : 'text-ink-3 hover:text-ink'"
+                                class="flex items-center justify-center gap-1 rounded-[5px] py-1 text-xs">
+                            <x-icon :name="$icon" class="size-3.5" />{{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
             <div class="pt-1">
                 <x-ui.menu-item :href="route('profile.edit')" icon="user">{{ __('Profile') }}</x-ui.menu-item>
                 <form method="POST" action="{{ route('logout') }}">

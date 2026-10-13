@@ -22,6 +22,7 @@
         --primary-hover: 9 90 79;    /* #095A4F */
         --primary-soft: 230 242 239; /* #E6F2EF */
         --primary-ink: 6 78 68;      /* primary text on soft */
+        --on-primary: 255 255 255;   /* text on filled primary/danger */
 
         --success: 21 128 61;   --success-soft: 228 244 233;
         --warn: 180 83 9;       --warn-soft: 253 241 220;
@@ -53,6 +54,7 @@
         --primary-hover: 92 196 179;
         --primary-soft: 22 52 48;
         --primary-ink: 140 222 207;
+        --on-primary: 12 20 19;
 
         --success: 74 196 116;  --success-soft: 23 48 33;
         --warn: 234 160 72;     --warn-soft: 56 40 18;
@@ -105,6 +107,10 @@
    App shell. html.rail = sidebar collapsed to icons (desktop only).
 ---------------------------------------------------------------- */
 .app-sidebar { width: var(--sidebar-w); }
+@media (max-width: 1023.98px) {
+    .app-sidebar { transform: translateX(-100%); }
+    .app-sidebar[data-open="true"] { transform: none; }
+}
 @media (min-width: 1024px) {
     .app-main { padding-inline-start: var(--sidebar-w); }
     html.rail .app-main { padding-inline-start: var(--sidebar-rail-w); }

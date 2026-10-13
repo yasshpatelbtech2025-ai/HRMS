@@ -5,7 +5,7 @@
      @keydown.window.meta.k.prevent="open ? hide() : show()"
      @keydown.window.slash="if (!open && !['INPUT','TEXTAREA','SELECT'].includes($event.target.tagName) && !$event.target.isContentEditable) { $event.preventDefault(); show() }"
      x-show="open" x-cloak class="fixed inset-0 z-[65] flex items-start justify-center p-3 pt-[12vh]">
-    <div x-show="open" x-transition.opacity.duration.100ms class="fixed inset-0 bg-ink/30" @click="hide()"></div>
+    <div x-show="open" x-transition.opacity.duration.100ms class="fixed inset-0 bg-black/30" @click="hide()"></div>
     <div x-show="open" x-trap.noscroll="open" role="dialog" aria-modal="true" aria-label="{{ __('Search and jump') }}"
          x-transition:enter="ease-out duration-100" x-transition:enter-start="opacity-0 scale-[.98]"
          @keydown.escape.prevent.stop="hide()" @keydown.down.prevent="move(1)" @keydown.up.prevent="move(-1)" @keydown.enter.prevent="go()"

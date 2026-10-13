@@ -49,4 +49,17 @@ installInlineValidation();
 
 window.Alpine = Alpine;
 window.placeBelow = placeBelow;
+
+// Light / dark / follow the system. The stored choice is applied before first paint in
+// layouts/partials/head.blade.php; this keeps it in sync afterwards.
+const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+window.applyTheme = (theme) => {
+    const dark = theme === 'dark' || (theme === 'system' && darkQuery.matches);
+    document.documentElement.toggleAttribute('data-theme', dark);
+    if (dark) document.documentElement.dataset.theme = 'dark';
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', dark ? '#111316' : '#F7F7F4');
+};
+darkQuery.addEventListener('change', () => {
+    try { window.applyTheme(JSON.parse(localStorage.getItem('_x_theme') || '"light"')); } catch (e) { /* storage blocked */ }
+});
 Alpine.start();

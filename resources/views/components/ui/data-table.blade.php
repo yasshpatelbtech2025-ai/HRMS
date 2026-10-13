@@ -105,13 +105,13 @@
              class="fixed inset-x-3 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-card bg-ink px-3 py-2 text-sm text-canvas shadow-pop sm:inset-x-0">
             <span class="ps-1 font-medium tabular" x-text="selected.length + ' ' + (selected.length === 1 ? noun[0] : noun[1]) + ' {{ __('selected') }}'"></span>
             <span class="flex-1"></span>
-            <button type="button" @click="exportCsv()" class="inline-flex items-center gap-1.5 rounded-control px-2.5 py-1.5 hover:bg-white/10"><x-icon name="download" class="size-4" /><span class="max-sm:sr-only">{{ __('Export CSV') }}</span></button>
+            <button type="button" @click="exportCsv()" class="inline-flex items-center gap-1.5 rounded-control px-2.5 py-1.5 hover:bg-canvas/10"><x-icon name="download" class="size-4" /><span class="max-sm:sr-only">{{ __('Export CSV') }}</span></button>
             <button type="button" @click="$dispatch('confirm', {
                         title: '{{ __('Delete') }} ' + selected.length + ' ' + (selected.length === 1 ? noun[0] : noun[1]) + '?',
                         message: '{{ __('They will be moved out of the list. You can undo this right after.') }}',
                         confirmLabel: '{{ __('Delete') }}', action: @js($bulkDelete), method: 'DELETE', fields: { 'ids[]': selected } })"
-                    class="inline-flex items-center gap-1.5 rounded-control px-2.5 py-1.5 text-[rgb(255_170_160)] hover:bg-white/10"><x-icon name="trash" class="size-4" /><span class="max-sm:sr-only">{{ __('Delete') }}</span></button>
-            <button type="button" @click="clear()" class="rounded-control p-1.5 hover:bg-white/10" aria-label="{{ __('Clear selection') }}"><x-icon name="x" class="size-4" /></button>
+                    class="inline-flex items-center gap-1.5 rounded-control px-2.5 py-1.5 text-danger-soft hover:bg-canvas/10"><x-icon name="trash" class="size-4" /><span class="max-sm:sr-only">{{ __('Delete') }}</span></button>
+            <button type="button" @click="clear()" class="rounded-control p-1.5 hover:bg-canvas/10" aria-label="{{ __('Clear selection') }}"><x-icon name="x" class="size-4" /></button>
         </div>
     @endif
 </div>

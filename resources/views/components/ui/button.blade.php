@@ -1,10 +1,10 @@
 @props(['variant' => 'primary', 'size' => 'md', 'href' => null, 'icon' => null, 'iconRight' => null, 'square' => false])
 @php
     $variants = [
-        'primary' => 'bg-primary text-white shadow-hairline hover:bg-primary-hover',
+        'primary' => 'bg-primary text-on-primary shadow-hairline hover:bg-primary-hover',
         'secondary' => 'border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken',
         'ghost' => 'text-ink-2 hover:bg-sunken hover:text-ink',
-        'danger' => 'bg-danger text-white shadow-hairline hover:bg-danger-hover',
+        'danger' => 'bg-danger text-on-primary shadow-hairline hover:bg-danger-hover',
         'danger-ghost' => 'text-danger hover:bg-danger-soft',
     ];
     $sizes = $square
