@@ -3,8 +3,18 @@
 # the universal image, so apt's php8.x-pgsql packages don't apply to it).
 set -euo pipefail
 
-if php -m | grep -qx pdo_pgsql; then
+if php -m | grep -x pdo_pgsql >/dev/null; then
     echo "pdo_pgsql already enabled for PHP $(php -r 'echo PHP_VERSION;')"
+    exit 0
+fi
+
+SCAN_DIR=$(php --ini | sed -n 's/^Scan for additional .ini files in: *//p' | tr -d '"')  # PHP 8.5 quotes the path
+EXT_DIR=$(php -r 'echo ini_get("extension_dir");')
+
+# Already compiled but not switched on (the .ini can go missing while the .so files remain).
+if [ -f "$EXT_DIR/pgsql.so" ] && [ -f "$EXT_DIR/pdo_pgsql.so" ]; then
+    printf 'extension=pgsql\nextension=pdo_pgsql\n' > "$SCAN_DIR/20-pgsql.ini"
+    php -m | grep -E '^(pgsql|pdo_pgsql)$'
     exit 0
 fi
 
@@ -14,7 +24,6 @@ fi
 
 PHP_VERSION=$(php -r 'echo PHP_VERSION;')
 PHP_BIN=$(dirname "$(readlink -f "$(command -v php)")")
-SCAN_DIR=$(php --ini | sed -n 's/^Scan for additional .ini files in: *//p')
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 

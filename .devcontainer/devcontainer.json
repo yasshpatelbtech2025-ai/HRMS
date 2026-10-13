@@ -1,5 +1,6 @@
 {
   "name": "HRMS",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "postCreateCommand": "bash .devcontainer/install-php-pgsql.sh"
+  "postCreateCommand": "bash .devcontainer/install-php-pgsql.sh",
+  "postStartCommand": "bash .devcontainer/install-php-pgsql.sh"
 }
