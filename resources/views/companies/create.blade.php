@@ -1,8 +1,4 @@
-<x-app-layout>
-    <x-slot name="header">{{ __('Add company') }}</x-slot>
-
-    <form method="POST" action="{{ route('company.store') }}" class="max-w-3xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-        @csrf
-        @include('companies._form', ['submit' => __('Add company')])
-    </form>
+<x-app-layout :title="__('Add company')">
+    <x-ui.page-header :title="__('Add company')" />
+    @include('companies._form', ['action' => route('company.store'), 'submit' => __('Add company')])
 </x-app-layout>

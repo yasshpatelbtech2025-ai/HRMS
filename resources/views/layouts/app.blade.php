@@ -1,39 +1,28 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('app.name', 'HRMS') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('layouts.partials.head')
     </head>
-    <body class="font-sans antialiased bg-slate-50">
-        <div x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="min-h-screen">
+    <body class="font-sans">
+        <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[80] focus:rounded-control focus:bg-surface focus:px-3 focus:py-2 focus:shadow-pop">{{ __('Skip to content') }}</a>
+
+        <div x-data="{ drawer: false, rail: $persist(false).as('sidebar:rail') }"
+             x-effect="document.documentElement.classList.toggle('rail', rail)"
+             @keydown.escape.window="drawer = false"
+             class="min-h-dvh">
             @include('layouts.sidebar')
 
-            <div class="lg:ps-64 flex flex-col min-h-screen">
+            <div class="app-main flex min-h-dvh flex-col">
                 @include('layouts.topbar')
 
-                <!-- Page Content -->
-                <main class="flex-1 p-4 sm:p-6 lg:p-8">
-                    @if (session('status'))
-                        <div role="alert" class="mb-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 ring-1 ring-green-200">{{ session('status') }}</div>
-                    @endif
-                    @if (session('error'))
-                        <div role="alert" class="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">{{ session('error') }}</div>
-                    @endif
-
+                <main id="main" tabindex="-1" class="mx-auto w-full max-w-[1600px] flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
                     {{ $slot }}
                 </main>
             </div>
         </div>
+
+        @include('layouts.palette')
+        <x-ui.confirm-dialog />
+        <x-ui.toast-stack />
     </body>
 </html>

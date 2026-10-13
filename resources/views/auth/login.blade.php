@@ -1,47 +1,30 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <h1 class="text-xl font-semibold text-ink">{{ __('Sign in') }}</h1>
+    <p class="mt-1 text-sm text-ink-3">{{ __('Use the email and password your administrator gave you.') }}</p>
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
         @csrf
+        <x-ui.field :label="__('Email')" for="email">
+            <x-ui.input name="email" type="email" required autofocus autocomplete="username" />
+        </x-ui.field>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <x-ui.field for="password" x-data="{ reveal: false }">
+            <div class="flex items-baseline justify-between">
+                <label for="password" class="text-13 font-medium text-ink-2">{{ __('Password') }}</label>
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="text-13 text-primary hover:underline">{{ __('Forgot password?') }}</a>
+                @endif
+            </div>
+            <div class="relative">
+                <input id="password" name="password" required autocomplete="current-password" :type="reveal ? 'text' : 'password'" type="password" class="control pe-16" @error('password') aria-invalid="true" @enderror>
+                <button type="button" @click="reveal = !reveal" class="absolute inset-y-0 end-0 px-3 text-13 text-ink-3 hover:text-ink" x-text="reveal ? '{{ __('Hide') }}' : '{{ __('Show') }}'" :aria-pressed="reveal">{{ __('Show') }}</button>
+            </div>
+        </x-ui.field>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <label class="flex items-center gap-2 text-sm text-ink-2">
+            <x-ui.checkbox id="remember_me" name="remember" />{{ __('Keep me signed in on this computer') }}
+        </label>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-brand-600 shadow-sm focus:ring-brand-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+        <x-ui.button class="w-full">{{ __('Sign in') }}</x-ui.button>
     </form>
 </x-guest-layout>

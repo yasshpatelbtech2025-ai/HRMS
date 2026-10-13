@@ -1,9 +1,8 @@
-<x-app-layout>
-    <x-slot name="header">{{ __('Edit company') }}</x-slot>
-
-    <form method="POST" action="{{ route('company.update', $company) }}" class="max-w-3xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-        @csrf
-        @method('PUT')
-        @include('companies._form', ['submit' => __('Save changes')])
-    </form>
+<x-app-layout :title="$company->establishment_name">
+    <x-ui.page-header :title="$company->establishment_name">
+        <x-slot:actions>
+            <x-ui.button variant="secondary" :href="route('employees.index', ['company_id' => $company->id])" icon="users">{{ __('View employees') }}</x-ui.button>
+        </x-slot:actions>
+    </x-ui.page-header>
+    @include('companies._form', ['action' => route('company.update', $company), 'submit' => __('Save changes')])
 </x-app-layout>

@@ -2,4 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------
+   Design tokens ("Ledger"). Colours are RGB channels so Tailwind
+   opacity modifiers work: bg-primary/10, etc.
+---------------------------------------------------------------- */
+@layer base {
+    :root {
+        --canvas: 247 247 244;       /* #F7F7F4 page background */
+        --surface: 255 255 255;      /* cards, tables */
+        --sunken: 241 241 237;       /* table headers, wells */
+        --rail: 251 251 249;         /* sidebar */
+        --line: 228 228 223;         /* #E4E4DF borders */
+        --line-strong: 207 207 200;
+        --ink: 22 24 29;             /* #16181D primary text */
+        --ink-2: 74 77 85;           /* secondary text */
+        --ink-3: 107 110 118;        /* tertiary text, AA on canvas */
+
+        --primary: 11 107 94;        /* #0B6B5E */
+        --primary-hover: 9 90 79;    /* #095A4F */
+        --primary-soft: 230 242 239; /* #E6F2EF */
+        --primary-ink: 6 78 68;      /* primary text on soft */
+
+        --success: 21 128 61;   --success-soft: 228 244 233;
+        --warn: 180 83 9;       --warn-soft: 253 241 220;
+        --danger: 180 35 24;    --danger-hover: 150 28 19; --danger-soft: 252 233 231;
+        --info: 29 78 216;      --info-soft: 230 237 252;
+
+        --radius-control: 6px;
+        --radius-card: 10px;
+        --sidebar-w: 248px;
+        --sidebar-rail-w: 64px;
+        --topbar-h: 56px;
+        --row-h: 44px;
+
+        color-scheme: light;
+    }
+
+    [data-theme="dark"] {
+        --canvas: 17 19 22;
+        --surface: 24 27 31;
+        --sunken: 30 33 38;
+        --rail: 20 22 26;
+        --line: 44 48 54;
+        --line-strong: 62 67 75;
+        --ink: 236 237 233;
+        --ink-2: 184 187 192;
+        --ink-3: 142 146 153;
+
+        --primary: 64 178 160;
+        --primary-hover: 92 196 179;
+        --primary-soft: 22 52 48;
+        --primary-ink: 140 222 207;
+
+        --success: 74 196 116;  --success-soft: 23 48 33;
+        --warn: 234 160 72;     --warn-soft: 56 40 18;
+        --danger: 240 112 100;  --danger-hover: 248 140 130; --danger-soft: 60 26 24;
+        --info: 120 160 248;    --info-soft: 26 36 64;
+
+        color-scheme: dark;
+    }
+
+    html { -webkit-tap-highlight-color: transparent; }
+    body { @apply bg-canvas text-sm text-ink antialiased; font-feature-settings: "ss02"; }
+
+    /* One focus style everywhere: visible, on-brand, keyboard only. */
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid rgb(var(--primary)); outline-offset: 2px; border-radius: 4px; }
+
+    .tabular, td, .font-mono { font-variant-numeric: tabular-nums; }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+}
+
+@layer components {
+    /* Form controls share one shape. Components use these classes. */
+    .control {
+        @apply block w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-sm text-ink shadow-none
+               placeholder:text-ink-3 transition-colors
+               hover:border-ink-3
+               focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20
+               disabled:cursor-not-allowed disabled:bg-sunken disabled:text-ink-3;
+    }
+    .control[aria-invalid="true"] { @apply border-danger focus:border-danger focus:ring-danger/20; }
+
+    .card { @apply rounded-card border border-line bg-surface shadow-hairline; }
+
+    .skeleton {
+        @apply rounded bg-sunken;
+        background-image: linear-gradient(90deg, transparent, rgb(var(--surface) / .7), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s ease-in-out infinite;
+    }
+}
+
+@keyframes shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
 [x-cloak] { display: none !important; }
+
+/* ---------------------------------------------------------------
+   App shell. html.rail = sidebar collapsed to icons (desktop only).
+---------------------------------------------------------------- */
+.app-sidebar { width: var(--sidebar-w); }
+@media (min-width: 1024px) {
+    .app-main { padding-inline-start: var(--sidebar-w); }
+    html.rail .app-main { padding-inline-start: var(--sidebar-rail-w); }
+    html.rail .app-sidebar { width: var(--sidebar-rail-w); }
+    html.rail .app-sidebar .rail-hide { display: none !important; }
+    html.rail .app-sidebar .rail-show { display: flex !important; }
+    html.rail .app-sidebar .rail-show-flex { display: flex !important; }
+    html.rail .app-sidebar .rail-center { justify-content: center; }
+}
+
+/* ---------------------------------------------------------------
+   Data tables: row density.
+---------------------------------------------------------------- */
+[data-table] td { padding: 9px 12px; vertical-align: middle; }
+[data-table][data-density="compact"] td { padding-block: 4px; }
+[data-table] tbody tr:has(input[type="checkbox"]:checked) { background: rgb(var(--primary-soft) / .6); }
+[data-table][data-density="compact"] th { padding-block: 7px; }

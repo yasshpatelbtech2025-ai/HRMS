@@ -2,30 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ListsRecords;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Company;
 use App\Models\Department;
+use App\Support\CurrentCompany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class DepartmentController extends Controller
 {
-    public function index(): View
+    use ListsRecords;
+
+    public function index(CurrentCompany $current): View
     {
-        $departments = Department::with(['company', 'parent'])->withCount('employees')
-            ->when(request('company_id'), fn ($query, $id) => $query->where('company_id', $id))
-            ->orderBy('company_id')->orderBy('name')
-            ->paginate(15)->withQueryString();
+        $companyId = $current->filter();
+        $query = Department::with(['company', 'parent'])->withCount(['employees' => fn ($q) => $q->active()])
+            ->when($companyId, fn ($query, $id) => $query->where('company_id', $id))
+            ->when(request('search'), fn ($query, $term) => $query->where('name', 'like', "%{$term}%"));
+
+        $departments = $this->sorted($query, [
+            'name' => fn ($q, $dir) => $q->orderBy('company_id')->orderBy('name', $dir),
+            'employees' => 'employees_count',
+        ], 'name')->paginate($this->perPage())->withQueryString();
 
         return view('departments.index', [
             'departments' => $departments,
-            'companies' => Company::orderBy('establishment_name')->get(['id', 'establishment_name']),
+            'companyId' => $companyId,
         ]);
     }
 
-    public function create(): View
+    public function create(CurrentCompany $current): View
     {
-        return view('departments.form', $this->formData(new Department));
+        return view('departments.form', $this->formData(new Department(['company_id' => request('company_id', $current->id())])));
     }
 
     public function store(DepartmentRequest $request): RedirectResponse
@@ -55,7 +64,15 @@ class DepartmentController extends Controller
 
         $department->delete();
 
-        return redirect()->route('departments.index')->with('status', __('Department deleted.'));
+        return redirect()->route('departments.index')->with('status', __('Department deleted.'))
+            ->with('undo', route('departments.restore', $department));
+    }
+
+    public function restore(Department $department): RedirectResponse
+    {
+        $department->restore();
+
+        return back()->with('status', __('Department restored.'));
     }
 
     private function formData(Department $department): array

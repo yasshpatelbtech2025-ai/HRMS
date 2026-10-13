@@ -10,6 +10,13 @@ class EmployeeRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
+        // Masked inputs show spaces for readability (98765 43210, 1234 5678 9012); store digits only.
+        foreach (['mobile', 'aadhaar_number', 'uan_number', 'esic_number', 'bank_account_number'] as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => preg_replace('/[\s-]+/', '', (string) $this->input($field))]);
+            }
+        }
+
         $this->merge([
             'pan_number' => $this->filled('pan_number') ? strtoupper(trim($this->pan_number)) : null,
             'ifsc_code' => $this->filled('ifsc_code') ? strtoupper(trim($this->ifsc_code)) : null,

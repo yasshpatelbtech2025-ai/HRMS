@@ -1,52 +1,73 @@
-@php
-    $icons = [
-        'home' => 'm2.25 12 8.954-8.955a1.126 1.126 0 0 1 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25',
-        'building' => 'M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21',
-        'clock' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
-        'users' => 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z',
-        'scale' => 'M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z',
-        'document' => 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z',
-        'card' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z',
-        'chart' => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z',
-        'cog' => 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
-    ];
-    $nav = [
-        ['Dashboard', 'dashboard', 'dashboard', 'home'],
-        ['Company', 'company.index', 'company*', 'building'],
-        ['Attendance', 'attendance.index', 'attendance*', 'clock'],
-        ['Employee', 'employees.index', ['employees.*', 'departments.*', 'positions.*'], 'users'],
-        ['Compliance', 'compliance.index', 'compliance*', 'scale'],
-        ['Documents', 'documents.index', 'documents*', 'document'],
-        ['Payroll', 'payroll.index', 'payroll*', 'card'],
-        ['Reports', 'reports.index', 'reports*', 'chart'],
-        ['Configs', 'configs.index', 'configs*', 'cog'],
-    ];
-@endphp
+{{-- Sidebar: grouped sections from config/navigation.php. Desktop can collapse to an icon rail (remembered);
+     below lg it is an off-canvas drawer. --}}
+<div x-show="drawer" x-transition.opacity @click="drawer = false" class="fixed inset-0 z-40 bg-ink/40 lg:hidden" x-cloak></div>
 
-<!-- Mobile backdrop -->
-<div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
-     class="fixed inset-0 z-30 bg-gray-900/50 lg:hidden" style="display: none;"></div>
-
-<!-- Sidebar -->
-<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-       class="fixed inset-y-0 start-0 z-40 w-64 flex flex-col bg-gray-900 text-gray-300 transform transition-transform duration-200 ease-in-out lg:translate-x-0">
-    <!-- Brand -->
-    <div class="flex items-center gap-3 h-16 px-6 border-b border-gray-800">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-            <x-application-logo class="h-8 w-auto fill-current text-brand-300" />
-            <span class="text-lg font-semibold text-white">{{ config('app.name', 'HRMS') }}</span>
+<aside id="sidebar" aria-label="{{ __('Main') }}"
+       :class="drawer ? 'translate-x-0' : 'max-lg:-translate-x-full'"
+       class="app-sidebar fixed inset-y-0 start-0 z-50 flex flex-col border-e border-line bg-rail transition-[transform,width] duration-200 max-lg:-translate-x-full max-lg:shadow-pop">
+    <div class="flex h-[var(--topbar-h)] shrink-0 items-center justify-between gap-2 px-3.5">
+        <a href="{{ route('dashboard') }}" class="min-w-0 rounded-control">
+            <x-ui.brand class="rail-hide" />
+            <x-ui.brand compact class="rail-show hidden" />
         </a>
+        <x-ui.button variant="ghost" size="sm" square type="button" class="lg:hidden" @click="drawer = false" aria-label="{{ __('Close menu') }}"><x-icon name="x" class="size-4" /></x-ui.button>
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-        @foreach ($nav as [$label, $route, $pattern, $icon])
-            <x-sidebar-link :href="route($route)" :active="request()->routeIs(...(array) $pattern)">
-                <x-slot name="icon">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$icon] }}" /></svg>
-                </x-slot>
-                {{ __($label) }}
-            </x-sidebar-link>
+    <nav class="flex-1 overflow-y-auto overscroll-contain px-2.5 pb-4">
+        @foreach ($navigation->groups() as $group)
+            <div class="mt-4 first:mt-1">
+                @if ($group['label'])
+                    <p class="rail-hide mb-1 px-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{{ __($group['label']) }}</p>
+                    <div class="rail-show mx-2.5 mb-2 hidden border-t border-line"></div>
+                @endif
+                <ul class="space-y-0.5">
+                    @foreach ($group['items'] as $item)
+                        @php
+                            $key = 'nav:'.$item['route'];
+                            $base = 'flex w-full items-center gap-2.5 rounded-control px-2.5 py-[7px] text-sm transition-colors';
+                            $state = $item['active'] ? 'bg-primary-soft font-medium text-primary-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink';
+                        @endphp
+                        <li @if ($item['children']) x-data="{ expanded: $persist({{ $item['active'] ? 'true' : 'false' }}).as('{{ $key }}') }" @if ($item['active']) x-init="expanded = true" @endif @endif>
+                            @if ($item['children'])
+                                {{-- Parent: toggles sub-menu; in rail mode it links straight to the section. --}}
+                                <a href="{{ route($item['route']) }}" title="{{ __($item['label']) }}" class="rail-show-flex hidden {{ $base }} {{ $state }} justify-center">
+                                    <x-icon :name="$item['icon']" class="size-[18px]" />
+                                    <span class="sr-only">{{ __($item['label']) }}</span>
+                                </a>
+                                <button type="button" @click="expanded = !expanded" :aria-expanded="expanded" aria-controls="sub-{{ $loop->parent->index }}-{{ $loop->index }}"
+                                        class="rail-hide {{ $base }} {{ $item['active'] ? 'font-medium text-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink' }}">
+                                    <x-icon :name="$item['icon']" class="size-[18px] {{ $item['active'] ? 'text-primary' : '' }}" />
+                                    <span class="flex-1 truncate text-start">{{ __($item['label']) }}</span>
+                                    <x-icon name="chevron-down" class="size-3.5 text-ink-3 transition-transform" ::class="expanded || '-rotate-90'" />
+                                </button>
+                                <ul id="sub-{{ $loop->parent->index }}-{{ $loop->index }}" x-show="expanded" x-collapse class="rail-hide relative ms-[21px] mt-0.5 space-y-0.5 border-s border-line ps-2.5">
+                                    @foreach ($item['children'] as $child)
+                                        <li>
+                                            <a href="{{ route($child['route']) }}" @if ($child['active']) aria-current="page" @endif
+                                               class="relative block rounded-control px-2.5 py-1.5 text-13 transition-colors {{ $child['active'] ? 'bg-primary-soft font-medium text-primary-ink before:absolute before:-start-[11px] before:inset-y-1.5 before:w-0.5 before:rounded-full before:bg-primary' : 'text-ink-2 hover:bg-sunken hover:text-ink' }}">
+                                                {{ __($child['label']) }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <a href="{{ route($item['route']) }}" title="{{ __($item['label']) }}" @if ($item['active']) aria-current="page" @endif class="{{ $base }} {{ $state }} rail-center">
+                                    <x-icon :name="$item['icon']" class="size-[18px] {{ $item['active'] ? 'text-primary' : '' }}" />
+                                    <span class="rail-hide truncate">{{ __($item['label']) }}</span>
+                                </a>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
         @endforeach
     </nav>
+
+    <div class="hidden shrink-0 border-t border-line p-2.5 lg:block">
+        <button type="button" @click="rail = !rail" class="flex w-full items-center gap-2.5 rounded-control px-2.5 py-1.5 text-13 text-ink-3 hover:bg-sunken hover:text-ink rail-center"
+                :aria-label="rail ? '{{ __('Expand sidebar') }}' : '{{ __('Collapse sidebar') }}'" :title="rail ? '{{ __('Expand sidebar') }}' : '{{ __('Collapse sidebar') }}'">
+            <x-icon name="sidebar" class="size-[18px]" />
+            <span class="rail-hide">{{ __('Collapse') }}</span>
+        </button>
+    </div>
 </aside>

@@ -1,41 +1,29 @@
-<x-app-layout>
-    <x-slot name="header">{{ __('Employee') }}</x-slot>
-    @include('employees._tabs')
+@php $title = $department->exists ? $department->name : __('Add department'); @endphp
+<x-app-layout :title="$title">
+    <x-ui.page-header :title="$title" />
 
-    <form method="POST" action="{{ $department->exists ? route('departments.update', $department) : route('departments.store') }}"
-          x-data="{ companyId: @js((string) old('company_id', $department->company_id)), all: @js($departments), parentId: @js((string) old('parent_id', $department->parent_id)), self: @js($department->id) }"
-          class="max-w-xl space-y-5 rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+    <form method="POST" action="{{ $department->exists ? route('departments.update', $department) : route('departments.store') }}" data-guard
+          x-data="{ companyId: @js((string) old('company_id', $department->company_id)), departments: @js($departments), self: @js($department->id) }"
+          class="max-w-2xl pb-20">
         @csrf
         @if ($department->exists) @method('PUT') @endif
 
-        <div>
-            <x-input-label for="company_id" :value="__('Company')" /> <span class="text-red-600">*</span>
-            <select id="company_id" name="company_id" x-model="companyId" @change="parentId = ''" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
-                <option value="">{{ __('Select company') }}</option>
-                @foreach ($companies as $company)
-                    <option value="{{ $company->id }}">{{ $company->establishment_name }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('company_id')" />
-        </div>
-        <div>
-            <x-input-label for="name" :value="__('Department name')" /> <span class="text-red-600">*</span>
-            <x-text-input id="name" name="name" class="mt-1 block w-full" :value="old('name', $department->name)" required />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
-        <div>
-            <x-input-label for="parent_id" :value="__('Parent department (optional)')" />
-            <select id="parent_id" name="parent_id" x-model="parentId" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
-                <option value="">{{ __('None') }}</option>
-                <template x-for="d in all.filter(d => String(d.company_id) === String(companyId) && d.id !== self)" :key="d.id">
-                    <option :value="d.id" x-text="d.name" :selected="String(d.id) === String(parentId)"></option>
-                </template>
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('parent_id')" />
-        </div>
-        <div class="flex items-center gap-3 pt-3">
-            <x-primary-button>{{ $department->exists ? __('Save changes') : __('Add department') }}</x-primary-button>
-            <a href="{{ route('departments.index') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
-        </div>
+        <x-ui.card>
+            <div class="grid gap-5">
+                <x-ui.field :label="__('Company')" for="company_id" required>
+                    <x-ui.combobox name="company_id" x-model="companyId" :value="$department->company_id" :placeholder="__('Search company…')"
+                                   :options="$companies->map(fn ($c) => ['value' => $c->id, 'label' => $c->establishment_name])->all()" />
+                </x-ui.field>
+                <x-ui.field :label="__('Department name')" for="name" required>
+                    <x-ui.input name="name" :value="$department->name" required :autofocus="(bool) $department->company_id" maxlength="255" />
+                </x-ui.field>
+                <x-ui.field :label="__('Parent department')" for="parent_id" :hint="__('Optional. Use it for sub-departments, e.g. Packing under Production.')">
+                    <x-ui.combobox name="parent_id" :value="$department->parent_id" :placeholder="__('None')" :empty-label="__('None')"
+                                   options-from="departments.filter(d => String(d.company_id) === String(companyId) && d.id !== self).map(d => ({ value: d.id, label: d.name }))" />
+                </x-ui.field>
+            </div>
+        </x-ui.card>
+
+        <x-ui.form-actions :cancel="route('departments.index')" :submit="$department->exists ? __('Save changes') : __('Add department')" />
     </form>
 </x-app-layout>

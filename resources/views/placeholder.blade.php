@@ -1,8 +1,10 @@
-<x-app-layout>
-    <x-slot name="header">{{ $title }}</x-slot>
+<x-app-layout :title="$title">
+    <x-ui.page-header :title="$title" />
 
-    <div class="rounded-xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-200">
-        <h2 class="text-xl font-semibold text-gray-900">{{ $title }}</h2>
-        <p class="mt-2 text-sm text-gray-500">{{ __('This section is not built yet.') }}</p>
-    </div>
+    <x-ui.card>
+        <x-ui.empty-state icon="clock" :title="__(':section is coming soon', ['section' => $title])"
+                          :message="__('This module hasn’t been built yet. When it is, it will appear here with the same layout as the rest of the app.')">
+            <x-ui.button variant="secondary" :href="route('dashboard')">{{ __('Back to dashboard') }}</x-ui.button>
+        </x-ui.empty-state>
+    </x-ui.card>
 </x-app-layout>

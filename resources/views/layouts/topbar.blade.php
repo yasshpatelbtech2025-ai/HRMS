@@ -1,49 +1,91 @@
-<header class="sticky top-0 z-20 flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-200">
-    <div class="flex items-center gap-3">
-        <!-- Mobile sidebar toggle -->
-        <button type="button" @click="sidebarOpen = true"
-                class="lg:hidden -ms-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            <span class="sr-only">{{ __('Open sidebar') }}</span>
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+<header class="sticky top-0 z-30 flex h-[var(--topbar-h)] items-center gap-2 border-b border-line bg-canvas px-3 sm:gap-3 sm:px-6 lg:px-8">
+    <x-ui.button variant="ghost" square type="button" class="lg:hidden" @click="drawer = true" aria-controls="sidebar" aria-label="{{ __('Open menu') }}"><x-icon name="menu" /></x-ui.button>
+
+    {{-- Company switcher: most work is per client company, so it is always visible.
+         The list loads on first open (and is prefetched on hover/focus). --}}
+    <div x-data="{
+            open: false, q: '', companies: null, active: 0, pos: '',
+            async load() { if (this.companies) return; const r = await fetch(@js(route('context.companies')), { headers: { Accept: 'application/json' } }); this.companies = r.ok ? await r.json() : []; },
+            get list() { const q = this.q.trim().toLowerCase(); return [{ id: '', name: @js(__('All companies')), all: true, current: {{ $currentCompany ? 'false' : 'true' }} }, ...(this.companies ?? [])].filter(c => !q || (!c.all && c.name.toLowerCase().includes(q))); },
+            toggle() { this.open = !this.open; this.q = ''; this.active = 0; if (this.open) { this.load(); this.$nextTick(() => { this.pos = placeBelow(this.$refs.trigger, this.$refs.panel); this.$refs.filter.focus(); }); } },
+            pick(c) { if (c) { this.$refs.value.value = c.id; this.$refs.form.requestSubmit(); } },
+         }"
+         class="relative min-w-0" @keydown.escape.stop="open = false; $refs.trigger.focus()" @click.outside="open = false">
+        <button type="button" x-ref="trigger" @click="toggle()" @pointerenter.once="load()" @focus.once="load()" :aria-expanded="open" aria-haspopup="listbox"
+                class="flex h-9 max-w-[16rem] items-center gap-2 rounded-control border px-2 text-sm transition-colors sm:max-w-xs {{ $currentCompany ? 'border-line-strong bg-surface shadow-hairline hover:border-ink-3' : 'border-dashed border-line-strong text-ink-2 hover:bg-surface' }}">
+            @if ($currentCompany)
+                <span class="flex size-6 shrink-0 items-center justify-center rounded-[5px] text-[11px] font-semibold text-white" style="background: hsl({{ \App\Support\CurrentCompany::hue($currentCompany->id) }} 42% 38%)">{{ mb_strtoupper(mb_substr($currentCompany->establishment_name, 0, 2)) }}</span>
+                <span class="min-w-0 text-start leading-tight">
+                    <span class="block text-[10px] font-medium uppercase tracking-wide text-ink-3 max-sm:hidden">{{ __('Company') }}</span>
+                    <span class="block truncate font-medium text-ink">{{ $currentCompany->establishment_name }}</span>
+                </span>
+            @else
+                <x-icon name="building" class="size-4 text-ink-3" />
+                <span class="truncate">{{ __('All companies') }}</span>
+            @endif
+            <x-icon name="chevron-up-down" class="size-4 shrink-0 text-ink-3" />
         </button>
 
-        @isset($header)
-            <div class="text-lg font-semibold text-gray-800">{{ $header }}</div>
-        @endisset
+        <div x-show="open" x-cloak x-ref="panel" :style="pos" x-transition.opacity.duration.100ms class="fixed z-[45] w-[min(20rem,calc(100vw-1.5rem))] rounded-card border border-line bg-surface shadow-pop">
+            <div class="border-b border-line p-2">
+                <input x-ref="filter" x-model="q" @input="active = 0" type="text" class="control h-8 py-1 text-13" placeholder="{{ __('Find a company…') }}" aria-label="{{ __('Find a company') }}"
+                       role="combobox" aria-controls="company-switcher-list" :aria-activedescendant="'company-opt-' + active"
+                       @keydown.down.prevent="active = Math.min(active + 1, list.length - 1)" @keydown.up.prevent="active = Math.max(active - 1, 0)" @keydown.enter.prevent="pick(list[active])">
+            </div>
+            <form x-ref="form" method="POST" action="{{ route('context.company') }}">
+                @csrf
+                <input type="hidden" name="company_id" x-ref="value">
+            </form>
+            <ul id="company-switcher-list" role="listbox" aria-label="{{ __('Companies') }}" class="max-h-80 overflow-y-auto p-1">
+                <template x-for="(c, i) in list" :key="c.id">
+                    <li :id="'company-opt-' + i" role="option" :aria-selected="c.current" @click="pick(c)" @mousemove="active = i"
+                        :class="[i === active ? 'bg-sunken' : '', c.current ? 'text-primary-ink font-medium' : 'text-ink']"
+                        class="flex cursor-pointer items-center gap-2.5 rounded-[5px] px-2.5 py-2 text-sm">
+                        <template x-if="c.all"><span class="flex size-6 items-center justify-center rounded-[5px] border border-dashed border-line-strong"><x-icon name="building" class="size-3.5 text-ink-3" /></span></template>
+                        <template x-if="!c.all"><span class="flex size-6 shrink-0 items-center justify-center rounded-[5px] text-[10px] font-semibold text-white" :style="`background: hsl(${c.hue} 42% 38%)`" x-text="c.initials"></span></template>
+                        <span class="min-w-0 flex-1">
+                            <span class="block truncate" x-text="c.name"></span>
+                            <span class="block truncate text-xs font-normal text-ink-3" x-show="c.district" x-text="c.district"></span>
+                        </span>
+                        <x-icon name="check" class="size-4 text-primary" x-show="c.current" />
+                    </li>
+                </template>
+                <li x-show="companies === null" class="space-y-2 p-2.5" aria-hidden="true"><div class="skeleton h-3 w-2/3"></div><div class="skeleton h-3 w-1/2"></div></li>
+                <li x-show="companies && companies.length === 0" class="px-2.5 py-3 text-13 text-ink-3">{{ __('No companies yet.') }} <a href="{{ route('company.create') }}" class="font-medium text-primary hover:underline">{{ __('Add one') }}</a></li>
+                <li x-show="companies && companies.length && list.length === 0" class="px-2.5 py-3 text-13 text-ink-3">{{ __('No match.') }}</li>
+            </ul>
+        </div>
     </div>
 
-    <!-- User menu -->
-    <x-dropdown align="right" width="48">
-        <x-slot name="trigger">
-            <button class="inline-flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 focus:outline-none transition">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white text-sm font-semibold">
-                    {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
-                </span>
-                <span class="hidden sm:block">{{ Auth::user()->name }}</span>
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-            </button>
-        </x-slot>
+    {{-- Search / command palette trigger --}}
+    <button type="button" @click="$dispatch('open-palette')"
+            class="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-control border border-line bg-surface/70 px-2.5 text-sm text-ink-3 transition-colors hover:border-line-strong hover:text-ink-2 sm:max-w-md"
+            aria-label="{{ __('Search or jump to (Ctrl+K)') }}">
+        <x-icon name="search" class="size-4" />
+        <span class="truncate max-sm:sr-only">{{ __('Search employees, companies, pages…') }}</span>
+        <kbd class="ms-auto hidden rounded border border-line bg-sunken px-1.5 font-mono text-[11px] text-ink-3 sm:inline">Ctrl K</kbd>
+    </button>
 
-        <x-slot name="content">
-            <div class="px-4 py-2 border-b border-gray-100">
-                <div class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</div>
+    <div class="ms-auto flex items-center gap-1">
+        {{-- User menu --}}
+        <x-ui.menu width="w-60">
+            <x-slot:trigger>
+                <button type="button" class="flex items-center gap-2 rounded-control p-1 hover:bg-sunken" aria-label="{{ __('Account menu') }}" aria-haspopup="menu">
+                    <span class="flex size-7 items-center justify-center rounded-full bg-ink text-xs font-semibold text-canvas">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                    <span class="hidden max-w-[10rem] truncate text-sm font-medium text-ink-2 md:block">{{ Auth::user()->name }}</span>
+                </button>
+            </x-slot:trigger>
+            <div class="border-b border-line px-2.5 pb-2 pt-1.5">
+                <p class="truncate text-sm font-medium text-ink">{{ Auth::user()->name }}</p>
+                <p class="truncate text-xs text-ink-3">{{ Auth::user()->email }}</p>
             </div>
-
-            <x-dropdown-link :href="route('profile.edit')">
-                {{ __('Profile') }}
-            </x-dropdown-link>
-
-            <!-- Authentication -->
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <x-dropdown-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                    this.closest('form').submit();">
-                    {{ __('Log Out') }}
-                </x-dropdown-link>
-            </form>
-        </x-slot>
-    </x-dropdown>
+            <div class="pt-1">
+                <x-ui.menu-item :href="route('profile.edit')" icon="user">{{ __('Profile') }}</x-ui.menu-item>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <x-ui.menu-item type="submit" icon="logout">{{ __('Log out') }}</x-ui.menu-item>
+                </form>
+            </div>
+        </x-ui.menu>
+    </div>
 </header>
