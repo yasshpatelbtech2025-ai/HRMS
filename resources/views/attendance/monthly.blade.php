@@ -38,6 +38,36 @@
                      this.$nextTick(() => this.$refs.reset.submit());
                  }
              },
+             keys: { p: 'P', l: 'A', a: 'A', v: 'LEAVE', c: 'COFF' },
+             step(event, cell) {
+                 if (event.ctrlKey || event.metaKey || event.altKey) return;
+                 const select = event.target;
+                 const row = select.closest('tr');
+                 const day = Number(select.dataset.day);
+                 const arrows = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] };
+                 if (arrows[event.key]) {
+                     event.preventDefault();
+                     const [down, across] = arrows[event.key];
+                     let target = null;
+                     if (across) {
+                         for (let d = day + across; d >= 1 && d <= {{ $month->daysInMonth }} && ! target; d += across) {
+                             target = row.querySelector(`select[data-day='${d}']`);
+                         }
+                     } else {
+                         for (let r = down < 0 ? row.previousElementSibling : row.nextElementSibling; r && ! target; r = down < 0 ? r.previousElementSibling : r.nextElementSibling) {
+                             target = r.querySelector(`select[data-day='${day}']`);
+                         }
+                     }
+                     target?.focus();
+                     return;
+                 }
+                 const value = this.keys[event.key.toLowerCase()];
+                 if (! value) return;
+                 event.preventDefault();
+                 if (! [...select.options].some((option) => option.value === value)) return;
+                 select.value = value;
+                 this.choose({ target: select }, cell);
+             },
              countDays() {
                  if (! this.leave.start || ! this.leave.end) return;
                  const days = (new Date(this.leave.end) - new Date(this.leave.start)) / 86400000 + 1;
@@ -151,7 +181,7 @@
                                                     'shift' => $employee->shift?->name, 'in' => $in->format('Y-m-d\TH:i'), 'out' => $out->format('Y-m-d\TH:i'),
                                                 ];
                                             @endphp
-                                            <select x-on:change="choose($event, @js($cell))" title="{{ $title }}" aria-label="{{ $employee->full_name }} {{ $date }}"
+                                            <select data-day="{{ (int) substr($date, 8, 2) }}" x-on:change="choose($event, @js($cell))" x-on:keydown="step($event, @js($cell))" title="{{ $title }}" aria-label="{{ $employee->full_name }} {{ $date }}"
                                                     class="w-16 cursor-pointer rounded border px-1 py-1 text-center text-xs font-semibold {{ $d['missing'] && $status === 'A' ? 'bg-warn-soft text-warn border-amber-300' : $styles[$status] }} {{ $d['locked'] ? 'ring-1 ring-gray-500' : '' }}">
                                                 @foreach ($options as $value => $label)
                                                     <option value="{{ $value === 'P_EDIT' ? 'P' : $value }}" @selected($value === $status) class="bg-white text-gray-900">
@@ -171,7 +201,7 @@
                 </table>
             </div>
             <p class="px-5 py-3 text-xs text-gray-500 print:hidden">
-                {{ __('P present · HD half day · LOP absent (MP: missing punch) · WO week off · PH holiday · LEAVE · COFF compensatory off. Hover a day for its times; click a name for the day-by-day report.') }}
+                {{ __('P present · HD half day · LOP absent (MP: missing punch) · WO week off · PH holiday · LEAVE · COFF compensatory off. Hover a day for its times; click a name for the day-by-day report. Keyboard: arrow keys move between days, then press P, L, V or C to mark Present, LOP, Leave or Comp-off.') }}
             </p>
         @endif
 
