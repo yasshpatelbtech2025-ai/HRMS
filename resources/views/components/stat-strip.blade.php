@@ -5,7 +5,7 @@
 --}}
 @props(['items'])
 
-<div class="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4 print:hidden">
+<div class="mb-4 grid grid-cols-2 gap-3 {{ count($items) > 4 ? 'sm:grid-cols-3 lg:grid-cols-5' : 'lg:grid-cols-4' }} print:hidden">
     @foreach ($items as $item)
         @php
             $tone = ['success' => 'text-success', 'warn' => 'text-warn', 'danger' => 'text-danger'][$item['tone'] ?? ''] ?? 'text-ink';

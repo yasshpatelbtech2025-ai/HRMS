@@ -15,23 +15,18 @@
         $filter = fn (array $change) => route('compliance.to-do', array_filter(array_merge(request()->only(['company', 'status', 'department', 'type']), $change)));
     @endphp
 
-    {{-- Stat cards: click one to filter by it. --}}
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
-        <a href="{{ $filter(['status' => 'all']) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === 'all' ? 'ring-brand-300' : 'ring-gray-200' }} hover:ring-gray-300">
-            <span class="absolute inset-y-0 start-0 w-1 bg-brand-500"></span>
-            <p class="text-sm font-medium text-gray-500">{{ __('Total tasks') }}</p>
-            <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $stats['total'] }}</p>
-        </a>
-        @foreach (['overdue', 'week', 'completed', 'upcoming'] as $key)
-            <a href="{{ $filter(['status' => $key]) }}" class="relative overflow-hidden rounded-lg bg-white p-5 shadow-sm ring-1 {{ $status === $key ? 'ring-brand-300' : 'ring-gray-200' }} hover:ring-gray-300">
-                <span class="absolute inset-y-0 start-0 w-1 {{ $statuses[$key]['accent'] }}"></span>
-                <p class="text-sm font-medium text-gray-500">{{ $statuses[$key]['label'] }}</p>
-                <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $stats[$key] }}</p>
-            </a>
-        @endforeach
-    </div>
+    <h2 class="mb-4 text-2xl font-bold text-gray-900">{{ __('To Do List') }}</h2>
 
-    <div class="mt-6 rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+    {{-- Summary cards: click one to filter by it. --}}
+    <x-stat-strip :items="[
+        ['label' => __('Total tasks'), 'value' => $stats['total'], 'href' => $filter(['status' => 'all']), 'active' => $status === 'all'],
+        ['label' => __('Overdue'), 'value' => $stats['overdue'], 'tone' => $stats['overdue'] ? 'danger' : null, 'href' => $filter(['status' => 'overdue']), 'active' => $status === 'overdue'],
+        ['label' => __('Due this week'), 'value' => $stats['week'], 'tone' => $stats['week'] ? 'warn' : null, 'href' => $filter(['status' => 'week']), 'active' => $status === 'week'],
+        ['label' => __('Upcoming'), 'value' => $stats['upcoming'], 'href' => $filter(['status' => 'upcoming']), 'active' => $status === 'upcoming'],
+        ['label' => __('Completed'), 'value' => $stats['completed'], 'tone' => 'success', 'href' => $filter(['status' => 'completed']), 'active' => $status === 'completed'],
+    ]" />
+
+    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <form method="GET" action="{{ route('compliance.to-do') }}" class="flex flex-wrap items-center gap-2">
                 <select name="status" class="{{ $select }}" aria-label="{{ __('Status') }}" onchange="this.form.submit()">
