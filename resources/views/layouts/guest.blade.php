@@ -7,6 +7,8 @@
 
         <title>{{ config('branding.name') }}</title>
 
+        {{-- Apply the saved (or system) theme before first paint (no flash). --}}
+        <script>try { var t = localStorage.getItem('theme'); if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); } catch (e) {}</script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-canvas font-sans text-ink antialiased">

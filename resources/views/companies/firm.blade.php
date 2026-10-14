@@ -46,7 +46,7 @@
             <nav class="flex flex-wrap gap-2 border-b border-gray-200 px-5 py-3" aria-label="{{ __('Steps') }}">
                 @foreach ([1 => __('Establishment Details'), 2 => __('Owners Details'), 3 => __('Mail setup')] as $number => $title)
                     <button type="button" x-on:click="step = {{ $number }}"
-                            :class="step === {{ $number }} ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                            :class="step === {{ $number }} ? 'bg-ink text-canvas' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
                             class="rounded-md px-3 py-2 text-sm font-semibold">{{ $number }}. {{ $title }}</button>
                 @endforeach
             </nav>

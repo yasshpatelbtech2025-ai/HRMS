@@ -38,7 +38,7 @@
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>
                             </td>
                             <td class="px-5 py-3">
-                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $user->isAdmin() ? 'bg-gray-900 text-white' : 'bg-brand-50 text-brand-700' }}">{{ __(\App\Models\User::ROLES[$user->role] ?? $user->role) }}</span>
+                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $user->isAdmin() ? 'bg-ink text-canvas' : 'bg-brand-50 text-brand-700' }}">{{ __(\App\Models\User::ROLES[$user->role] ?? $user->role) }}</span>
                             </td>
                             <td class="px-5 py-3 text-gray-700">
                                 @if ($user->isAdmin())

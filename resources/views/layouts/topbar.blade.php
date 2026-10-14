@@ -66,6 +66,15 @@
         <x-global-search />
     </div>
 
+    {{-- Light / dark theme: remembered in this browser; follows the system until chosen. --}}
+    <button type="button" x-data="{ dark: document.documentElement.classList.contains('dark') }"
+            @click="dark = ! dark; document.documentElement.classList.toggle('dark', dark); try { localStorage.setItem('theme', dark ? 'dark' : 'light') } catch (e) {}"
+            :aria-label="dark ? @js(__('Switch to light mode')) : @js(__('Switch to dark mode'))" :title="dark ? @js(__('Switch to light mode')) : @js(__('Switch to dark mode'))"
+            class="rounded-md p-2 text-ink-2 hover:bg-sunken hover:text-ink">
+        <x-icon name="sun" class="size-5" x-show="dark" style="display: none;" />
+        <x-icon name="moon" class="size-5" x-show="! dark" />
+    </button>
+
     <x-ui.menu width="w-60">
         <x-slot:trigger>
             <button type="button" class="flex items-center gap-2 rounded-md p-1 hover:bg-sunken" aria-label="{{ __('Account menu') }}" aria-haspopup="menu">

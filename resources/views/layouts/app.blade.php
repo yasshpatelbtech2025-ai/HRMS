@@ -9,6 +9,9 @@
         {{-- Apply the remembered sidebar width before first paint (no jump). --}}
         <script>try { if (localStorage.getItem('_x_sidebar:rail') === 'true') document.documentElement.classList.add('rail'); } catch (e) {}</script>
 
+        {{-- Apply the saved (or system) theme before first paint (no flash). --}}
+        <script>try { var t = localStorage.getItem('theme'); if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); } catch (e) {}</script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>

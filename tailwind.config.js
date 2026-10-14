@@ -22,6 +22,7 @@ const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: ['class', '.dark'],
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -51,19 +52,8 @@ export default {
                     950: '#04221f',
                 },
                 // Warm neutrals: surfaces stay paper-like, text stays crisp.
-                gray: {
-                    50: '#f7f7f4',
-                    100: '#f0f0ec',
-                    200: '#e4e4df',
-                    300: '#cfcfc8',
-                    400: '#a3a49f',
-                    500: '#6b6e76',
-                    600: '#4a4d55',
-                    700: '#373a41',
-                    800: '#25272d',
-                    900: '#16181d',
-                    950: '#0d0e11',
-                },
+                // The scale is backed by CSS variables so it flips in dark mode.
+                gray: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`gray-${n}`)])),
                 canvas: token('canvas'),
                 surface: token('surface'),
                 sunken: token('sunken'),

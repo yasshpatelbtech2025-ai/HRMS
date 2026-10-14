@@ -11,7 +11,8 @@
  */
 @layer base {
     /* Semantic colours as RGB channels (Tailwind opacity modifiers work). */
-    :root {
+    :root,
+    .dark .sheet {
         --canvas: 247 247 244;       /* page background */
         --surface: 255 255 255;      /* cards, tables, menus */
         --sunken: 240 240 236;       /* table headings, wells */
@@ -30,9 +31,38 @@
         --warn: 180 83 9;       --warn-soft: 253 241 220;
         --danger: 180 35 24;    --danger-hover: 150 28 19; --danger-soft: 252 233 231;
         --info: 29 78 216;      --info-soft: 230 237 252;
+        --gray-50: 247 247 244;  --gray-100: 240 240 236; --gray-200: 228 228 223; --gray-300: 207 207 200;
+        --gray-400: 163 164 159; --gray-500: 107 110 118; --gray-600: 74 77 85;    --gray-700: 55 58 65;
+        --gray-800: 37 39 45;    --gray-900: 22 24 29;    --gray-950: 13 14 17;
         --sidebar-w: 248px;
         --sidebar-rail-w: 64px;
         --topbar-h: 56px;
+    }
+
+    /* Dark theme: <html class="dark">, set before first paint by the layouts. */
+    :root.dark {
+        color-scheme: dark;
+        --canvas: 16 17 21;
+        --surface: 24 26 31;
+        --sunken: 32 35 41;
+        --rail: 19 21 25;
+        --line: 43 46 53;
+        --line-strong: 63 67 76;
+        --ink: 236 237 240;
+        --ink-2: 178 181 189;
+        --ink-3: 143 147 156;
+        --primary: 62 168 150;
+        --primary-hover: 86 188 170;
+        --primary-soft: 20 52 48;
+        --primary-ink: 140 214 200;
+        --on-primary: 8 24 22;
+        --success: 74 197 120;  --success-soft: 22 48 34;
+        --warn: 240 168 80;     --warn-soft: 56 40 18;
+        --danger: 248 113 100;  --danger-hover: 252 140 128; --danger-soft: 62 28 26;
+        --info: 125 163 250;    --info-soft: 28 40 70;
+        --gray-50: 32 35 41;   --gray-100: 38 41 48;  --gray-200: 47 50 58;  --gray-300: 66 70 79;
+        --gray-400: 122 126 135; --gray-500: 150 154 163; --gray-600: 178 181 189; --gray-700: 205 208 214;
+        --gray-800: 224 226 230; --gray-900: 238 239 242; --gray-950: 248 248 250;
     }
 
     html {
@@ -276,4 +306,55 @@ main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; paddin
 @media (min-width: 1024px) {
     main .overflow-x-auto:has(> table.text-sm > thead) { max-height: calc(100dvh - 14rem); overflow: auto; }
     main .overflow-x-auto > table.text-sm > thead th { position: sticky; top: 0; z-index: 2; }
+}
+
+/* ---------------------------------------------------------------
+   Dark mode: pages still using plain Tailwind colours get matching
+   dark equivalents (the grays and semantic tokens flip on their own).
+---------------------------------------------------------------- */
+.dark .bg-white { background-color: rgb(var(--surface)); }
+.dark .text-white:where(.bg-brand-600, .bg-brand-500, .bg-primary) { color: rgb(var(--on-primary)); }
+.dark .bg-brand-600, .dark .bg-brand-500 { background-color: rgb(var(--primary)); }
+.dark .hover\:bg-brand-700:hover { background-color: rgb(var(--primary-hover)); }
+.dark .bg-brand-50, .dark .bg-brand-100, .dark .hover\:bg-brand-50:hover, .dark .focus\:bg-brand-100:focus, .dark .bg-brand-50\/60 { background-color: rgb(var(--primary-soft)); }
+.dark .text-brand-600, .dark .text-brand-700, .dark .text-brand-800, .dark .text-brand-900, .dark .focus\:text-brand-800:focus { color: rgb(var(--primary-ink)); }
+.dark .border-brand-300, .dark .border-brand-400, .dark .ring-brand-300 { border-color: rgb(var(--primary) / 0.5); --tw-ring-color: rgb(var(--primary) / 0.5); }
+.dark .text-red-600 { color: rgb(var(--danger)); }
+.dark .bg-red-50, .dark .bg-red-600\/10 { background-color: rgb(var(--danger-soft)); }
+.dark .border-red-200, .dark .border-red-300, .dark .ring-red-200 { border-color: rgb(var(--danger) / 0.35); --tw-ring-color: rgb(var(--danger) / 0.35); }
+.dark .bg-amber-50 { background-color: rgb(var(--warn-soft)); }
+.dark .text-amber-600, .dark .text-amber-700, .dark .text-amber-800 { color: rgb(var(--warn)); }
+.dark .border-amber-300, .dark .ring-amber-200 { border-color: rgb(var(--warn) / 0.4); --tw-ring-color: rgb(var(--warn) / 0.4); }
+.dark .bg-sky-50 { background-color: rgb(var(--info-soft)); }
+.dark .text-sky-600 { color: rgb(var(--info)); }
+.dark .ring-emerald-200 { --tw-ring-color: rgb(var(--success) / 0.35); }
+.dark .text-emerald-600, .dark .text-emerald-900 { color: rgb(var(--success)); }
+.dark .bg-violet-100 { background-color: rgb(46 34 80); }
+.dark .text-violet-700, .dark .text-violet-800 { color: rgb(196 181 253); }
+.dark .border-violet-200 { border-color: rgb(196 181 253 / 0.35); }
+.dark .bg-teal-100 { background-color: rgb(18 56 56); }
+.dark .text-teal-700, .dark .text-teal-800 { color: rgb(94 214 206); }
+.dark .border-teal-200 { border-color: rgb(94 214 206 / 0.35); }
+.dark .bg-blue-100 { background-color: rgb(var(--info-soft)); }
+.dark .skeleton::after { background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent); }
+
+/* Statutory forms and printouts stay on paper: .sheet re-declares the light tokens above. */
+.dark .sheet { color-scheme: light; color: rgb(var(--ink)); background-color: #fff; }
+.dark .sheet .bg-white { background-color: #fff; }
+.dark .sheet :is(input:not([type='checkbox'], [type='radio']), select, textarea) { background-color: #fff; color: rgb(var(--ink)); border-color: rgb(var(--line-strong)); }
+@media print {
+    .dark body { background: #fff; color: #000; }
+}
+
+@layer base {
+    /* Native form controls (the forms plugin paints them white). */
+    .dark :where(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color']), select, textarea) {
+        background-color: rgb(var(--surface));
+        color: rgb(var(--ink));
+        border-color: rgb(var(--line-strong));
+    }
+    .dark :is(input, textarea)::placeholder { color: rgb(var(--ink-3)); }
+    .dark select option { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
+    .dark [type='checkbox'], .dark [type='radio'] { background-color: rgb(var(--sunken)); border-color: rgb(var(--line-strong)); }
+    .dark [type='checkbox']:checked, .dark [type='radio']:checked { background-color: rgb(var(--primary)); border-color: rgb(var(--primary)); }
 }

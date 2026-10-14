@@ -97,7 +97,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <button title="{{ $punch->is_locked ? __('Unlock Attendance') : __('Lock Attendance') }}"
-                                                class="rounded-md border px-2 py-1 text-xs {{ $punch->is_locked ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 text-gray-600 hover:bg-gray-50' }}">
+                                                class="rounded-md border px-2 py-1 text-xs {{ $punch->is_locked ? 'border-ink bg-ink text-canvas' : 'border-gray-300 text-gray-600 hover:bg-gray-50' }}">
                                             {{ $punch->is_locked ? __('Locked') : __('Lock') }}
                                         </button>
                                     </form>
