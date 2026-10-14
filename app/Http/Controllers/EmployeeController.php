@@ -43,7 +43,15 @@ class EmployeeController extends Controller
     {
         $perPage = $this->perPage($request, allowAll: true);
 
+        $current = Employee::current();
+
         return view('employees.index', [
+            'stats' => [
+                'total' => (clone $current)->count(),
+                'active' => (clone $current)->where('status', EmployeeStatus::Active)->count(),
+                'inactive' => (clone $current)->where('status', EmployeeStatus::Inactive)->count(),
+                'joined' => (clone $current)->whereBetween('date_of_joining', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+            ],
             'employees' => $this->filtered($request, Employee::current())->paginate($perPage)->withQueryString(),
             'perPage' => $perPage,
             'columns' => $this->visibleColumns($request),
@@ -252,7 +260,12 @@ class EmployeeController extends Controller
             };
         }
 
+        if (in_array($request->query('status'), [EmployeeStatus::Active->value, EmployeeStatus::Inactive->value], true)) {
+            $query->where('status', $request->query('status'));
+        }
+
         return match ($request->query('sort')) {
+            'name' => $query->orderBy('first_name', $direction)->orderBy('last_name', $direction)->orderBy('employee_code'),
             'employee_code' => $query->orderBy('employee_code', $direction),
             'status' => $query->orderBy('status', $direction)->orderBy('employee_code'),
             'joining_date' => $query->orderBy('date_of_joining', $direction)->orderBy('employee_code'),

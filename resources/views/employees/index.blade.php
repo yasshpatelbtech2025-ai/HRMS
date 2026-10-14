@@ -9,7 +9,9 @@
         $filtering = collect(request()->only($filterKeys))
             ->when(request()->attributes->get('company_from_picker'), fn ($f) => $f->except('company_id'))
             ->filter(fn ($v) => filled($v))->isNotEmpty();
-        $exportQuery = request()->only([...$filterKeys, 'search', 'sort', 'direction']);
+        $exportQuery = request()->only([...$filterKeys, 'status', 'search', 'sort', 'direction']);
+        $status = in_array(request('status'), ['active', 'inactive'], true) ? request('status') : null;
+        $statusUrl = fn (?string $value) => route('employees.index', array_filter(['status' => $value, 'per_page' => request('per_page')]));
         $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
@@ -60,6 +62,13 @@
                 </x-dropdown>
             </div>
         </div>
+    <x-stat-strip :items="[
+            ['label' => __('All employees'), 'value' => $stats['total'], 'href' => $statusUrl(null), 'active' => ! $status],
+            ['label' => __('Active'), 'value' => $stats['active'], 'tone' => 'success', 'href' => $statusUrl('active'), 'active' => $status === 'active'],
+            ['label' => __('Inactive'), 'value' => $stats['inactive'], 'tone' => $stats['inactive'] ? 'warn' : null, 'href' => $statusUrl('inactive'), 'active' => $status === 'inactive'],
+            ['label' => __('Joined this month'), 'value' => $stats['joined'], 'hint' => now()->format('F Y')],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         {{-- Filter panel --}}
@@ -141,17 +150,12 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="w-10 px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all on this page') }}"></th>
-                        <th class="px-4 py-3">{{ __('Sl') }}</th>
-                        <x-sort-header column="company" default class="px-4 py-3">{{ __('Company name') }}</x-sort-header>
-                        <x-sort-header column="employee_code" class="px-4 py-3">{{ __('Employee id') }}</x-sort-header>
-                        <th class="px-4 py-3">{{ __('Image') }}</th>
-                        <th class="px-4 py-3">{{ __('Name of employee') }}</th>
-                        <th class="px-4 py-3">{{ __('Mobile no') }}</th>
-                        @if ($columns['email'])<th class="px-4 py-3">{{ __('Email') }}</th>@endif
+                        <x-sort-header column="name" class="px-4 py-3">{{ __('Employee') }}</x-sort-header>
+                        <x-sort-header column="company" default class="px-4 py-3">{{ __('Company') }}</x-sort-header>
+                        <th class="px-4 py-3">{{ __('Contact') }}</th>
                         <th class="px-4 py-3">{{ __('Department') }}</th>
                         <x-sort-header column="status" class="px-4 py-3">{{ __('Status') }}</x-sort-header>
-                        <th class="px-4 py-3">{{ __('Action') }}</th>
-                        <th class="px-4 py-3">{{ __('Letter') }}</th>
+                        <th class="px-4 py-3"><span class="sr-only">{{ __('Action') }}</span></th>
                         @if ($columns['date_of_birth'])<th class="px-4 py-3">{{ __('Date of Birth') }}</th>@endif
                         @if ($columns['designation'])<th class="px-4 py-3">{{ __('Designation') }}</th>@endif
                         @if ($columns['joining_date'])<x-sort-header column="joining_date" class="px-4 py-3">{{ __('Joining Date') }}</x-sort-header>@endif
@@ -163,13 +167,20 @@
                     @forelse ($employees as $employee)
                         <tr class="hover:bg-gray-50" :class="selected.includes(@js($employee->uuid)) && 'bg-brand-50/60'">
                             <td class="px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="{{ $employee->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :name', ['name' => $employee->full_name]) }}"></td>
-                            <td class="px-4 py-3 text-gray-500">{{ $employees->firstItem() + $loop->index }}</td>
+                            <td class="px-4 py-3">
+                                <a href="{{ route('employees.show', $employee) }}" class="flex items-center gap-3">
+                                    <x-employee-photo :employee="$employee" class="h-9 w-9 shrink-0" />
+                                    <span class="min-w-0">
+                                        <span class="block truncate font-medium text-gray-900">{{ $employee->full_name }}</span>
+                                        <span class="block font-mono text-xs text-gray-500">{{ $employee->employee_code }}</span>
+                                    </span>
+                                </a>
+                            </td>
                             <td class="px-4 py-3">{{ $employee->company?->establishment_name }}</td>
-                            <td class="px-4 py-3 font-mono">{{ $employee->employee_code }}</td>
-                            <td class="px-4 py-3"><x-employee-photo :employee="$employee" class="h-10 w-10" /></td>
-                            <td class="px-4 py-3 font-medium text-gray-900">{{ $employee->full_name }}</td>
-                            <td class="px-4 py-3 whitespace-nowrap">{{ $employee->phone }}</td>
-                            @if ($columns['email'])<td class="px-4 py-3">{{ $employee->email }}</td>@endif
+                            <td class="px-4 py-3">
+                                <span class="block whitespace-nowrap">{{ $employee->phone }}</span>
+                                @if ($columns['email'] && $employee->email)<span class="block text-xs text-gray-500">{{ $employee->email }}</span>@endif
+                            </td>
                             <td class="px-4 py-3">{{ $employee->subDepartment?->name ?? $employee->department?->name }}</td>
                             <td class="px-4 py-3"><x-status-badge :active="$employee->status === \App\Enums\EmployeeStatus::Active" /></td>
                             <td class="px-4 py-3">
@@ -210,14 +221,12 @@
                                         <span class="sr-only">{{ __('Separation') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
                                     </button>
-                                </x-row-menu>
-                            </td>
-                            <td class="px-4 py-3">
-                                <button type="button" title="{{ __('Letters') }}" class="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                                    <button type="button" title="{{ __('Letters') }}" class="rounded-md p-2 text-gray-600 hover:bg-gray-100"
                                         x-on:click="$dispatch('show-letters', @js(['name' => $employee->full_name, 'call' => route('employees.letter', [$employee, 'call']), 'offer' => route('employees.letter', [$employee, 'offer']), 'joining' => route('employees.letter', [$employee, 'joining'])]))">
                                     <span class="sr-only">{{ __('Letters') }}</span>
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                                 </button>
+                                </x-row-menu>
                             </td>
                             @if ($columns['date_of_birth'])<td class="px-4 py-3 whitespace-nowrap">{{ $employee->date_of_birth?->toDateString() }}</td>@endif
                             @if ($columns['designation'])<td class="px-4 py-3">{{ $employee->position?->name }}</td>@endif
@@ -226,7 +235,7 @@
                             @if ($columns['shift'])<td class="px-4 py-3">{{ $employee->shift?->name }}</td>@endif
                         </tr>
                     @empty
-                        @if ($filtering || request('search'))
+                        @if ($filtering || $status || request('search'))
                             <x-empty-state colspan="17" icon="search" :title="__('No employees match these filters.')">{{ __('Try a different search or clear the filters.') }}</x-empty-state>
                         @else
                             <x-empty-state colspan="17" icon="users" :title="__('No employees yet')">
