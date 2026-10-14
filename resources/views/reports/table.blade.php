@@ -13,6 +13,11 @@
             </div>
             @include('reports._exports')
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Records'), 'value' => count($rows)],
+            ['label' => __('Period'), 'value' => $period],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('reports.'.$report) }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">

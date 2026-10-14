@@ -24,6 +24,15 @@
                 </select>
             </form>
         </div>
+        @if ($sheet)
+            <x-stat-strip :items="[
+                ['label' => __('Employees'), 'value' => $sheet->entries->count()],
+                ['label' => __('Eligible'), 'value' => $sheet->entries->where('eligible', true)->count(), 'tone' => 'success'],
+                ['label' => __('Total bonus'), 'value' => '₹'.number_format($sheet->entries->sum('calculated'))],
+                ['label' => __('Status'), 'value' => $sheet->approved_at ? __('Approved') : __('Not approved'), 'tone' => $sheet->approved_at ? 'success' : 'warn'],
+            ]" />
+        @endif
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $company)

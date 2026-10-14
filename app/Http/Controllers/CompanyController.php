@@ -36,6 +36,7 @@ class CompanyController extends Controller
         $companies = $this->filtered($request)->paginate($perPage)->withQueryString();
 
         return view('companies.index', [
+            'employeeCount' => \App\Models\Employee::current()->count(),
             'companies' => $companies,
             'perPage' => $perPage,
             'parents' => Company::orderBy('establishment_name')->get(['id', 'establishment_name']),

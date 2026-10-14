@@ -21,6 +21,12 @@
                 </div>
             @endif
         </div>
+        @if ($employee)
+            <x-stat-strip :items="[
+                ['label' => __('Punches this month'), 'value' => $punches->total(), 'hint' => $month->format('F Y')],
+            ]" />
+        @endif
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.raw-data') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">

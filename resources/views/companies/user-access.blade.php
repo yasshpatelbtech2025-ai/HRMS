@@ -7,14 +7,16 @@
         <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('User access') }}</h2>
-                <p class="text-sm text-gray-500">
-                    @foreach ($seats as $role => $seat)
-                        {{ __(':used of :cap :role seats in use', ['used' => $seat['used'], 'cap' => $seat['cap'], 'role' => strtolower(__(\App\Models\User::ROLES[$role]))]) }}@if (! $loop->last) · @endif
-                    @endforeach
-                </p>
             </div>
             <x-add-button modal="create-user">{{ __('Add login') }}</x-add-button>
         </div>
+        <x-stat-strip :items="collect($seats)->map(fn ($seat, $role) => [
+            'label' => __(':role seats in use', ['role' => __(\App\Models\User::ROLES[$role])]),
+            'value' => $seat['used'].' / '.$seat['cap'],
+            'tone' => $seat['used'] >= $seat['cap'] ? 'warn' : null,
+            'hint' => $seat['used'] >= $seat['cap'] ? __('No seats left') : __(':n left', ['n' => $seat['cap'] - $seat['used']]),
+        ])->values()->all()" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">

@@ -17,6 +17,16 @@
                 </select>
             </form>
         </div>
+        @php
+            $live = collect($acts)->reject(fn ($a) => $a['coming_soon'] ?? false);
+            $formCount = $live->sum(fn ($a) => count($a['forms'] ?? []));
+        @endphp
+        <x-stat-strip :items="[
+            ['label' => __('Acts available'), 'value' => $live->count()],
+            ['label' => __('Forms and registers'), 'value' => $formCount],
+            ['label' => __('Coming soon'), 'value' => count($acts) - $live->count()],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $company)

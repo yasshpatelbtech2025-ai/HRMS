@@ -28,6 +28,13 @@
                 @endif
             </form>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Employees'), 'value' => $rows->count(), 'hint' => __('FY :fy', ['fy' => $fy.'-'.substr($fy + 1, 2)])],
+            ['label' => __('Tax for the year'), 'value' => '₹'.number_format($rows->sum('tax'))],
+            ['label' => __('Deducted so far'), 'value' => '₹'.number_format($rows->sum('paid_tds')), 'tone' => 'success'],
+            ['label' => __('Still to deduct'), 'value' => '₹'.number_format($rows->sum('balance')), 'tone' => $rows->sum('balance') > 0 ? 'warn' : null],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if ($company && ! $deducting)

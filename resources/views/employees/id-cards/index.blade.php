@@ -8,6 +8,11 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee list for id card') }}</h2>
             <x-add-button modal="assign-id-card">{{ __('Assign id card') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Employees'), 'value' => $employees->total()],
+            ['label' => __('Card not yet assigned'), 'value' => $unassigned->count(), 'tone' => $unassigned->count() ? 'warn' : 'success'],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('employees.id-cards')" :per-page="$perPage" />

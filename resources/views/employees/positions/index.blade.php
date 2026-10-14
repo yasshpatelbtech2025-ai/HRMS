@@ -8,6 +8,12 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Position list') }}</h2>
             <x-add-button modal="create-position">{{ __('Add position') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Positions'), 'value' => $positions->total()],
+            ['label' => __('Active'), 'value' => $active, 'tone' => 'success'],
+            ['label' => __('Inactive'), 'value' => max($positions->total() - $active, 0), 'tone' => $positions->total() > $active ? 'warn' : null],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('employees.positions')" :per-page="$perPage" />

@@ -8,6 +8,12 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Separation employees list') }}</h2>
             <x-add-button modal="add-separation">{{ __('Add separation') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Separated employees'), 'value' => $employees->total()],
+            ['label' => __('Separated this month'), 'value' => $monthly, 'tone' => $monthly ? 'warn' : null, 'hint' => now()->format('F Y')],
+            ['label' => __('Currently employed'), 'value' => $candidates->count(), 'tone' => 'success'],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('employees.separations')" :per-page="$perPage" />

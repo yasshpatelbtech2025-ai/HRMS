@@ -19,6 +19,14 @@
                 </select>
             </form>
         </div>
+        @if ($company)
+            <x-stat-strip :items="[
+                ['label' => __('Employees'), 'value' => $stats['all']],
+                ['label' => __('Salary entered'), 'value' => $stats['set'], 'tone' => 'success'],
+                ['label' => __('Salary missing'), 'value' => $stats['all'] - $stats['set'], 'tone' => $stats['all'] > $stats['set'] ? 'warn' : null, 'hint' => $stats['all'] > $stats['set'] ? __('Add it under Manage Employee Salary') : null],
+            ]" />
+        @endif
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $employees)

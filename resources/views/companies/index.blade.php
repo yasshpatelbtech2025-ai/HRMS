@@ -10,6 +10,11 @@
                 <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
             @endcan
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Companies'), 'value' => $companies->total()],
+            ['label' => __('Employees across companies'), 'value' => $employeeCount],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('company.index')" :per-page="$perPage" print

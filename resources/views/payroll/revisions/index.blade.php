@@ -28,6 +28,12 @@
                 <a href="{{ route('payroll.revisions.export', ['format' => 'xlsx'] + request()->only('employee')) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
             </form>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Revisions'), 'value' => array_sum($counts)],
+            ['label' => __('Scheduled'), 'value' => $counts['pending'] ?? 0, 'tone' => ($counts['pending'] ?? 0) ? 'warn' : null, 'hint' => __('Apply on their effective date')],
+            ['label' => __('Applied'), 'value' => $counts['applied'] ?? 0, 'tone' => 'success'],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">

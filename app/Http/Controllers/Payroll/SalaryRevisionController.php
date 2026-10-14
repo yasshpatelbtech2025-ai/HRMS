@@ -31,6 +31,7 @@ class SalaryRevisionController extends Controller
         $employee = $employees->firstWhere('uuid', $request->query('employee'));
 
         return view('payroll.revisions.index', [
+            'counts' => SalaryRevision::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status')->all(),
             'employees' => $employees,
             'employee' => $employee,
             'revisions' => SalaryRevision::with('employee')

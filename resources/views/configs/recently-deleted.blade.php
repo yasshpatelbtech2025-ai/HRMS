@@ -16,6 +16,12 @@
                 </select>
             </form>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Deleted items'), 'value' => count($rows)],
+            ['label' => __('Removed for good within 7 days'), 'value' => collect($rows)->filter(fn ($r) => $r['expires'] && $r['model']->deleted_at->copy()->addDays($retention)->lte(now()->addDays(7)))->count(), 'tone' => 'warn'],
+            ['label' => __('Kept for'), 'value' => trans_choice(':count day|:count days', $retention)],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">

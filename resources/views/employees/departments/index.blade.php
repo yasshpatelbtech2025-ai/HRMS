@@ -8,6 +8,12 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Sub department list') }}</h2>
             <x-add-button modal="create-sub-department">{{ __('Add sub department') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Sub departments'), 'value' => $subDepartments->total()],
+            ['label' => __('Active'), 'value' => $active, 'tone' => 'success'],
+            ['label' => __('Inactive'), 'value' => max($subDepartments->total() - $active, 0), 'tone' => $subDepartments->total() > $active ? 'warn' : null],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @php($exportQuery = request()->only('search', 'sort', 'direction'))
