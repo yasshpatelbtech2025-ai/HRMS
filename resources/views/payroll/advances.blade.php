@@ -10,6 +10,13 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary advanced list') }}</h2>
             <x-add-button modal="create-advance">{{ __('Add salary advance') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Active advances'), 'value' => $stats['count']],
+            ['label' => __('Total advanced'), 'value' => '₹'.number_format($stats['given'])],
+            ['label' => __('Released so far'), 'value' => '₹'.number_format($stats['released']), 'tone' => 'success'],
+            ['label' => __('Still to release'), 'value' => '₹'.number_format(max($stats['given'] - $stats['released'], 0)), 'tone' => $stats['given'] > $stats['released'] ? 'warn' : null],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('payroll.advances')" :per-page="$perPage" :exports="[

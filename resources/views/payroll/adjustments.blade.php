@@ -8,6 +8,13 @@
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary adjustment list') }}</h2>
             <x-add-button modal="create-adjustment">{{ __('Add adjustment') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Adjustments'), 'value' => $stats['count']],
+            ['label' => __('Added to pay'), 'value' => '₹'.number_format($stats['earnings']), 'tone' => 'success'],
+            ['label' => __('Deducted from pay'), 'value' => '₹'.number_format($stats['deductions']), 'tone' => $stats['deductions'] ? 'danger' : null],
+            ['label' => __('Net effect'), 'value' => '₹'.number_format($stats['earnings'] - $stats['deductions'])],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('payroll.adjustments')" :per-page="$perPage" :exports="[

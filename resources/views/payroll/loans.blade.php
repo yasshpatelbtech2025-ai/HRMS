@@ -16,6 +16,13 @@
                 <x-add-button modal="create-loan">{{ __('Add loan') }}</x-add-button>
             </div>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Loans'), 'value' => $stats['count']],
+            ['label' => __('Being repaid'), 'value' => $stats['running'], 'tone' => $stats['running'] ? 'warn' : null],
+            ['label' => __('Fully repaid'), 'value' => $stats['repaid'], 'tone' => 'success'],
+            ['label' => __('Total lent'), 'value' => '₹'.number_format($stats['lent'])],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('payroll.loans') }}" x-show="filtersOpen" x-transition class="flex flex-wrap items-end gap-3 border-b border-gray-200 bg-gray-50 px-5 py-4" style="display: none;">

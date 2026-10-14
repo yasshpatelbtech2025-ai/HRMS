@@ -29,6 +29,12 @@ class LoanController extends Controller
     public function index(Request $request): View
     {
         return view('payroll.loans', [
+            'stats' => [
+                'count' => Loan::count(),
+                'running' => Loan::where('is_active', true)->whereColumn('installments_cleared', '<', 'installment_period')->count(),
+                'repaid' => Loan::whereColumn('installments_cleared', '>=', 'installment_period')->count(),
+                'lent' => (float) Loan::sum('amount'),
+            ],
             'loans' => $this->filtered($request)->paginate($perPage = $this->perPage($request))->withQueryString(),
             'perPage' => $perPage,
             'employees' => Employee::current()->with('company')->orderBy('company_id')->orderBy('employee_code')->get(),

@@ -13,6 +13,13 @@
                 <a href="{{ route('payroll.export', 'xlsx') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
             </div>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Salary sheets'), 'value' => $stats['sheets']],
+            ['label' => __('Waiting for approval'), 'value' => $stats['waiting'], 'tone' => $stats['waiting'] ? 'warn' : null, 'hint' => $stats['waiting'] ? __('Review and approve to finalise') : null],
+            ['label' => __('Approved'), 'value' => $stats['approved'], 'tone' => 'success'],
+            ['label' => __('Approved, not yet paid'), 'value' => $stats['unpaid'], 'tone' => $stats['unpaid'] ? 'warn' : null],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4">
