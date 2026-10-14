@@ -77,6 +77,16 @@
         <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Monthly present report') }}</h2>
         </div>
+        @if ($company && $employees->isNotEmpty())
+            @php $sum = fn (string $key) => collect($grid)->sum(fn ($row) => $row['totals'][$key]) + 0; @endphp
+            <x-stat-strip :items="[
+                ['label' => __('Employees'), 'value' => $employees->count(), 'hint' => $month->format('F Y')],
+                ['label' => __('Present days'), 'value' => $sum('P') + $sum('HD') / 2, 'tone' => 'success', 'hint' => $sum('HD') ? __(':n half days counted as half', ['n' => $sum('HD')]) : null],
+                ['label' => __('LOP days'), 'value' => $sum('A'), 'tone' => $sum('A') ? 'danger' : null],
+                ['label' => __('On leave'), 'value' => $sum('LEAVE'), 'hint' => __(':wo week offs · :ph holidays', ['wo' => $sum('WO'), 'ph' => $sum('PH')])],
+            ]" />
+        @endif
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.index') }}" class="grid grid-cols-1 gap-3 border-b border-gray-200 px-5 py-4 sm:grid-cols-3 lg:grid-cols-6 print:hidden">

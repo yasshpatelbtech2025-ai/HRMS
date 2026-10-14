@@ -18,6 +18,16 @@
                 <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance form') }}</a>
             </div>
         </div>
+        @if ($company)
+            @php $link = fn (?string $value) => route('attendance.requests', array_filter(['company' => $company->uuid, 'status' => $value])); @endphp
+            <x-stat-strip :items="[
+                ['label' => __('All requests'), 'value' => array_sum($counts), 'href' => $link(null), 'active' => ! $status],
+                ['label' => __('Pending approval'), 'value' => $counts['pending'] ?? 0, 'tone' => ($counts['pending'] ?? 0) ? 'warn' : null, 'href' => $link('pending'), 'active' => $status === 'pending'],
+                ['label' => __('Approved'), 'value' => $counts['approved'] ?? 0, 'tone' => 'success', 'href' => $link('approved'), 'active' => $status === 'approved'],
+                ['label' => __('Rejected'), 'value' => $counts['rejected'] ?? 0, 'href' => $link('rejected'), 'active' => $status === 'rejected'],
+            ]" />
+        @endif
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.requests') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4 print:hidden">

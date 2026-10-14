@@ -12,6 +12,13 @@
                 {{ __('Attendance form') }}
             </a>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Missing punches'), 'value' => $punches->count(), 'tone' => $punches->isNotEmpty() ? 'warn' : 'success', 'hint' => $month->format('F Y')],
+            ['label' => __('Employees affected'), 'value' => $punches->pluck('employee_id')->unique()->count()],
+            ['label' => __('Days affected'), 'value' => $punches->pluck('work_date')->map(fn ($d) => $d->toDateString())->unique()->count()],
+            ['label' => __('Status'), 'value' => $punches->isEmpty() ? __('All clear') : __('Needs fixing'), 'tone' => $punches->isEmpty() ? 'success' : 'warn', 'hint' => $punches->isEmpty() ? null : __('Fix these before generating salary')],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.missing-punch') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">

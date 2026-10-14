@@ -25,6 +25,13 @@
                 <x-add-button modal="create-leave">{{ __('Add leave application') }}</x-add-button>
             </div>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('All leave'), 'value' => array_sum($counts), 'href' => route('attendance.leave'), 'active' => ! request('status')],
+            ['label' => __('Pending approval'), 'value' => $counts['pending'] ?? 0, 'tone' => ($counts['pending'] ?? 0) ? 'warn' : null, 'href' => route('attendance.leave', ['status' => 'pending']), 'active' => request('status') === 'pending'],
+            ['label' => __('Approved'), 'value' => $counts['approved'] ?? 0, 'tone' => 'success', 'href' => route('attendance.leave', ['status' => 'approved']), 'active' => request('status') === 'approved'],
+            ['label' => __('Rejected'), 'value' => $counts['rejected'] ?? 0, 'href' => route('attendance.leave', ['status' => 'rejected']), 'active' => request('status') === 'rejected'],
+        ]" />
+
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('attendance.leave')" :per-page="$perPage" :exports="[

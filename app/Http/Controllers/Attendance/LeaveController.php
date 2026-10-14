@@ -34,6 +34,7 @@ class LeaveController extends Controller
     public function index(Request $request): View
     {
         return view('attendance.leave.index', [
+            'counts' => LeaveApplication::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status')->all(),
             'leaves' => $this->filtered($request)->paginate($perPage = $this->perPage($request))->withQueryString(),
             'perPage' => $perPage,
             'employees' => Employee::current()->orderBy('company_id')->orderBy('employee_code')->get(['id', 'uuid', 'company_id', 'employee_code', 'first_name', 'middle_name', 'last_name']),
