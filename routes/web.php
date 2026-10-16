@@ -29,6 +29,7 @@ use App\Http\Controllers\EmployeeImportController;
 use App\Http\Controllers\CompanyImportController;
 use App\Http\Controllers\Attendance\AttendanceImportController;
 use App\Http\Controllers\IdCardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Payroll\BonusController;
 use App\Http\Controllers\Payroll\CurrentSalaryController;
 use App\Http\Controllers\Payroll\LoanController;
@@ -333,6 +334,18 @@ Route::middleware(['auth', 'verified', 'throttle:app'])->group(function () {
         Route::post('rules', 'storeRule')->name('configs.payroll.rules.store');
         Route::put('rules/{rule}', 'updateRule')->name('configs.payroll.rules.update');
         Route::delete('rules/{rule}', 'destroyRule')->name('configs.payroll.rules.destroy');
+    });
+
+    // Invoice (admin only, config/access.php).
+    Route::controller(InvoiceController::class)->prefix('invoice')->group(function () {
+        Route::get('/', 'index')->name('invoice.index');
+        Route::get('create', 'create')->name('invoice.create');
+        Route::post('/', 'store')->name('invoice.store');
+        Route::get('{invoice}', 'show')->name('invoice.show');
+        Route::get('{invoice}/pdf', 'pdf')->name('invoice.pdf');
+        Route::get('{invoice}/edit', 'edit')->name('invoice.edit');
+        Route::put('{invoice}', 'update')->name('invoice.update');
+        Route::delete('{invoice}', 'destroy')->name('invoice.destroy');
     });
 
     // Every other section tab renders a placeholder page until its module is built.

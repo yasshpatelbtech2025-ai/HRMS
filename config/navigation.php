@@ -61,6 +61,11 @@ return [
         'bonus' => 'Bonus',
     ],
 
+    // Admin-only (config/access.php).
+    'invoice' => [
+        '' => 'Invoices',
+    ],
+
     'reports' => [
         '' => 'Attendance sheet',
         'attendance' => 'Attendance report',

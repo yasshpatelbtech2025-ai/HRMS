@@ -15,7 +15,7 @@ return [
     'seats' => ['admin' => 2, 'user' => 10],
 
     // Routes (by name) only admins can open; their tabs are hidden from users.
-    // A future "invoice" section: add 'invoice' here (a whole section) and its routes.
+    // A whole section (e.g. 'invoice*') hides it from the sidebar too.
     'admin_only' => [
         'company.firm*', 'company.id-card-formats*', 'company.devices', 'company.user-access*', 'company.store', 'company.update',
         'company.destroy', 'configs.recently-deleted', 'recently-deleted.*', 'configs.activity-log*', 'invoice*',
@@ -25,7 +25,4 @@ return [
 
     // Configs › Activity log entries older than this are removed (daily model:prune).
     'activity_retention_days' => 730,
-
-    // The sidebar is written in resources/views/layouts/sidebar.blade.php: wrap an
-    // admin-only section's link (e.g. Invoice) in @can('admin') ... @endcan.
 ];

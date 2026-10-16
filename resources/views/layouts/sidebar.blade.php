@@ -13,10 +13,16 @@
         'Organisation' => [['company', 'Company', 'building']],
         'People' => [['attendance', 'Attendance', 'calendar'], ['employees', 'Employees', 'users']],
         'Compliance' => [['compliance', 'Compliance', 'shield'], ['documents', 'Documents', 'document']],
-        'Money' => [['payroll', 'Payroll', 'wallet']],
+        'Money' => [['payroll', 'Payroll', 'wallet'], ['invoice', 'Invoice', 'receipt']],
         'Insights' => [['reports', 'Reports', 'chart']],
         'Admin' => [['configs', 'Configs', 'cog']],
     ];
+
+    // Sections whose landing page is admin-only (config/access.php) are hidden from users,
+    // and so is a group left with nothing in it.
+    $groups = collect($groups)
+        ->map(fn ($items) => array_values(array_filter($items, fn ($item) => $item[0] === 'dashboard' || CompanyAccess::canOpen("{$item[0]}.index"))))
+        ->filter();
 
     // Same active-tab rule as components/section-tabs: a tab owns its own routes and
     // the ones beneath it; anything else in the section belongs to the landing tab.
