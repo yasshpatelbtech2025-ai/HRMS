@@ -5,8 +5,13 @@
 
     @php
         $filterKeys = ['company_id', 'name', 'employee_code', 'employment_type', 'department_id', 'sub_department_id', 'position_id', 'blood_group', 'country', 'gender', 'marital_status'];
-        $filtering = collect(request()->only($filterKeys))->filter(fn ($v) => filled($v))->isNotEmpty();
-        $exportQuery = request()->only([...$filterKeys, 'search', 'sort', 'direction']);
+        // A company that came from the top-bar picker isn't a filter the user opened.
+        $filtering = collect(request()->only($filterKeys))
+            ->when(request()->attributes->get('company_from_picker'), fn ($f) => $f->except('company_id'))
+            ->filter(fn ($v) => filled($v))->isNotEmpty();
+        $exportQuery = request()->only([...$filterKeys, 'status', 'search', 'sort', 'direction']);
+        $status = in_array(request('status'), ['active', 'inactive'], true) ? request('status') : null;
+        $statusUrl = fn (?string $value) => route('employees.index', array_filter(['status' => $value, 'per_page' => request('per_page')]));
         $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
@@ -14,17 +19,17 @@
         @include('employees._import-status', ['run' => $importRun])
     @endif
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200" x-data="{ filtersOpen: @js($filtering) }">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div x-data="{ filtersOpen: @js($filtering) }">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee list') }}</h2>
             <div class="flex flex-wrap items-center gap-2 print:hidden">
                 <button type="button" x-on:click="filtersOpen = ! filtersOpen" :aria-expanded="filtersOpen"
-                        class="inline-flex items-center gap-2 rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">
+                        class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" /></svg>
                     {{ __('Filter') }}
                 </button>
                 <button type="button" x-on:click="$dispatch('open-modal', 'import-employees')"
-                        class="inline-flex items-center gap-2 rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">
+                        class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                     {{ __('Import Employees') }}
                 </button>
@@ -35,7 +40,7 @@
                 </a>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button type="button" class="inline-flex items-center gap-1 rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800">
+                        <button type="button" class="inline-flex items-center gap-1 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">
                             {{ __('Select Columns') }}
                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" /></svg>
                         </button>
@@ -48,7 +53,7 @@
                                 <button class="flex w-full items-center justify-between px-4 py-2 text-start text-sm text-gray-700 hover:bg-gray-100" role="menuitemcheckbox" aria-checked="{{ $columns[$key] ? 'true' : 'false' }}">
                                     {{ __($label) }}
                                     @if ($columns[$key])
-                                        <svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                        <svg class="h-4 w-4 text-success" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
                                     @endif
                                 </button>
                             </form>
@@ -57,6 +62,14 @@
                 </x-dropdown>
             </div>
         </div>
+    <x-stat-strip :items="[
+            ['label' => __('All employees'), 'value' => $stats['total'], 'href' => $statusUrl(null), 'active' => ! $status],
+            ['label' => __('Active'), 'value' => $stats['active'], 'tone' => 'success', 'href' => $statusUrl('active'), 'active' => $status === 'active'],
+            ['label' => __('Inactive'), 'value' => $stats['inactive'], 'tone' => $stats['inactive'] ? 'warn' : null, 'href' => $statusUrl('inactive'), 'active' => $status === 'inactive'],
+            ['label' => __('Joined this month'), 'value' => $stats['joined'], 'hint' => now()->format('F Y')],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         {{-- Filter panel --}}
         <form method="GET" action="{{ route('employees.index') }}" x-show="filtersOpen" x-transition
@@ -137,17 +150,12 @@
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
                         <th class="w-10 px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all on this page') }}"></th>
-                        <th class="px-4 py-3">{{ __('Sl') }}</th>
-                        <x-sort-header column="company" default class="px-4 py-3">{{ __('Company name') }}</x-sort-header>
-                        <x-sort-header column="employee_code" class="px-4 py-3">{{ __('Employee id') }}</x-sort-header>
-                        <th class="px-4 py-3">{{ __('Image') }}</th>
-                        <th class="px-4 py-3">{{ __('Name of employee') }}</th>
-                        <th class="px-4 py-3">{{ __('Mobile no') }}</th>
-                        @if ($columns['email'])<th class="px-4 py-3">{{ __('Email') }}</th>@endif
+                        <x-sort-header column="name" class="px-4 py-3">{{ __('Employee') }}</x-sort-header>
+                        <x-sort-header column="company" default class="px-4 py-3">{{ __('Company') }}</x-sort-header>
+                        <th class="px-4 py-3">{{ __('Contact') }}</th>
                         <th class="px-4 py-3">{{ __('Department') }}</th>
                         <x-sort-header column="status" class="px-4 py-3">{{ __('Status') }}</x-sort-header>
-                        <th class="px-4 py-3">{{ __('Action') }}</th>
-                        <th class="px-4 py-3">{{ __('Letter') }}</th>
+                        <th class="px-4 py-3"><span class="sr-only">{{ __('Action') }}</span></th>
                         @if ($columns['date_of_birth'])<th class="px-4 py-3">{{ __('Date of Birth') }}</th>@endif
                         @if ($columns['designation'])<th class="px-4 py-3">{{ __('Designation') }}</th>@endif
                         @if ($columns['joining_date'])<x-sort-header column="joining_date" class="px-4 py-3">{{ __('Joining Date') }}</x-sort-header>@endif
@@ -159,27 +167,34 @@
                     @forelse ($employees as $employee)
                         <tr class="hover:bg-gray-50" :class="selected.includes(@js($employee->uuid)) && 'bg-brand-50/60'">
                             <td class="px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="{{ $employee->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :name', ['name' => $employee->full_name]) }}"></td>
-                            <td class="px-4 py-3 text-gray-500">{{ $employees->firstItem() + $loop->index }}</td>
+                            <td class="px-4 py-3">
+                                <a href="{{ route('employees.show', $employee) }}" class="flex items-center gap-3">
+                                    <x-employee-photo :employee="$employee" class="h-9 w-9 shrink-0" />
+                                    <span class="min-w-0">
+                                        <span class="block truncate font-medium text-gray-900">{{ $employee->full_name }}</span>
+                                        <span class="block font-mono text-xs text-gray-500">{{ $employee->employee_code }}</span>
+                                    </span>
+                                </a>
+                            </td>
                             <td class="px-4 py-3">{{ $employee->company?->establishment_name }}</td>
-                            <td class="px-4 py-3 font-mono">{{ $employee->employee_code }}</td>
-                            <td class="px-4 py-3"><x-employee-photo :employee="$employee" class="h-10 w-10" /></td>
-                            <td class="px-4 py-3 font-medium text-gray-900">{{ $employee->full_name }}</td>
-                            <td class="px-4 py-3 whitespace-nowrap">{{ $employee->phone }}</td>
-                            @if ($columns['email'])<td class="px-4 py-3">{{ $employee->email }}</td>@endif
+                            <td class="px-4 py-3">
+                                <span class="block whitespace-nowrap">{{ $employee->phone }}</span>
+                                @if ($columns['email'] && $employee->email)<span class="block text-xs text-gray-500">{{ $employee->email }}</span>@endif
+                            </td>
                             <td class="px-4 py-3">{{ $employee->subDepartment?->name ?? $employee->department?->name }}</td>
                             <td class="px-4 py-3"><x-status-badge :active="$employee->status === \App\Enums\EmployeeStatus::Active" /></td>
                             <td class="px-4 py-3">
-                                <div class="flex items-center gap-0.5">
+                                <x-row-menu>
                                     @php $makeInactive = $employee->status === \App\Enums\EmployeeStatus::Active; @endphp
                                     <form method="POST" action="{{ route('employees.status', $employee) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button title="{{ $makeInactive ? __('Make inactive') : __('Make active') }}" class="rounded-md p-2 {{ $makeInactive ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50' }}">
+                                        <button title="{{ $makeInactive ? __('Make inactive') : __('Make active') }}" class="rounded-md p-2 {{ $makeInactive ? 'text-amber-600 hover:bg-warn-soft' : 'text-success hover:bg-success-soft' }}">
                                             <span class="sr-only">{{ $makeInactive ? __('Make inactive') : __('Make active') }}</span>
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" /></svg>
                                         </button>
                                     </form>
-                                    <a href="{{ route('employees.show', $employee) }}" title="{{ __('Show') }}" class="rounded-md p-2 text-sky-600 hover:bg-sky-50">
+                                    <a href="{{ route('employees.show', $employee) }}" title="{{ __('Show') }}" class="rounded-md p-2 text-info hover:bg-info-soft">
                                         <span class="sr-only">{{ __('Show') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                                     </a>
@@ -191,7 +206,7 @@
                                         <form method="POST" action="{{ route('employees.destroy', $employee) }}" data-confirm="{{ __('Delete employee :name?', ['name' => $employee->full_name]) }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button title="{{ __('Delete') }}" class="rounded-md p-2 text-red-600 hover:bg-red-50">
+                                            <button title="{{ __('Delete') }}" class="rounded-md p-2 row-menu-danger text-red-600 hover:bg-danger-soft">
                                                 <span class="sr-only">{{ __('Delete') }}</span>
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                             </button>
@@ -201,19 +216,17 @@
                                         <span class="sr-only">{{ __('Salary Revision') }}</span>
                                         <span aria-hidden="true" class="block h-4 w-4 text-center text-sm font-semibold leading-4">₹</span>
                                     </a>
-                                    <button type="button" title="{{ __('Separation') }}" class="rounded-md p-2 text-orange-600 hover:bg-orange-50"
+                                    <button type="button" title="{{ __('Separation') }}" class="rounded-md p-2 text-warn hover:bg-warn-soft"
                                             x-on:click="$dispatch('separate-employee', @js(['action' => route('employees.separation', $employee), 'name' => $employee->full_name, 'date' => $employee->separation_date?->toDateString()]))">
                                         <span class="sr-only">{{ __('Separation') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
                                     </button>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3">
-                                <button type="button" title="{{ __('Letters') }}" class="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                                    <button type="button" title="{{ __('Letters') }}" class="rounded-md p-2 text-gray-600 hover:bg-gray-100"
                                         x-on:click="$dispatch('show-letters', @js(['name' => $employee->full_name, 'call' => route('employees.letter', [$employee, 'call']), 'offer' => route('employees.letter', [$employee, 'offer']), 'joining' => route('employees.letter', [$employee, 'joining'])]))">
                                     <span class="sr-only">{{ __('Letters') }}</span>
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                                 </button>
+                                </x-row-menu>
                             </td>
                             @if ($columns['date_of_birth'])<td class="px-4 py-3 whitespace-nowrap">{{ $employee->date_of_birth?->toDateString() }}</td>@endif
                             @if ($columns['designation'])<td class="px-4 py-3">{{ $employee->position?->name }}</td>@endif
@@ -222,7 +235,7 @@
                             @if ($columns['shift'])<td class="px-4 py-3">{{ $employee->shift?->name }}</td>@endif
                         </tr>
                     @empty
-                        @if ($filtering || request('search'))
+                        @if ($filtering || $status || request('search'))
                             <x-empty-state colspan="17" icon="search" :title="__('No employees match these filters.')">{{ __('Try a different search or clear the filters.') }}</x-empty-state>
                         @else
                             <x-empty-state colspan="17" icon="users" :title="__('No employees yet')">
@@ -237,6 +250,7 @@
 
         <x-list-footer :paginator="$employees" />
     </div>
+    </div>
 
     @include('employees._separation-modal')
 
@@ -249,8 +263,8 @@
             </div>
             <div class="flex flex-col gap-2 px-6 py-5">
                 <a :href="letters?.call" target="_blank" class="rounded-md border border-brand-300 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">📄 {{ __('Call Letter') }}</a>
-                <a :href="letters?.offer" target="_blank" class="rounded-md border border-sky-300 px-4 py-2 text-sm font-medium text-sky-700 hover:bg-sky-50">📄 {{ __('Offer Letter') }}</a>
-                <a :href="letters?.joining" target="_blank" class="rounded-md border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">📄 {{ __('Joining Letter') }}</a>
+                <a :href="letters?.offer" target="_blank" class="rounded-md border border-info/30 px-4 py-2 text-sm font-medium text-info hover:bg-info-soft">📄 {{ __('Offer Letter') }}</a>
+                <a :href="letters?.joining" target="_blank" class="rounded-md border border-amber-300 px-4 py-2 text-sm font-medium text-warn hover:bg-warn-soft">📄 {{ __('Joining Letter') }}</a>
             </div>
             <div class="flex justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
                 <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>

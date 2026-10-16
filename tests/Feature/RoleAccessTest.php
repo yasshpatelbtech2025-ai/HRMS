@@ -105,7 +105,7 @@ class RoleAccessTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $this->get(route('company.user-access'))->assertOk()->assertSee('1 of 2 admin seats in use');
+        $this->get(route('company.user-access'))->assertOk()->assertSeeInOrder(['Admin seats in use', '1 / 2', '1 left']);
 
         $this->post(route('company.user-access.store'), [
             'name' => 'Priya', 'email' => 'priya@example.com', 'password' => 'secret-pass-123', 'password_confirmation' => 'secret-pass-123',

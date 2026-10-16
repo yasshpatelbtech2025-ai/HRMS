@@ -5,11 +5,12 @@
 
     @php($input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500')
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Smart attendance') }}</h2>
             <p class="mt-1 text-sm text-gray-500">{{ __('Marks the chosen employees present at their shift times on every working day of the month that has no punches yet. Week-offs, holidays and days outside their employment are skipped.') }}</p>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="POST" action="{{ route('attendance.smart.store') }}" class="max-w-3xl space-y-4 px-5 py-6"
               x-data="{
@@ -41,7 +42,7 @@
                             <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-gray-700 hover:bg-gray-50">
                                 <input type="checkbox" name="employees[]" :value="e.uuid" x-model="selected" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                 <span x-text="e.label"></span>
-                                <span x-show="! e.hasShift" class="text-xs text-amber-700">({{ __('no shift — will be skipped') }})</span>
+                                <span x-show="! e.hasShift" class="text-xs text-warn">({{ __('no shift — will be skipped') }})</span>
                             </label>
                         </template>
                         <p x-show="! listed.length" class="px-2 py-2 text-sm text-gray-500" x-text="company ? @js(__('This company has no current employees.')) : @js(__('Select a company first.'))"></p>
@@ -69,5 +70,6 @@
                 <x-primary-button>{{ __('Submit') }}</x-primary-button>
             </div>
         </form>
+    </div>
     </div>
 </x-app-layout>

@@ -3,8 +3,8 @@
 
     <x-section-tabs section="configs" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('Recently deleted') }}</h2>
                 <p class="text-sm text-gray-500">{{ __('Restore anything deleted by mistake. Records are removed for good :days days after deletion; employees and companies are kept until restored.', ['days' => $retention]) }}</p>
@@ -16,6 +16,13 @@
                 </select>
             </form>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Deleted items'), 'value' => count($rows)],
+            ['label' => __('Removed for good within 7 days'), 'value' => collect($rows)->filter(fn ($r) => $r['expires'] && $r['model']->deleted_at->copy()->addDays($retention)->lte(now()->addDays(7)))->count(), 'tone' => 'warn'],
+            ['label' => __('Kept for'), 'value' => trans_choice(':count day|:count days', $retention)],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -51,7 +58,7 @@
                                                   data-confirm="{{ __('Delete :name for good? This cannot be undone.', ['name' => $row['title']]) }}" data-confirm-button="{{ __('Delete for good') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-red-50">{{ __('Delete for good') }}</button>
+                                                <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete for good') }}</button>
                                             </form>
                                         @endcan
                                     @endif
@@ -64,5 +71,6 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 </x-app-layout>

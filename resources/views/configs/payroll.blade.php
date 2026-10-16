@@ -19,8 +19,8 @@
         ];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Payroll setting') }}</h2>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('configs.payroll') }}">
@@ -36,6 +36,7 @@
                 @endif
             </div>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">
@@ -116,6 +117,7 @@
                 </div>
             </div>
         @endif
+    </div>
     </div>
 
     @if ($company)

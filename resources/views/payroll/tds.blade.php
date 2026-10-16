@@ -9,8 +9,8 @@
         $exportQuery = ['company' => $company?->uuid, 'fy' => $fy];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('TDS (Income Tax)') }}</h2>
                 <p class="text-sm text-gray-500">{{ __('Financial year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
@@ -28,9 +28,17 @@
                 @endif
             </form>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Employees'), 'value' => $rows->count(), 'hint' => __('FY :fy', ['fy' => $fy.'-'.substr($fy + 1, 2)])],
+            ['label' => __('Tax for the year'), 'value' => '₹'.number_format($rows->sum('tax'))],
+            ['label' => __('Deducted so far'), 'value' => '₹'.number_format($rows->sum('paid_tds')), 'tone' => 'success'],
+            ['label' => __('Still to deduct'), 'value' => '₹'.number_format($rows->sum('balance')), 'tone' => $rows->sum('balance') > 0 ? 'warn' : null],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if ($company && ! $deducting)
-            <div class="mx-5 mt-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
+            <div class="mx-5 mt-4 rounded-md bg-warn-soft px-4 py-3 text-sm text-warn ring-1 ring-amber-200">
                 {{ __(':company does not deduct TDS from salary, so payroll leaves it out. Turn on "Employee Tax Deduction" in', ['company' => $company->establishment_name]) }}
                 <a href="{{ route('configs.payroll', ['company' => $company->uuid]) }}" class="font-semibold underline">{{ __('Configs › Payroll') }}</a>
                 {{ __('to deduct the monthly TDS below.') }}
@@ -75,7 +83,7 @@
                                     <input type="hidden" name="fy" value="{{ $fy }}">
                                     <input type="number" name="monthly_amount" step="0.01" min="0" value="{{ $r['override']?->monthly_amount }}" placeholder="{{ $money($r['estimate']) }}"
                                            class="{{ $select }} w-28 py-1" aria-label="{{ __('Monthly TDS for :name', ['name' => $e->full_name]) }}">
-                                    <button class="rounded-md bg-gray-800 px-2 py-1 text-xs font-semibold text-white hover:bg-gray-900">{{ __('Set') }}</button>
+                                    <button class="rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-2 py-1 text-xs font-medium">{{ __('Set') }}</button>
                                 </form>
                                 <p class="mt-1 text-xs {{ $r['override'] ? 'font-medium text-brand-700' : 'text-gray-500' }}">
                                     {{ $r['override'] ? __('Set by hand (estimate :amount) — clear and Set to estimate again', ['amount' => $money($r['estimate'])]) : __('Estimated · :months month(s) left', ['months' => $r['months_left']]) }}
@@ -91,5 +99,6 @@
         <p class="border-t border-gray-100 px-5 py-3 text-xs text-gray-500">
             {{ __('How it works: the year\'s gross is what was paid so far plus the monthly gross for the months left and any yearly bonus. Less the standard deduction (₹75,000 new regime, ₹50,000 old; the old regime also allows PT and employee PF under 80C up to ₹1.5 lakh), tax is worked out on the regime\'s slabs with the 87A rebate (no tax up to ₹12 lakh in the new regime) and 4% cess. The tax not yet deducted is spread over the months left and deducted in payroll each month. Set a monthly amount to use instead, e.g. after investment proofs. Tax regime is set on each employee.') }}
         </p>
+    </div>
     </div>
 </x-app-layout>

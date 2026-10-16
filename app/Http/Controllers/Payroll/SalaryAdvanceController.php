@@ -28,6 +28,11 @@ class SalaryAdvanceController extends Controller
     public function index(Request $request): View
     {
         return view('payroll.advances', [
+            'stats' => [
+                'count' => SalaryAdvance::where('is_active', true)->count(),
+                'given' => (float) SalaryAdvance::where('is_active', true)->sum('amount'),
+                'released' => (float) SalaryAdvance::where('is_active', true)->sum('released_amount'),
+            ],
             'advances' => $this->filtered($request)->paginate($perPage = $this->perPage($request))->withQueryString(),
             'perPage' => $perPage,
             'employees' => Employee::current()->orderBy('company_id')->orderBy('employee_code')->get(),

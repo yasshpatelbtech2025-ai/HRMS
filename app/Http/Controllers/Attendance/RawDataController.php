@@ -31,7 +31,7 @@ class RawDataController extends Controller
 
     public function index(Request $request): View
     {
-        $employees = Employee::current()->with('company')->orderBy('company_id')->orderBy('employee_code')->get();
+        $employees = Employee::current()->with(['company', 'shift'])->orderBy('company_id')->orderBy('employee_code')->get();
         $employee = $employees->firstWhere('uuid', $request->query('employee'));
         $month = $this->month($request);
 

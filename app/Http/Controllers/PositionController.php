@@ -32,6 +32,7 @@ class PositionController extends Controller
         };
 
         return view('employees.positions.index', [
+            'active' => Position::where('is_active', true)->count(),
             'positions' => $query->paginate($perPage = $this->perPage($request))->withQueryString(),
             'perPage' => $perPage,
             'companies' => Company::with('parent')->orderBy('establishment_name')->get(),

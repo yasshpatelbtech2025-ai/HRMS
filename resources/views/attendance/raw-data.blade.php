@@ -8,8 +8,8 @@
         $exportQuery = ['employee' => $employee?->uuid, 'month' => $month->format('Y-m')];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee attendance raw data') }}</h2>
             @if ($employee)
                 <div class="flex flex-wrap gap-2 print:hidden">
@@ -21,6 +21,13 @@
                 </div>
             @endif
         </div>
+        @if ($employee)
+            <x-stat-strip :items="[
+                ['label' => __('Punches this month'), 'value' => $punches->total(), 'hint' => $month->format('F Y')],
+            ]" />
+        @endif
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.raw-data') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-sm text-gray-700">
@@ -73,7 +80,7 @@
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($punches as $punch)
                             @php $form = 'punch-'.$punch->uuid; @endphp
-                            <tr @class(['hover:bg-gray-50', 'bg-amber-50' => $punch->is_missing])>
+                            <tr @class(['hover:bg-gray-50', 'bg-warn-soft' => $punch->is_missing])>
                                 <td class="px-4 py-2 text-gray-500">{{ $punches->firstItem() + $loop->index }}</td>
                                 <td class="px-4 py-2">{{ $punch->device ?? '--' }}</td>
                                 <td class="px-4 py-2">
@@ -88,7 +95,7 @@
                                     </select>
                                 </td>
                                 <td class="px-4 py-2">{{ (int) $punch->is_night_shift }}</td>
-                                <td class="px-4 py-2 {{ $punch->is_missing ? 'font-semibold text-amber-700' : '' }}">{{ (int) $punch->is_missing }}</td>
+                                <td class="px-4 py-2 {{ $punch->is_missing ? 'font-semibold text-warn' : '' }}">{{ (int) $punch->is_missing }}</td>
                                 <td class="px-4 py-2">{{ $punch->shift?->name ?? '--' }}</td>
                                 <td class="px-4 py-2 font-mono">{{ $punch->shift_code ?? '--' }}</td>
                                 <td class="px-4 py-2">
@@ -96,7 +103,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <button title="{{ $punch->is_locked ? __('Unlock Attendance') : __('Lock Attendance') }}"
-                                                class="rounded-md border px-2 py-1 text-xs {{ $punch->is_locked ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 text-gray-600 hover:bg-gray-50' }}">
+                                                class="rounded-md border px-2 py-1 text-xs {{ $punch->is_locked ? 'border-ink bg-ink text-canvas' : 'border-gray-300 text-gray-600 hover:bg-gray-50' }}">
                                             {{ $punch->is_locked ? __('Locked') : __('Lock') }}
                                         </button>
                                     </form>
@@ -111,7 +118,7 @@
                                             <form method="POST" action="{{ route('attendance.raw-data.destroy', $punch) }}" data-confirm="{{ __('Delete this punch?') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button title="{{ __('Delete') }}" class="rounded-md p-2 text-red-600 hover:bg-red-50">
+                                                <button title="{{ __('Delete') }}" class="rounded-md p-2 text-red-600 hover:bg-danger-soft">
                                                     <span class="sr-only">{{ __('Delete') }}</span>
                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                                 </button>
@@ -129,6 +136,7 @@
 
             <x-list-footer :paginator="$punches" />
         @endif
+    </div>
     </div>
 
     @if ($employee)

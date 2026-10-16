@@ -3,18 +3,21 @@
 
     <x-section-tabs section="company" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">{{ __('User access') }}</h2>
-                <p class="text-sm text-gray-500">
-                    @foreach ($seats as $role => $seat)
-                        {{ __(':used of :cap :role seats in use', ['used' => $seat['used'], 'cap' => $seat['cap'], 'role' => strtolower(__(\App\Models\User::ROLES[$role]))]) }}@if (! $loop->last) · @endif
-                    @endforeach
-                </p>
             </div>
             <x-add-button modal="create-user">{{ __('Add login') }}</x-add-button>
         </div>
+        <x-stat-strip :items="collect($seats)->map(fn ($seat, $role) => [
+            'label' => __(':role seats in use', ['role' => __(\App\Models\User::ROLES[$role])]),
+            'value' => $seat['used'].' / '.$seat['cap'],
+            'tone' => $seat['used'] >= $seat['cap'] ? 'warn' : null,
+            'hint' => $seat['used'] >= $seat['cap'] ? __('No seats left') : __(':n left', ['n' => $seat['cap'] - $seat['used']]),
+        ])->values()->all()" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -37,7 +40,7 @@
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>
                             </td>
                             <td class="px-5 py-3">
-                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $user->isAdmin() ? 'bg-gray-900 text-white' : 'bg-brand-50 text-brand-700' }}">{{ __(\App\Models\User::ROLES[$user->role] ?? $user->role) }}</span>
+                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $user->isAdmin() ? 'bg-ink text-canvas' : 'bg-brand-50 text-brand-700' }}">{{ __(\App\Models\User::ROLES[$user->role] ?? $user->role) }}</span>
                             </td>
                             <td class="px-5 py-3 text-gray-700">
                                 @if ($user->isAdmin())
@@ -62,6 +65,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 
     <x-modal name="create-user" :show="old('_modal') === 'create-user'" max-width="2xl">

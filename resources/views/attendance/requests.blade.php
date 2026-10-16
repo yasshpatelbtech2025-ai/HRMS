@@ -5,11 +5,11 @@
 
     @php
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
-        $badge = ['pending' => 'bg-amber-100 text-amber-800', 'approved' => 'bg-green-100 text-green-800', 'rejected' => 'bg-red-100 text-red-700'];
+        $badge = ['pending' => 'bg-warn-soft text-warn', 'approved' => 'bg-success-soft text-success', 'rejected' => 'bg-danger-soft text-danger'];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Attendance request') }}</h2>
             <div class="flex flex-wrap gap-2 print:hidden">
                 @if ($company)
@@ -18,6 +18,17 @@
                 <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance form') }}</a>
             </div>
         </div>
+        @if ($company)
+            @php $link = fn (?string $value) => route('attendance.requests', array_filter(['company' => $company->uuid, 'status' => $value])); @endphp
+            <x-stat-strip :items="[
+                ['label' => __('All requests'), 'value' => array_sum($counts), 'href' => $link(null), 'active' => ! $status],
+                ['label' => __('Pending approval'), 'value' => $counts['pending'] ?? 0, 'tone' => ($counts['pending'] ?? 0) ? 'warn' : null, 'href' => $link('pending'), 'active' => $status === 'pending'],
+                ['label' => __('Approved'), 'value' => $counts['approved'] ?? 0, 'tone' => 'success', 'href' => $link('approved'), 'active' => $status === 'approved'],
+                ['label' => __('Rejected'), 'value' => $counts['rejected'] ?? 0, 'href' => $link('rejected'), 'active' => $status === 'rejected'],
+            ]" />
+        @endif
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.requests') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -93,7 +104,7 @@
                                         <form method="POST" action="{{ route('attendance.requests.destroy', $item) }}" data-confirm="{{ __('Delete this request?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
                                         </form>
                                     @endcan
                                 </div>
@@ -109,6 +120,7 @@
         @if ($requests)
             <x-list-footer :paginator="$requests" />
         @endif
+    </div>
     </div>
 
     @if ($company)

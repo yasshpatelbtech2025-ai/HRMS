@@ -4,7 +4,7 @@
     @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
     <div x-data="{ category: 'all', doc: null, open: false }" class="space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white px-5 py-4 shadow-sm ring-1 ring-gray-200">
+        <div class="flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Documents') }}</h2>
             <div class="relative" x-on:click.outside="open = false">
                 <button type="button" x-on:click="open = ! open" :aria-expanded="open" class="inline-flex items-center gap-1 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
@@ -56,7 +56,7 @@
                                 </label>
                             </form>
 
-                            <a href="{{ route('documents.show', $slot['slug']) }}" class="mt-3 truncate text-sm font-semibold text-amber-600 hover:underline" title="{{ $slot['name'] }}">{{ $slot['name'] }} →</a>
+                            <a href="{{ route('documents.show', $slot['slug']) }}" class="mt-3 truncate text-sm font-medium text-primary hover:underline" title="{{ $slot['name'] }}">{{ $slot['name'] }} →</a>
 
                             @if ($slotFiles->isNotEmpty())
                                 <ul class="mt-2 space-y-1 text-xs">

@@ -226,7 +226,7 @@ class EmployeeTest extends TestCase
         $this->get(route('employees.index'))
             ->assertOk()
             ->assertSeeInOrder(['Employee list', 'Filter', 'Import Employees', 'Add employee', 'Select Columns'])
-            ->assertSeeInOrder(['Sl', 'Company name', 'Employee id', 'Image', 'Name of employee', 'Mobile no', 'Department', 'Status', 'Action', 'Letter', 'Date of Birth', 'Designation', 'Joining Date', 'Shift'])
+            ->assertSeeInOrder(['Employee', 'Company', 'Contact', 'Department', 'Status', 'Action', 'Date of Birth', 'Designation', 'Joining Date', 'Shift'])
             ->assertSee('Ravi Thakor')->assertSee('Mahesh Patel')->assertDontSee('Gone Away');
 
         $this->get(route('employees.index', ['blood_group' => 'O+']))->assertSee('Ravi Thakor')->assertDontSee('Mahesh Patel');

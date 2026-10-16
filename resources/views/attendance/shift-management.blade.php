@@ -6,13 +6,14 @@
     @php
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $days = collect(range(1, $month->daysInMonth))->map(fn ($d) => $month->setDay($d));
-        $codeStyles = "{ 'WO': 'bg-orange-100 text-orange-700', 'NS': 'bg-brand-100 text-brand-800', 'SS': 'bg-sky-100 text-sky-800', 'FS': 'bg-green-100 text-green-800', 'DS': 'bg-green-100 text-green-800', 'GS': 'bg-gray-100 text-gray-800' }";
+        $codeStyles = "{ 'WO': 'bg-warn-soft text-warn', 'NS': 'bg-brand-100 text-brand-800', 'SS': 'bg-info-soft text-info', 'FS': 'bg-success-soft text-success', 'DS': 'bg-success-soft text-success', 'GS': 'bg-gray-100 text-gray-800' }";
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Shift management') }}</h2>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('attendance.shifts') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4">
             <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -67,7 +68,7 @@
                             <tbody class="border-b border-gray-200">
                                 <tr class="bg-gray-50/60">
                                     <td class="border-t border-gray-200 px-2 py-2 align-top">
-                                        <button type="button" x-show="group.entries.length || group.parts.length" x-on:click="clear(group)" title="{{ __('Clear this department') }}" class="rounded p-1 text-red-600 hover:bg-red-50">
+                                        <button type="button" x-show="group.entries.length || group.parts.length" x-on:click="clear(group)" title="{{ __('Clear this department') }}" class="rounded p-1 text-red-600 hover:bg-danger-soft">
                                             <span class="sr-only">{{ __('Clear this department') }}</span>
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                         </button>
@@ -104,7 +105,7 @@
                                         <td colspan="4" class="border-t border-gray-100"></td>
                                         <td class="whitespace-nowrap border-t border-gray-100 px-2 py-1 text-left text-sm">
                                             <span x-text="entry.label"></span>
-                                            <button type="button" x-on:click="remove(group, index)" class="ms-1 font-bold text-red-600 hover:text-red-800" title="{{ __('Remove from roster') }}">×</button>
+                                            <button type="button" x-on:click="remove(group, index)" class="ms-1 font-bold text-red-600 hover:text-danger" title="{{ __('Remove from roster') }}">×</button>
                                         </td>
                                         <td class="border-t border-gray-100 px-2 py-1">
                                             <select x-model="entry.weeklyOff" x-on:change="refresh(group)" class="{{ $select }} text-xs" aria-label="{{ __('Week off') }}">
@@ -141,5 +142,6 @@
                 </div>
             </form>
         @endif
+    </div>
     </div>
 </x-app-layout>

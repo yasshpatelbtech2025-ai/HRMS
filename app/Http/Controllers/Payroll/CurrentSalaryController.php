@@ -57,6 +57,11 @@ class CurrentSalaryController extends Controller
                 ->paginate($perPage = $this->perPage($request, allowAll: true))->withQueryString()
             : null;
 
-        return view('payroll.current', ['companies' => $companies, 'company' => $company, 'employees' => $employees, 'perPage' => $perPage ?? 10, 'revisions' => $revisions]);
+        $stats = $company ? [
+            'all' => Employee::current()->where('company_id', $company->id)->count(),
+            'set' => Employee::current()->where('company_id', $company->id)->whereHas('salaryElements')->count(),
+        ] : ['all' => 0, 'set' => 0];
+
+        return view('payroll.current', ['stats' => $stats, 'companies' => $companies, 'company' => $company, 'employees' => $employees, 'perPage' => $perPage ?? 10, 'revisions' => $revisions]);
     }
 }

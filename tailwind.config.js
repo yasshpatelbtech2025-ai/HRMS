@@ -2,21 +2,27 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /*
- * SRYMPEX HRMS design tokens.
+ * SRYMPEX HRMS design tokens ("Ledger").
  *
- * - Theme: red, white and black (SRYMPEX). brand is the red, for primary
- *   actions, links, focus rings and the active navigation; the sidebar is
- *   black and pages are white.
- * - Status colours keep their meaning only: emerald = success,
- *   amber = warning, red = danger. Neutrals are Tailwind's gray.
- * - Type scale (15px body, as in the old system): xs 12 · sm 13.5 · base 15 ·
- *   lg 17 · xl 20 · 2xl 24 · 3xl 28 (page titles) · 4xl 34 (figures).
- * - Radius: controls 8px (md), cards 12px (lg), dialogs 16px (xl).
- * - Shadows: sm for cards, md for menus and toasts, lg/xl for dialogs.
+ * - A calm work tool: warm off-white pages, white cards, near-black ink and a
+ *   deep teal for primary actions, links, focus and the active navigation.
+ *   Colour is otherwise kept for meaning: emerald = success, amber = warning,
+ *   red = danger. The SRYMPEX logo keeps its own red (components/brand-logo).
+ * - `brand` is the teal and `gray` the warm neutral scale, so every existing
+ *   page picks up the theme. Newer components use the semantic names
+ *   (canvas, surface, ink, line, primary...), backed by CSS variables in
+ *   resources/css/app.css.
+ * - Type: IBM Plex Sans (UI) and IBM Plex Mono (IDs, numbers), self-hosted.
+ *   Scale: xs 12 · sm 13.5 · base 15 · lg 17 · xl 20 · 2xl 24 · 3xl 28 · 4xl 34.
+ * - Radius: controls 6px (md), cards 10px (lg), dialogs 14px (xl).
+ * - Shadows are hairline for cards; md/lg only for menus, toasts and dialogs.
  */
+
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: ['class', '.dark'],
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -28,25 +34,42 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Funnel Display"', ...defaultTheme.fontFamily.sans],
+                sans: ['"IBM Plex Sans"', ...defaultTheme.fontFamily.sans],
+                mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
             },
             colors: {
                 brand: {
-                    50: '#fff1f2',
-                    100: '#ffe1e3',
-                    200: '#ffc7cb',
-                    300: '#ff9ca3',
-                    400: '#fb6170',
-                    500: '#ef3343',
-                    600: '#d4141f',
-                    700: '#b20f19',
-                    800: '#93111a',
-                    900: '#7a141b',
-                    950: '#43050a',
+                    50: '#effaf7',
+                    100: '#d9f0ea',
+                    200: '#b3e0d5',
+                    300: '#82cabb',
+                    400: '#4fae9c',
+                    500: '#2a9080',
+                    600: '#0b6b5e',
+                    700: '#095a4f',
+                    800: '#0a4941',
+                    900: '#0b3c36',
+                    950: '#04221f',
                 },
+                // Warm neutrals: surfaces stay paper-like, text stays crisp.
+                // The scale is backed by CSS variables so it flips in dark mode.
+                gray: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`gray-${n}`)])),
+                canvas: token('canvas'),
+                surface: token('surface'),
+                sunken: token('sunken'),
+                rail: token('rail'),
+                line: { DEFAULT: token('line'), strong: token('line-strong') },
+                ink: { DEFAULT: token('ink'), 2: token('ink-2'), 3: token('ink-3') },
+                primary: { DEFAULT: token('primary'), hover: token('primary-hover'), soft: token('primary-soft'), ink: token('primary-ink') },
+                'on-primary': token('on-primary'),
+                success: { DEFAULT: token('success'), soft: token('success-soft') },
+                warn: { DEFAULT: token('warn'), soft: token('warn-soft') },
+                danger: { DEFAULT: token('danger'), hover: token('danger-hover'), soft: token('danger-soft') },
+                info: { DEFAULT: token('info'), soft: token('info-soft') },
             },
             fontSize: {
                 xs: ['12px', { lineHeight: '16px' }],
+                13: ['13px', { lineHeight: '18px' }],
                 sm: ['13.5px', { lineHeight: '20px' }],
                 base: ['15px', { lineHeight: '22px' }],
                 lg: ['17px', { lineHeight: '24px' }],
@@ -56,17 +79,21 @@ export default {
                 '4xl': ['34px', { lineHeight: '40px' }],
             },
             borderRadius: {
-                DEFAULT: '6px',
-                md: '8px',
-                lg: '12px',
-                xl: '16px',
+                DEFAULT: '5px',
+                md: '6px',
+                lg: '10px',
+                xl: '14px',
+                control: '6px',
+                card: '10px',
             },
             boxShadow: {
-                sm: '0 1px 2px 0 rgb(16 24 40 / 0.05)',
-                DEFAULT: '0 1px 3px 0 rgb(16 24 40 / 0.08), 0 1px 2px -1px rgb(16 24 40 / 0.06)',
-                md: '0 6px 16px -4px rgb(16 24 40 / 0.12), 0 2px 6px -2px rgb(16 24 40 / 0.06)',
-                lg: '0 14px 30px -8px rgb(16 24 40 / 0.18), 0 4px 10px -4px rgb(16 24 40 / 0.06)',
-                xl: '0 24px 48px -12px rgb(16 24 40 / 0.25)',
+                sm: '0 1px 2px 0 rgb(22 24 29 / 0.05)',
+                DEFAULT: '0 1px 2px 0 rgb(22 24 29 / 0.06)',
+                hairline: '0 1px 2px 0 rgb(22 24 29 / 0.05)',
+                md: '0 1px 2px rgb(22 24 29 / 0.06), 0 8px 24px -8px rgb(22 24 29 / 0.16)',
+                pop: '0 1px 2px rgb(22 24 29 / 0.06), 0 12px 32px -8px rgb(22 24 29 / 0.18)',
+                lg: '0 1px 2px rgb(22 24 29 / 0.06), 0 16px 40px -12px rgb(22 24 29 / 0.22)',
+                xl: '0 24px 48px -12px rgb(22 24 29 / 0.25)',
             },
             keyframes: {
                 'progress-indeterminate': {

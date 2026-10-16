@@ -29,6 +29,12 @@ class SalaryGenerateController extends Controller
     public function index(): View
     {
         return view('payroll.generate', [
+            'stats' => [
+                'sheets' => SalarySheet::count(),
+                'waiting' => SalarySheet::where('status', '!=', 'approved')->count(),
+                'approved' => SalarySheet::where('status', 'approved')->count(),
+                'unpaid' => SalarySheet::where('status', 'approved')->whereNull('paid_date')->count(),
+            ],
             'companies' => Company::with('parent')->orderBy('establishment_name')->get(),
             'sheets' => SalarySheet::with(['company.parent', 'generator', 'approver'])->withCount('payslips')
                 ->orderByDesc('month')->orderByDesc('generated_at')->paginate(25),

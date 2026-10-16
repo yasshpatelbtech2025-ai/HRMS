@@ -62,7 +62,7 @@
             @endisset
             <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'print']) }}" target="_blank" class="{{ $btn }} bg-brand-600 text-white hover:bg-brand-700">{{ __('Print') }}</a>
             @unless ($noPdf)
-                <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'pdf']) }}" class="{{ $btn }} bg-gray-800 text-white hover:bg-gray-900">{{ __('Download PDF') }}</a>
+                <a href="{{ route('compliance.forms.show', [$company, $form] + $query + ['output' => 'pdf']) }}" class="{{ $btn }} border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken">{{ __('Download PDF') }}</a>
             @endunless
         </div>
     </div>

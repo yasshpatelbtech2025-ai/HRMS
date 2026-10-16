@@ -5,11 +5,11 @@
 
     @php
         $money = fn ($n) => number_format((float) $n, 2);
-        $badge = ['pending' => 'bg-amber-100 text-amber-800', 'applied' => 'bg-green-100 text-green-800', 'cancelled' => 'bg-gray-100 text-gray-600'];
+        $badge = ['pending' => 'bg-warn-soft text-warn', 'applied' => 'bg-success-soft text-success', 'cancelled' => 'bg-gray-100 text-gray-600'];
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary revision list') }}</h2>
             <form method="GET" action="{{ route('payroll.revisions') }}" class="flex flex-wrap items-center gap-2"
                   x-data="{ employee: @js($employee?->uuid ?? '') }">
@@ -28,6 +28,13 @@
                 <a href="{{ route('payroll.revisions.export', ['format' => 'xlsx'] + request()->only('employee')) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
             </form>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Revisions'), 'value' => array_sum($counts)],
+            ['label' => __('Scheduled'), 'value' => $counts['pending'] ?? 0, 'tone' => ($counts['pending'] ?? 0) ? 'warn' : null, 'hint' => __('Apply on their effective date')],
+            ['label' => __('Applied'), 'value' => $counts['applied'] ?? 0, 'tone' => 'success'],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -47,7 +54,7 @@
                             <td class="px-4 py-3">{{ $revision->revised_on->toDateString() }}</td>
                             <td class="px-4 py-3">{{ $revision->effective_from->format('F Y') }}</td>
                             <td class="px-4 py-3">{{ $money($revision->revised_yearly) }} <span class="text-xs text-gray-500">({{ __('was :amount', ['amount' => $money($revision->previous_yearly)]) }})</span></td>
-                            <td class="px-4 py-3 font-semibold {{ $pct >= 0 ? 'text-green-700' : 'text-red-600' }}">{{ $pct >= 0 ? '+' : '' }}{{ $pct }}%</td>
+                            <td class="px-4 py-3 font-semibold {{ $pct >= 0 ? 'text-success' : 'text-red-600' }}">{{ $pct >= 0 ? '+' : '' }}{{ $pct }}%</td>
                             <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $badge[$revision->status] }}">{{ __(ucfirst($revision->status)) }}</span></td>
                             <td class="px-4 py-3">
                                 @if ($revision->status === 'pending')
@@ -60,7 +67,7 @@
                                         <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" data-confirm="{{ __('Cancel this revision?') }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Cancel') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Cancel') }}</button>
                                         </form>
                                     </div>
                                 @else
@@ -78,5 +85,6 @@
         @if ($revisions->hasPages())
             <div class="border-t border-gray-200 px-5 py-4">{{ $revisions->links() }}</div>
         @endif
+    </div>
     </div>
 </x-app-layout>

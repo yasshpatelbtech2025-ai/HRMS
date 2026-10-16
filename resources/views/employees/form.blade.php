@@ -52,18 +52,17 @@
         $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
             <h2 class="text-2xl font-bold text-gray-900">{{ $editing ? __('Edit employee') : __('Add employee') }}</h2>
             @if ($editing)
-                <p class="text-sm text-gray-500">{{ __('Employee id') }} <span class="font-mono">{{ $e->employee_code }}</span> · {{ $e->full_name }}</p>
+                <p class="mt-1 text-sm text-ink-3">{{ __('Employee id') }} <span class="font-mono">{{ $e->employee_code }}</span> · {{ $e->full_name }}</p>
             @endif
         </div>
-        <a href="{{ route('employees.index') }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Back to employee list') }}</a>
     </div>
 
     @if ($errors->any())
-        <div role="alert" class="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">
+        <div role="alert" class="mb-4 rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger ring-1 ring-red-200">
             {{ trans_choice('There is :count problem with the form. The sections that need attention are open below.|There are :count problems with the form. The sections that need attention are open below.', $errors->count()) }}
         </div>
     @endif
@@ -75,6 +74,54 @@
         @if ($editing)
             @method('PUT')
         @endif
+
+        {{-- Steps (like the first version): adding goes one section at a time; editing shows every section with a jump list. --}}
+        <div x-data="formSteps({ stepped: @js(! $editing), remember: @js(! $editing) })" class="grid gap-6 pb-24 lg:grid-cols-[14rem_1fr]">
+            <nav aria-label="{{ __('Form sections') }}" class="lg:sticky lg:top-[calc(var(--topbar-h)+1.5rem)] lg:self-start">
+                {{-- Phones: a progress bar --}}
+                <div class="lg:hidden" x-show="stepped">
+                    <div class="mb-1.5 flex items-center justify-between text-13">
+                        <span class="font-medium text-ink" x-text="steps[step]?.title"></span>
+                        <span class="text-ink-3">{{ __('Step') }} <span x-text="step + 1"></span> {{ __('of') }} <span x-text="steps.length"></span></span>
+                    </div>
+                    <div class="h-1.5 overflow-hidden rounded-full bg-sunken" role="progressbar" aria-valuemin="1" :aria-valuenow="step + 1" :aria-valuemax="steps.length">
+                        <div class="h-full rounded-full bg-primary transition-all duration-300" :style="`width: ${(step + 1) / steps.length * 100}%`"></div>
+                    </div>
+                </div>
+
+                <ol class="space-y-0.5 max-lg:hidden">
+                    <template x-for="(s, i) in steps" :key="i">
+                        <li>
+                            <button type="button" @click="go(i)" :aria-current="stepped && step === i ? 'step' : null"
+                                    :class="stepped && step === i ? 'border-line bg-surface shadow-hairline' : 'border-transparent hover:bg-sunken'"
+                                    class="flex w-full items-center gap-3 rounded-md border px-2.5 py-1.5 text-start transition-colors">
+                                <span class="flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
+                                      :class="{
+                                          'border-danger bg-danger-soft text-danger': state(i) === 'error',
+                                          'border-primary bg-primary text-white': state(i) === 'current',
+                                          'border-primary/30 bg-primary-soft text-primary': state(i) === 'done',
+                                          'border-line-strong text-ink-3': state(i) === 'todo',
+                                      }">
+                                    <template x-if="state(i) === 'done'"><x-icon name="check" class="size-3.5" stroke="2.5" /></template>
+                                    <template x-if="state(i) === 'error'"><span>!</span></template>
+                                    <template x-if="! ['done', 'error'].includes(state(i))"><span x-text="i + 1"></span></template>
+                                </span>
+                                <span class="min-w-0 truncate text-sm" :class="stepped && step === i ? 'font-medium text-ink' : 'text-ink-2'" x-text="s.title"></span>
+                                <span x-show="s.required" class="ms-auto text-danger" aria-hidden="true">*</span>
+                            </button>
+                        </li>
+                    </template>
+                </ol>
+
+                @unless ($editing)
+                    <label class="mt-4 flex cursor-pointer items-center gap-2 px-2.5 text-13 text-ink-3 max-lg:hidden">
+                        <input type="checkbox" class="size-4 rounded border-line-strong text-primary focus:ring-primary/30" :checked="! stepped" @change="stepped = ! $event.target.checked">
+                        {{ __('Show all sections on one page') }}
+                    </label>
+                @endunless
+            </nav>
+
+            <div class="flex min-w-0 flex-col gap-4">
 
         {{-- 1. Basic info --}}
         <x-form-section :title="__('Basic Info')" required open :fields="['first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone', 'alternate_phone', 'date_of_birth', 'marital_status', 'religion', 'caste', 'no_of_kids', 'country']">
@@ -358,9 +405,18 @@
             <p class="mt-3 text-xs text-gray-500">{{ __('Employee self-service logins (email and password) will be added with the employee portal.') }}</p>
         </x-form-section>
 
-        <div class="flex items-center justify-end gap-3">
-            <a href="{{ route('employees.index') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
-            <x-primary-button>{{ $editing ? __('Update') : __('Submit') }}</x-primary-button>
+            </div>
+
+            {{-- Sticky action bar: Save is always one click away. --}}
+            <div class="app-main fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 backdrop-blur print:hidden">
+                <div class="mx-auto flex max-w-[1600px] flex-wrap items-center gap-2 px-4 py-3 sm:px-6 lg:px-8">
+                    <a href="{{ route('employees.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-ink-2 hover:bg-sunken hover:text-ink">{{ __('Cancel') }}</a>
+                    <span class="flex-1"></span>
+                    <x-secondary-button x-show="stepped && step > 0" x-on:click="back()"><x-icon name="chevron-left" class="size-4" />{{ __('Back') }}</x-secondary-button>
+                    <x-primary-button type="button" x-show="stepped && ! last" x-on:click="next()">{{ __('Next') }}<x-icon name="chevron-right" class="size-4" /></x-primary-button>
+                    <x-primary-button x-show="! stepped || last">{{ $editing ? __('Update') : __('Submit') }}</x-primary-button>
+                </div>
+            </div>
         </div>
 
         {{-- Suggestions for the address fields; any new value can be typed. --}}

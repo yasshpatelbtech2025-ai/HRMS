@@ -5,11 +5,19 @@
 
     @php $money = fn ($n) => number_format((float) $n, 2); @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary advanced list') }}</h2>
             <x-add-button modal="create-advance">{{ __('Add salary advance') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Active advances'), 'value' => $stats['count']],
+            ['label' => __('Total advanced'), 'value' => '₹'.number_format($stats['given'])],
+            ['label' => __('Released so far'), 'value' => '₹'.number_format($stats['released']), 'tone' => 'success'],
+            ['label' => __('Still to release'), 'value' => '₹'.number_format(max($stats['given'] - $stats['released'], 0)), 'tone' => $stats['given'] > $stats['released'] ? 'warn' : null],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('payroll.advances')" :per-page="$perPage" :exports="[
             __('CSV') => route('payroll.advances.export', ['format' => 'csv'] + request()->only('search')),
@@ -64,6 +72,7 @@
         </div>
 
         <x-list-footer :paginator="$advances" />
+    </div>
     </div>
 
     <x-modal name="create-advance" :show="old('_modal') === 'create-advance'" max-width="2xl">

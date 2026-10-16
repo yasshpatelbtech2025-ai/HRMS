@@ -26,6 +26,11 @@ class SalaryAdjustmentController extends Controller
     public function index(Request $request): View
     {
         return view('payroll.adjustments', [
+            'stats' => [
+                'count' => SalaryAdjustment::count(),
+                'earnings' => (float) SalaryAdjustment::where('type', 'earning')->sum('amount'),
+                'deductions' => (float) SalaryAdjustment::where('type', 'deduction')->sum('amount'),
+            ],
             'adjustments' => $this->filtered($request)->paginate($perPage = $this->perPage($request))->withQueryString(),
             'perPage' => $perPage,
             'employees' => Employee::current()->orderBy('company_id')->orderBy('employee_code')->get(),

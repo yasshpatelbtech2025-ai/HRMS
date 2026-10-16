@@ -12,21 +12,59 @@
         $masked = fn (?string $value) => $value ? str_repeat('•', max(0, strlen($value) - 4)).substr($value, -4) : '';
     @endphp
 
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <a href="{{ route('employees.index') }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Back to employee list') }}</a>
-        <div class="flex gap-2">
-            <a href="{{ route('employees.edit', $e) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</a>
-            <button type="button" onclick="window.print()" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Print') }}</button>
-        </div>
-    </div>
+    <a href="{{ route('employees.index') }}" class="mb-3 inline-flex items-center gap-1 text-sm text-ink-2 hover:text-ink print:hidden"><x-icon name="chevron-left" class="size-4" /> {{ __('Back to employee list') }}</a>
 
-    <article class="mx-auto max-w-4xl rounded-lg bg-white p-6 text-sm shadow-sm ring-1 ring-gray-200 print:max-w-none print:p-0 print:shadow-none print:ring-0">
-        <header class="mb-6 flex items-start justify-between gap-6 border-b border-gray-200 pb-4">
+    {{-- Profile header (screen only; the printed form below carries its own header). --}}
+    <section class="mb-5 rounded-lg border border-line bg-surface p-5 shadow-hairline print:hidden">
+        <div class="flex flex-wrap items-start gap-5">
+            <x-employee-photo :employee="$e" class="size-20 shrink-0 text-xl" />
+            <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-2xl font-semibold text-ink">{{ $e->full_name }}</h2>
+                    <x-status-badge :active="$e->status === \App\Enums\EmployeeStatus::Active" />
+                    @if ($e->separation_date)<span class="text-xs text-warn">{{ __('Separation date: :date', ['date' => $date($e->separation_date)]) }}</span>@endif
+                </div>
+                <p class="mt-0.5 text-sm text-ink-2">
+                    {{ collect([$e->position?->name, $e->subDepartment?->name ?? $e->department?->name, $e->company?->establishment_name])->filter()->implode(' · ') }}
+                    <span class="font-mono text-ink-3">· {{ $e->employee_code }}</span>
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('employees.edit', $e) }}" class="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-white shadow-hairline hover:bg-primary-hover"><x-icon name="pencil" class="size-4" /> {{ __('Edit') }}</a>
+                <button type="button" onclick="window.print()" class="inline-flex h-9 items-center rounded-md border border-line-strong bg-surface px-3.5 text-sm font-medium text-ink hover:bg-sunken">{{ __('Print') }}</button>
+            </div>
+        </div>
+
+        <dl class="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-line pt-4 text-sm sm:grid-cols-3 lg:grid-cols-5">
+            @foreach ([
+                __('Phone') => $e->phone,
+                __('Email') => $e->email,
+                __('Joined') => $e->date_of_joining ? $e->date_of_joining->format('d M Y').' · '.$e->date_of_joining->diffForHumans(null, true) : null,
+                __('Shift') => $e->shift?->name,
+                __('Employee Type') => $e->employment_type?->label(),
+            ] as $label => $value)
+                <div class="min-w-0">
+                    <dt class="text-xs text-ink-3">{{ $label }}</dt>
+                    <dd class="truncate font-medium text-ink">{{ $value ?: '—' }}</dd>
+                </div>
+            @endforeach
+        </dl>
+
+        <div class="mt-4 flex flex-wrap gap-2 border-t border-line pt-4 text-sm">
+            <a href="{{ route('attendance.employee-report', ['employee' => $e->uuid, 'month' => now()->format('Y-m')]) }}" class="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3 py-1.5 text-ink-2 hover:bg-sunken hover:text-ink"><x-icon name="clock" class="size-4" /> {{ __('Attendance this month') }}</a>
+            <a href="{{ route('payroll.revisions', ['employee' => $e->uuid]) }}" class="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3 py-1.5 text-ink-2 hover:bg-sunken hover:text-ink"><x-icon name="wallet" class="size-4" /> {{ __('Salary revisions') }}</a>
+        </div>
+    </section>
+
+    <h3 class="mb-2 text-sm font-medium text-ink-2 print:hidden">{{ __('Full details') }}</h3>
+
+    <article class="rounded-lg bg-white p-6 text-sm shadow-sm ring-1 ring-gray-200 print:max-w-none print:p-0 print:shadow-none print:ring-0">
+        <header class="mb-6 hidden items-start justify-between gap-6 border-b border-gray-200 pb-4 print:flex">
             <div>
                 <h1 class="text-xl font-bold tracking-wide text-gray-900">{{ __('EMPLOYEE DETAILS FORM') }}</h1>
                 <p class="mt-1 text-gray-600">{{ $e->company?->establishment_name }} · {{ __('Employee id') }} <span class="font-mono">{{ $e->employee_code }}</span></p>
                 <p class="mt-1"><x-status-badge :active="$e->status === \App\Enums\EmployeeStatus::Active" />
-                    @if ($e->separation_date)<span class="ms-2 text-xs text-orange-700">{{ __('Separation date: :date', ['date' => $date($e->separation_date)]) }}</span>@endif
+                    @if ($e->separation_date)<span class="ms-2 text-xs text-warn">{{ __('Separation date: :date', ['date' => $date($e->separation_date)]) }}</span>@endif
                 </p>
             </div>
             <figure class="text-center">

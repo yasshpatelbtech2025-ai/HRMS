@@ -3,13 +3,24 @@
 
     <x-section-tabs section="company" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Company List') }}</h2>
             @can('admin')
-                <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
+                <div class="flex flex-wrap items-center gap-2 print:hidden">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'import-companies')"
+                            class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">{{ __('Import Companies') }}</button>
+                    <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
+                </div>
             @endcan
         </div>
+        <x-import-errors />
+        <x-stat-strip :items="[
+            ['label' => __('Companies'), 'value' => $companies->total()],
+            ['label' => __('Employees across companies'), 'value' => $employeeCount],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('company.index')" :per-page="$perPage" print
                         :exports="[__('CSV') => route('company.export', request()->only('search', 'sort', 'direction'))]" />
@@ -67,8 +78,11 @@
 
         <x-list-footer :paginator="$companies" />
     </div>
+    </div>
 
     @can('admin')
+        <x-bulk-upload name="import-companies" :title="__('Import Companies (Excel)')" :action="route('company.import')" :template="route('company.import.template')"
+                       :hint="__('Connected company must be the exact name of an existing company, or of another company in the same file.')" />
         <x-modal name="create-company" :show="old('_modal') === 'create-company'" max-width="2xl">
             @include('companies._form', ['company' => new \App\Models\Company, 'modal' => 'create-company'])
         </x-modal>

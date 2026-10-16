@@ -4,26 +4,81 @@
 
 /*
  * Global styles on top of the design tokens (tailwind.config.js).
- * Typography and sizing follow the old HRMS: Funnel Display at 15px, 28px
- * bold page titles, uppercase 14px table headings over 15px cells with
- * 12px padding, 15px form controls and round 40px row-action buttons.
- * Statutory forms (.sheet), the attendance and roster grids (text-xs
- * tables) and print keep their compact layout.
+ * "Ledger": IBM Plex Sans at 14px, 24px semibold page titles, sentence-case
+ * 12px table headings over 13.5px cells, compact square row actions and
+ * one teal focus ring. Statutory forms (.sheet), the attendance and roster
+ * grids (text-xs tables) and print keep their compact layout.
  */
 @layer base {
+    /* Semantic colours as RGB channels (Tailwind opacity modifiers work). */
+    :root,
+    .dark .sheet {
+        --canvas: 247 247 244;       /* page background */
+        --surface: 255 255 255;      /* cards, tables, menus */
+        --sunken: 240 240 236;       /* table headings, wells */
+        --rail: 251 251 249;         /* sidebar */
+        --line: 228 228 223;         /* borders */
+        --line-strong: 207 207 200;
+        --ink: 22 24 29;             /* main text */
+        --ink-2: 74 77 85;           /* secondary text */
+        --ink-3: 107 110 118;        /* hints (AA on canvas) */
+        --primary: 11 107 94;        /* #0b6b5e */
+        --primary-hover: 9 90 79;
+        --primary-soft: 230 242 239;
+        --primary-ink: 6 78 68;
+        --on-primary: 255 255 255;
+        --success: 21 128 61;   --success-soft: 228 244 233;
+        --warn: 180 83 9;       --warn-soft: 253 241 220;
+        --danger: 180 35 24;    --danger-hover: 150 28 19; --danger-soft: 252 233 231;
+        --info: 29 78 216;      --info-soft: 230 237 252;
+        --gray-50: 247 247 244;  --gray-100: 240 240 236; --gray-200: 228 228 223; --gray-300: 207 207 200;
+        --gray-400: 163 164 159; --gray-500: 107 110 118; --gray-600: 74 77 85;    --gray-700: 55 58 65;
+        --gray-800: 37 39 45;    --gray-900: 22 24 29;    --gray-950: 13 14 17;
+        --sidebar-w: 248px;
+        --sidebar-rail-w: 64px;
+        --topbar-h: 56px;
+    }
+
+    /* Dark theme: <html class="dark">, set before first paint by the layouts. */
+    :root.dark {
+        color-scheme: dark;
+        --canvas: 16 17 21;
+        --surface: 24 26 31;
+        --sunken: 32 35 41;
+        --rail: 19 21 25;
+        --line: 43 46 53;
+        --line-strong: 63 67 76;
+        --ink: 236 237 240;
+        --ink-2: 178 181 189;
+        --ink-3: 143 147 156;
+        --primary: 62 168 150;
+        --primary-hover: 86 188 170;
+        --primary-soft: 20 52 48;
+        --primary-ink: 140 214 200;
+        --on-primary: 8 24 22;
+        --success: 74 197 120;  --success-soft: 22 48 34;
+        --warn: 240 168 80;     --warn-soft: 56 40 18;
+        --danger: 248 113 100;  --danger-hover: 252 140 128; --danger-soft: 62 28 26;
+        --info: 125 163 250;    --info-soft: 28 40 70;
+        --gray-50: 32 35 41;   --gray-100: 38 41 48;  --gray-200: 47 50 58;  --gray-300: 66 70 79;
+        --gray-400: 122 126 135; --gray-500: 150 154 163; --gray-600: 178 181 189; --gray-700: 205 208 214;
+        --gray-800: 224 226 230; --gray-900: 238 239 242; --gray-950: 248 248 250;
+    }
+
     html {
         -webkit-tap-highlight-color: transparent;
     }
 
     body {
-        font-size: 15px;
-        color: #101828;
-        background-color: #f4f6f8;
+        font-size: 14px;
+        color: rgb(var(--ink));
+        background-color: rgb(var(--canvas));
+        font-feature-settings: "ss02";
     }
 
-    /* One visible focus style for keyboard users, in the brand colour. */
+    /* One visible focus style for keyboard users, in the primary colour. */
     :focus-visible {
-        outline: 2px solid theme('colors.brand.500');
+        outline: 2px solid rgb(var(--primary));
         outline-offset: 2px;
     }
 
@@ -37,6 +92,8 @@
         transition-duration: 150ms;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    td, .tabular { font-variant-numeric: tabular-nums; }
 
     /* Scroll boxes contain their absolutely positioned content (e.g. the
        screen-reader labels on row actions), so a wide table scrolls inside
@@ -57,6 +114,11 @@
 }
 
 @layer components {
+    /* A white card on the page canvas. */
+    .card {
+        @apply rounded-lg border border-line bg-surface shadow-hairline;
+    }
+
     /* A spinner for buttons and loading areas (inherits the text colour). */
     .spinner {
         display: inline-block;
@@ -73,7 +135,7 @@
         position: relative;
         overflow: hidden;
         border-radius: 6px;
-        background-color: theme('colors.gray.200');
+        background-color: rgb(var(--sunken));
     }
 
     .skeleton::after {
@@ -94,63 +156,72 @@
 
 /* Page titles. */
 main h2.text-2xl {
-    font-size: 28px;
+    font-size: 24px;
     line-height: 1.25;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.015em;
 }
 
-/* List tables. */
+/* List tables: quiet sentence-case headings on a tinted band, dense rows. */
 main table.text-sm > thead th {
-    font-size: 13px;
-    font-weight: 600;
-    color: theme('colors.gray.600');
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgb(var(--ink-2));
+    background-color: rgb(var(--sunken));
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 9px 12px;
     white-space: nowrap;
+    border-bottom: 1px solid rgb(var(--line));
 }
 
 main table.text-sm > tbody td {
-    font-size: 15px;
-    padding: 12px;
+    font-size: 13.5px;
+    padding: 9px 12px;
     vertical-align: middle;
 }
 
+main table.text-sm > tbody > tr:hover {
+    background-color: rgb(var(--sunken) / 0.6);
+}
+
 /* Form controls (not inside statutory forms or grids). */
-main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):not(.sheet *, table.text-xs *) {
-    font-size: 15px;
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *, table.text-xs *)) {
+    font-size: 14px;
 }
 
-main :is(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):not(.sheet *, table *) {
-    padding: 8px 14px;
-    border-radius: 8px;
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):where(:not(.sheet *, table *)) {
+    padding: 7px 12px;
+    border-radius: 6px;
 }
 
-main select:not(.sheet *, table.text-xs *) {
-    border-radius: 8px;
+main :where(select):where(:not(.sheet *, table.text-xs *)) {
+    border-radius: 6px;
 }
 
-/* Row action buttons: 40px white circles with a soft shadow. */
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *)) {
+    border-color: rgb(var(--line-strong));
+}
+
+:is(input, select, textarea):not(.sheet *):focus {
+    border-color: rgb(var(--primary));
+    --tw-ring-color: rgb(var(--primary) / 0.2);
+}
+
+/* Row action buttons: compact ghost squares that fill on hover. */
 main table.text-sm > tbody td :is(a, button).rounded-md.p-2 {
-    width: 40px;
-    height: 40px;
-    border-radius: 9999px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #fff;
-    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.1);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background-color: transparent;
+    box-shadow: none;
 }
 
 main table.text-sm > tbody td :is(a, button).rounded-md.p-2:hover {
-    transform: scale(1.06);
-    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.14);
-}
-
-/* Table rows lift slightly on hover. */
-main table.text-sm > tbody > tr {
-    transition: background-color 150ms ease;
+    background-color: rgb(var(--sunken));
 }
 
 @keyframes spin {
@@ -175,4 +246,115 @@ main table.text-sm > tbody > tr {
         padding: 6px;
         font-size: 11px;
     }
+}
+
+/* ---------------------------------------------------------------
+   App shell. html.rail = sidebar collapsed to icons (desktop only).
+---------------------------------------------------------------- */
+.app-sidebar { width: var(--sidebar-w); }
+@media (max-width: 1023.98px) {
+    .app-sidebar { transform: translateX(-100%); }
+    .app-sidebar[data-open="true"] { transform: none; }
+}
+@media (min-width: 1024px) {
+    .app-main { padding-inline-start: var(--sidebar-w); }
+    html.rail .app-main { padding-inline-start: var(--sidebar-rail-w); }
+    html.rail .app-sidebar { width: var(--sidebar-rail-w); }
+    html.rail .app-sidebar .rail-hide { display: none !important; }
+    html.rail .app-sidebar .rail-show { display: flex !important; }
+    html.rail .app-sidebar .rail-center { justify-content: center; }
+}
+@media print {
+    .app-main { padding-inline-start: 0 !important; }
+}
+
+/* ---------------------------------------------------------------
+   Row "⋯" menus: the icon actions listed with their labels.
+---------------------------------------------------------------- */
+.row-menu-panel :is(a, button).rounded-md.p-2,
+main table.text-sm > tbody td .row-menu-panel :is(a, button).rounded-md.p-2 {
+    display: flex;
+    width: 100%;
+    height: auto;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: rgb(var(--ink));
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+.row-menu-panel :is(a, button).rounded-md.p-2 > svg { color: rgb(var(--ink-3)); flex-shrink: 0; }
+.row-menu-panel :is(a, button).rounded-md.p-2:is(:hover, :focus-visible) { background: rgb(var(--sunken)); outline: none; }
+.row-menu-panel :is(a, button).row-menu-danger,
+.row-menu-panel :is(a, button).row-menu-danger > svg { color: rgb(var(--danger)); }
+.row-menu-panel :is(a, button).row-menu-danger:hover { background: rgb(var(--danger-soft)); }
+.row-menu-panel .sr-only {
+    position: static; width: auto; height: auto; margin: 0; padding: 0;
+    overflow: visible; clip: auto; white-space: nowrap;
+}
+.row-menu-panel form { display: block; }
+
+/* ---------------------------------------------------------------
+   List tables: compact density and a header that stays in view.
+---------------------------------------------------------------- */
+main table.text-sm[data-density="compact"] > tbody td { padding-top: 4px; padding-bottom: 4px; }
+main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; padding-bottom: 7px; }
+@media (min-width: 1024px) {
+    main .overflow-x-auto:has(> table.text-sm > thead) { max-height: calc(100dvh - 14rem); overflow: auto; }
+    main .overflow-x-auto > table.text-sm > thead th { position: sticky; top: 0; z-index: 2; }
+}
+
+/* ---------------------------------------------------------------
+   Dark mode: pages still using plain Tailwind colours get matching
+   dark equivalents (the grays and semantic tokens flip on their own).
+---------------------------------------------------------------- */
+.dark .bg-white { background-color: rgb(var(--surface)); }
+.dark .text-white:where(.bg-brand-600, .bg-brand-500, .bg-primary) { color: rgb(var(--on-primary)); }
+.dark .bg-brand-600, .dark .bg-brand-500 { background-color: rgb(var(--primary)); }
+.dark .hover\:bg-brand-700:hover { background-color: rgb(var(--primary-hover)); }
+.dark .bg-brand-50, .dark .bg-brand-100, .dark .hover\:bg-brand-50:hover, .dark .focus\:bg-brand-100:focus, .dark .bg-brand-50\/60 { background-color: rgb(var(--primary-soft)); }
+.dark .text-brand-600, .dark .text-brand-700, .dark .text-brand-800, .dark .text-brand-900, .dark .focus\:text-brand-800:focus { color: rgb(var(--primary-ink)); }
+.dark .border-brand-300, .dark .border-brand-400, .dark .ring-brand-300 { border-color: rgb(var(--primary) / 0.5); --tw-ring-color: rgb(var(--primary) / 0.5); }
+.dark .text-red-600 { color: rgb(var(--danger)); }
+.dark .bg-red-50, .dark .bg-red-600\/10 { background-color: rgb(var(--danger-soft)); }
+.dark .border-red-200, .dark .border-red-300, .dark .ring-red-200 { border-color: rgb(var(--danger) / 0.35); --tw-ring-color: rgb(var(--danger) / 0.35); }
+.dark .bg-amber-50 { background-color: rgb(var(--warn-soft)); }
+.dark .text-amber-600, .dark .text-amber-700, .dark .text-amber-800 { color: rgb(var(--warn)); }
+.dark .border-amber-300, .dark .ring-amber-200 { border-color: rgb(var(--warn) / 0.4); --tw-ring-color: rgb(var(--warn) / 0.4); }
+.dark .bg-sky-50 { background-color: rgb(var(--info-soft)); }
+.dark .text-sky-600 { color: rgb(var(--info)); }
+.dark .ring-emerald-200 { --tw-ring-color: rgb(var(--success) / 0.35); }
+.dark .text-emerald-600, .dark .text-emerald-900 { color: rgb(var(--success)); }
+.dark .bg-violet-100 { background-color: rgb(46 34 80); }
+.dark .text-violet-700, .dark .text-violet-800 { color: rgb(196 181 253); }
+.dark .border-violet-200 { border-color: rgb(196 181 253 / 0.35); }
+.dark .bg-teal-100 { background-color: rgb(18 56 56); }
+.dark .text-teal-700, .dark .text-teal-800 { color: rgb(94 214 206); }
+.dark .border-teal-200 { border-color: rgb(94 214 206 / 0.35); }
+.dark .bg-blue-100 { background-color: rgb(var(--info-soft)); }
+.dark .skeleton::after { background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent); }
+
+/* Statutory forms and printouts stay on paper: .sheet re-declares the light tokens above. */
+.dark .sheet { color-scheme: light; color: rgb(var(--ink)); background-color: #fff; }
+.dark .sheet .bg-white { background-color: #fff; }
+.dark .sheet :is(input:not([type='checkbox'], [type='radio']), select, textarea) { background-color: #fff; color: rgb(var(--ink)); border-color: rgb(var(--line-strong)); }
+@media print {
+    .dark body { background: #fff; color: #000; }
+}
+
+@layer base {
+    /* Native form controls (the forms plugin paints them white). */
+    .dark :where(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color']), select, textarea) {
+        background-color: rgb(var(--surface));
+        color: rgb(var(--ink));
+        border-color: rgb(var(--line-strong));
+    }
+    .dark :is(input, textarea)::placeholder { color: rgb(var(--ink-3)); }
+    .dark select option { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
+    .dark [type='checkbox'], .dark [type='radio'] { background-color: rgb(var(--sunken)); border-color: rgb(var(--line-strong)); }
+    .dark [type='checkbox']:checked, .dark [type='radio']:checked { background-color: rgb(var(--primary)); border-color: rgb(var(--primary)); }
 }

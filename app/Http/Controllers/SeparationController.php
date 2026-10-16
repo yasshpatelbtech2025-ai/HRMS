@@ -31,6 +31,7 @@ class SeparationController extends Controller
             ->paginate($perPage = $this->perPage($request))->withQueryString();
 
         return view('employees.separations.index', [
+            'monthly' => Employee::whereBetween('separation_date', [now()->startOfMonth(), now()->endOfMonth()])->count(),
             'employees' => $employees,
             'perPage' => $perPage,
             'candidates' => Employee::whereNull('separation_date')->with('company')->orderBy('company_id')->orderBy('employee_code')->get(),

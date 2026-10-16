@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\AttendanceRequest;
 use App\Models\Company;
 use App\Models\ComplianceTask;
@@ -9,24 +10,29 @@ use App\Models\Employee;
 use App\Models\LeaveApplication;
 use App\Services\Attendance\MonthlyAttendance;
 use App\Services\Compliance\ComplianceTasks;
+use App\Support\CurrentCompany;
 use Carbon\CarbonImmutable;
 use Illuminate\View\View;
 
 /**
- * Dashboard: today's headcount and attendance across all companies, the
- * same split by department, requests waiting for a decision, and compliance
- * health from the To Do List.
+ * Dashboard: what needs attention first (overdue compliance, missing punches,
+ * pending requests), then today's headcount and attendance, the same split by
+ * department, requests waiting for a decision, and compliance health from the
+ * To Do List. Follows the top-bar company; all companies when none is picked.
  */
 class DashboardController extends Controller
 {
     public function __invoke(MonthlyAttendance $attendance, ComplianceTasks $compliance): View
     {
-        Company::all()->each(fn (Company $c) => $compliance->refresh($c));
-        $tasks = ComplianceTask::with(['company', 'employee'])->orderBy('due_on')->get();
+        $company = CurrentCompany::get();
+        $scope = fn ($query) => $query->when($company, fn ($q) => $q->where('company_id', $company->id));
+
+        ($company ? collect([$company]) : Company::all())->each(fn (Company $c) => $compliance->refresh($c));
+        $tasks = $scope(ComplianceTask::with(['company', 'employee']))->orderBy('due_on')->get();
         $due = $tasks->filter(fn (ComplianceTask $t) => $t->due_on->lt(today())); // past their due date (due today is not late yet)
 
         $today = CarbonImmutable::today();
-        $employees = Employee::current()->with(['shift', 'subDepartment', 'department'])->get();
+        $employees = $scope(Employee::current())->with(['shift', 'subDepartment', 'department'])->get();
         $days = collect($attendance->forRange($employees, $today, $today))->map(fn ($row) => $row['days'][$today->toDateString()]['status'] ?? null);
 
         // Today's state per employee: present (incl. half day), leave (incl. comp off), absent, or off (week-off / holiday).
@@ -45,7 +51,20 @@ class DashboardController extends Controller
             ->filter(fn ($counts) => array_sum($counts) > 0)
             ->sortKeys();
 
+        $counts = collect(['overdue', 'week', 'upcoming'])->mapWithKeys(fn ($s) => [$s => $tasks->filter(fn ($t) => $t->status() === $s)->count()])->all();
+
         return view('dashboard', [
+            'company' => $company,
+            // "Needs attention": real counts only, each opening the list behind it.
+            'attention' => [
+                'overdue' => $counts['overdue'],
+                'week' => $counts['week'],
+                'missing' => $scope(Attendance::where('is_missing', true))
+                    ->whereDate('work_date', '>=', $today->startOfMonth())->whereDate('work_date', '<=', $today)
+                    ->whereHas('employee', fn ($q) => $q->whereNull('deleted_at'))->count(),
+                'attendanceRequests' => $scope(AttendanceRequest::where('status', 'pending'))->count(),
+                'leaveRequests' => $scope(LeaveApplication::where('status', LeaveApplication::PENDING))->count(),
+            ],
             'stats' => [
                 'total' => $employees->count(),
                 'present' => $states->filter(fn ($s) => $s === 'present')->count(),
@@ -53,13 +72,13 @@ class DashboardController extends Controller
                 'leave' => $states->filter(fn ($s) => $s === 'leave')->count(),
             ],
             'departments' => $departments,
-            'attendanceRequests' => AttendanceRequest::where('status', 'pending')->with('employee')->latest()->limit(5)->get(),
-            'leaveRequests' => LeaveApplication::where('status', LeaveApplication::PENDING)->with(['employee', 'leaveType'])->latest()->limit(5)->get(),
+            'attendanceRequests' => $scope(AttendanceRequest::where('status', 'pending'))->with('employee')->latest()->limit(5)->get(),
+            'leaveRequests' => $scope(LeaveApplication::where('status', LeaveApplication::PENDING))->with(['employee', 'leaveType'])->latest()->limit(5)->get(),
             'today' => $today,
             // Health: the share of tasks due so far that are done.
             'compliance' => [
                 'health' => $due->isEmpty() ? 100 : (int) round($due->whereNotNull('completed_at')->count() / $due->count() * 100),
-                'counts' => collect(['overdue', 'week', 'upcoming'])->mapWithKeys(fn ($s) => [$s => $tasks->filter(fn ($t) => $t->status() === $s)->count()])->all(),
+                'counts' => $counts,
                 'urgent' => $tasks->filter(fn ($t) => in_array($t->status(), ['overdue', 'week'], true))->take(5),
             ],
         ]);

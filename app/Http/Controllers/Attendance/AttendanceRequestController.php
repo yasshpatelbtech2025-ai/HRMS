@@ -53,6 +53,7 @@ class AttendanceRequestController extends Controller
             'companies' => $companies,
             'company' => $company,
             'status' => $status,
+            'counts' => $company ? AttendanceRequest::where('company_id', $company->id)->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status')->all() : [],
             'requests' => $requests,
             'current' => $current,
             'perPage' => $perPage ?? 10,

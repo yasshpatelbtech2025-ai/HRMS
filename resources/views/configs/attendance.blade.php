@@ -8,8 +8,8 @@
         $input = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
     @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Attendance setting') }}</h2>
             <form method="GET" action="{{ route('configs.index') }}">
                 <label for="settings-company" class="sr-only">{{ __('Company') }}</label>
@@ -20,6 +20,7 @@
                 </select>
             </form>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">
@@ -75,7 +76,7 @@
                                             @endif
                                         </h5>
                                         <button type="button" x-on:click="$dispatch('open-modal', @js($modal))"
-                                                class="rounded-md border px-3 py-1.5 text-sm font-medium {{ $slotErrors ? 'border-red-300 text-red-700' : 'border-gray-300 text-gray-700' }} hover:bg-gray-50">
+                                                class="rounded-md border px-3 py-1.5 text-sm font-medium {{ $slotErrors ? 'border-red-300 text-danger' : 'border-gray-300 text-gray-700' }} hover:bg-gray-50">
                                             {{ __('Shift Settings') }}
                                         </button>
                                     </div>
@@ -152,5 +153,6 @@
                 </div>
             </form>
         @endif
+    </div>
     </div>
 </x-app-layout>

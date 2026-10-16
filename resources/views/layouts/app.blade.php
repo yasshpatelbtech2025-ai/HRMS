@@ -5,32 +5,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('app.name', 'SRYMPEX') }}</title>
+        <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('branding.name') }}</title>
+        {{-- Apply the remembered sidebar width before first paint (no jump). --}}
+        <script>try { if (localStorage.getItem('_x_sidebar:rail') === 'true') document.documentElement.classList.add('rail'); } catch (e) {}</script>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+        {{-- Apply the saved (or system) theme before first paint (no flash). --}}
+        <script>try { var t = localStorage.getItem('theme'); if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); } catch (e) {}</script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
+    <body class="bg-canvas font-sans text-ink antialiased">
         {{-- Shown while the next page loads (resources/js/loading.js). --}}
-        <div id="page-progress" class="hidden fixed inset-x-0 top-0 z-[70] h-0.5 overflow-hidden bg-brand-100 print:hidden" aria-hidden="true">
-            <div class="h-full w-2/5 animate-progress-indeterminate rounded-full bg-brand-500"></div>
+        <div id="page-progress" class="hidden fixed inset-x-0 top-0 z-[70] h-0.5 overflow-hidden bg-primary-soft print:hidden" aria-hidden="true">
+            <div class="h-full w-2/5 animate-progress-indeterminate rounded-full bg-primary"></div>
         </div>
         <x-toasts />
         <x-confirm-dialog />
 
-        <div x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="min-h-screen">
+        <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[80] focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:shadow-pop">{{ __('Skip to content') }}</a>
+
+        <div x-data="{ drawer: false, rail: $persist(false).as('sidebar:rail') }"
+             x-effect="document.documentElement.classList.toggle('rail', rail)"
+             @keydown.escape.window="drawer = false" class="min-h-screen">
             @include('layouts.sidebar')
 
-            <div class="lg:ps-[260px] print:ps-0 flex flex-col min-h-screen">
+            <div class="app-main flex min-h-screen flex-col">
                 @include('layouts.topbar')
 
                 <!-- Page Content -->
-                <main class="flex-1 p-4 sm:p-6 lg:p-8">
+                <main id="main" tabindex="-1" class="mx-auto w-full max-w-[1600px] flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
                     {{ $slot }}
                 </main>
             </div>

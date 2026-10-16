@@ -3,11 +3,18 @@
 
     <x-section-tabs section="employees" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Separation employees list') }}</h2>
             <x-add-button modal="add-separation">{{ __('Add separation') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Separated employees'), 'value' => $employees->total()],
+            ['label' => __('Separated this month'), 'value' => $monthly, 'tone' => $monthly ? 'warn' : null, 'hint' => now()->format('F Y')],
+            ['label' => __('Currently employed'), 'value' => $candidates->count(), 'tone' => 'success'],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('employees.separations')" :per-page="$perPage" />
 
@@ -38,13 +45,13 @@
                             <td class="px-5 py-3 whitespace-nowrap">{{ $employee->date_of_joining?->toDateString() }}</td>
                             <td class="px-5 py-3 whitespace-nowrap">
                                 {{ $employee->separation_date->toDateString() }}
-                                @unless ($employee->isSeparated())<span class="ms-1 text-xs text-amber-700">({{ __('upcoming') }})</span>@endunless
+                                @unless ($employee->isSeparated())<span class="ms-1 text-xs text-warn">({{ __('upcoming') }})</span>@endunless
                             </td>
                             <td class="px-5 py-3">
                                 @php($modal = 'edit-separation-'.$employee->uuid)
                                 <x-row-actions :edit-modal="$modal" :delete-url="route('employees.separations.destroy', $employee)"
                                                :delete-confirm="__('Remove the separation for :name? They will return to the employee list.', ['name' => $employee->full_name])">
-                                    <a href="{{ route('employees.show', $employee) }}" title="{{ __('Show') }}" class="rounded-md p-2 text-sky-600 hover:bg-sky-50">
+                                    <a href="{{ route('employees.show', $employee) }}" title="{{ __('Show') }}" class="rounded-md p-2 text-info hover:bg-info-soft">
                                         <span class="sr-only">{{ __('Show') }}</span>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                                     </a>
@@ -65,6 +72,7 @@
         </div>
 
         <x-list-footer :paginator="$employees" />
+    </div>
     </div>
 
     <x-modal name="add-separation" :show="old('_modal') === 'add-separation'" max-width="lg">

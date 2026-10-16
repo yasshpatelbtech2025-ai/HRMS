@@ -25,6 +25,7 @@ class SubDepartmentController extends Controller
     public function index(Request $request): View
     {
         return view('employees.departments.index', [
+            'active' => \App\Models\SubDepartment::where('is_active', true)->count(),
             'subDepartments' => $this->filtered($request)->paginate($perPage = $this->perPage($request))->withQueryString(),
             'perPage' => $perPage,
             'companies' => Company::with('parent')->orderBy('establishment_name')->get(),

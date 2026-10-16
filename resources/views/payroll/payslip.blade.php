@@ -33,7 +33,7 @@
                 <p class="text-xs text-gray-600">{{ collect([$p->company->address_line_1, $p->company->address_line_2, $p->company->village, $p->company->district, $p->company->state])->filter()->implode(', ') }}</p>
             @endif
             <p class="mt-2 font-semibold text-gray-800">{{ __('Pay slip for the month of :month', ['month' => $p->month->format('F Y')]) }}</p>
-            @unless ($p->sheet->isApproved())<p class="text-xs font-medium text-amber-700">{{ __('Draft — salary not yet approved') }}</p>@endunless
+            @unless ($p->sheet->isApproved())<p class="text-xs font-medium text-warn">{{ __('Draft — salary not yet approved') }}</p>@endunless
         </header>
 
         <dl class="grid grid-cols-2 gap-x-6 gap-y-1 border-b border-gray-300 py-3">

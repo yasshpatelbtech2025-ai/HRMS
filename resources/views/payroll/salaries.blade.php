@@ -3,11 +3,12 @@
 
     <x-section-tabs section="payroll" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200" x-data="{ filtersOpen: @js((bool) $month) }">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div x-data="{ filtersOpen: @js((bool) $month) }">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee salary') }}</h2>
             <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Filter') }}</button>
         </div>
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="GET" action="{{ route('payroll.salaries') }}" x-show="filtersOpen" x-transition class="flex flex-wrap items-end gap-3 border-b border-gray-200 bg-gray-50 px-5 py-4" style="display: none;">
             <input type="month" name="salary_month" value="{{ $month }}" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Salary month') }}">
@@ -65,5 +66,6 @@
         </div>
 
         <x-list-footer :paginator="$payslips" />
+    </div>
     </div>
 </x-app-layout>

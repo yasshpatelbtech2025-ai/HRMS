@@ -83,6 +83,18 @@ function check(field) {
     return false;
 }
 
+/** Check every visible field inside `root` (one form step); focus the first problem. */
+export function validateWithin(root) {
+    const fields = [...root.querySelectorAll(FIELDS)].filter((f) => f.form && !f.form.hasAttribute('data-no-validate'));
+    fields.forEach(applyFormat);
+    const invalid = fields.filter((f) => visible(f) && !check(f));
+    if (invalid.length) {
+        invalid[0].focus({ preventScroll: true });
+        invalid[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    return invalid.length === 0;
+}
+
 const visible = (el) => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
 const inScope = (field) => field.form && !field.form.hasAttribute('data-no-validate') && field.matches(FIELDS);
 

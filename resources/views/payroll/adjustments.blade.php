@@ -3,11 +3,19 @@
 
     <x-section-tabs section="payroll" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary adjustment list') }}</h2>
             <x-add-button modal="create-adjustment">{{ __('Add adjustment') }}</x-add-button>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Adjustments'), 'value' => $stats['count']],
+            ['label' => __('Added to pay'), 'value' => '₹'.number_format($stats['earnings']), 'tone' => 'success'],
+            ['label' => __('Deducted from pay'), 'value' => '₹'.number_format($stats['deductions']), 'tone' => $stats['deductions'] ? 'danger' : null],
+            ['label' => __('Net effect'), 'value' => '₹'.number_format($stats['earnings'] - $stats['deductions'])],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <x-list-toolbar :action="route('payroll.adjustments')" :per-page="$perPage" :exports="[
             __('CSV') => route('payroll.adjustments.export', ['format' => 'csv'] + request()->only('search')),
@@ -36,7 +44,7 @@
                             <td class="px-4 py-3">{{ $adjustment->title }}</td>
                             <td class="px-4 py-3">{{ number_format((float) $adjustment->amount, 2) }}</td>
                             <td class="px-4 py-3">{{ $adjustment->salary_month->format('Y-m') }}</td>
-                            <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $adjustment->type === 'earning' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700' }}">{{ \App\Models\SalaryAdjustment::TYPES[$adjustment->type] }}</span></td>
+                            <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $adjustment->type === 'earning' ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger' }}">{{ \App\Models\SalaryAdjustment::TYPES[$adjustment->type] }}</span></td>
                             <td class="px-4 py-3">
                                 <x-row-actions :edit-modal="$modal" :delete-url="route('payroll.adjustments.destroy', $adjustment)" :delete-confirm="__('Delete this adjustment?')" />
                                 <x-modal :name="$modal" :show="old('_modal') === $modal" max-width="2xl">
@@ -52,6 +60,7 @@
         </div>
 
         <x-list-footer :paginator="$adjustments" />
+    </div>
     </div>
 
     <x-modal name="create-adjustment" :show="old('_modal') === 'create-adjustment'" max-width="2xl">

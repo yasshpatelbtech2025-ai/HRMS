@@ -5,8 +5,8 @@
 
     @php $forms = $acts[$act]['forms']; @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Company compliance') }}</h2>
             <form method="GET" action="{{ route('compliance.index') }}">
                 <input type="hidden" name="act" value="{{ $act }}">
@@ -17,6 +17,17 @@
                 </select>
             </form>
         </div>
+        @php
+            $live = collect($acts)->reject(fn ($a) => $a['coming_soon'] ?? false);
+            $formCount = $live->sum(fn ($a) => count($a['forms'] ?? []));
+        @endphp
+        <x-stat-strip :items="[
+            ['label' => __('Acts available'), 'value' => $live->count()],
+            ['label' => __('Forms and registers'), 'value' => $formCount],
+            ['label' => __('Coming soon'), 'value' => count($acts) - $live->count()],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a></p>
@@ -64,5 +75,6 @@
                 @endif
             </div>
         @endif
+    </div>
     </div>
 </x-app-layout>

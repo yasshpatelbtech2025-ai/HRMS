@@ -5,14 +5,22 @@
 
     @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
+    <div>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary list') }}</h2>
             <div class="flex gap-2">
                 <a href="{{ route('payroll.export', 'csv') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
                 <a href="{{ route('payroll.export', 'xlsx') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
             </div>
         </div>
+        <x-stat-strip :items="[
+            ['label' => __('Salary sheets'), 'value' => $stats['sheets']],
+            ['label' => __('Waiting for approval'), 'value' => $stats['waiting'], 'tone' => $stats['waiting'] ? 'warn' : null, 'hint' => $stats['waiting'] ? __('Review and approve to finalise') : null],
+            ['label' => __('Approved'), 'value' => $stats['approved'], 'tone' => 'success'],
+            ['label' => __('Approved, not yet paid'), 'value' => $stats['unpaid'], 'tone' => $stats['unpaid'] ? 'warn' : null],
+        ]" />
+
+        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
         <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4">
             @csrf
@@ -55,7 +63,7 @@
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->generated_at->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">{{ $sheet->generator?->name }}</td>
                             <td class="px-4 py-3">
-                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $sheet->isApproved() ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800' }}">{{ $sheet->isApproved() ? __('Approved') : __('Not approved') }}</span>
+                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $sheet->isApproved() ? 'bg-success-soft text-success' : 'bg-warn-soft text-warn' }}">{{ $sheet->isApproved() ? __('Approved') : __('Not approved') }}</span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->approved_at?->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">{{ $sheet->approver?->name }}</td>
@@ -72,7 +80,7 @@
                                             <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     @endunless
@@ -108,5 +116,6 @@
         @if ($sheets->hasPages())
             <div class="border-t border-gray-200 px-5 py-4">{{ $sheets->links() }}</div>
         @endif
+    </div>
     </div>
 </x-app-layout>
