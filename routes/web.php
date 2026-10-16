@@ -26,6 +26,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportController;
+use App\Http\Controllers\CompanyImportController;
+use App\Http\Controllers\Attendance\AttendanceImportController;
 use App\Http\Controllers\IdCardController;
 use App\Http\Controllers\Payroll\BonusController;
 use App\Http\Controllers\Payroll\CurrentSalaryController;
@@ -55,6 +57,8 @@ Route::get('/search', SearchController::class)->middleware(['auth', 'verified', 
 
 Route::middleware(['auth', 'verified', 'throttle:app'])->group(function () {
     Route::get('company/export', [CompanyController::class, 'export'])->name('company.export');
+    Route::get('company/import/template', [CompanyImportController::class, 'template'])->name('company.import.template');
+    Route::post('company/import', [CompanyImportController::class, 'store'])->middleware('can:admin')->name('company.import');
     // Before the company resource, so "firm" is not taken for a company.
     Route::controller(FirmController::class)->prefix('company/firm')->group(function () {
         Route::get('/', 'show')->name('company.firm');
@@ -147,6 +151,8 @@ Route::middleware(['auth', 'verified', 'throttle:app'])->group(function () {
     Route::post('attendance/shifts/{company}', [ShiftManagementController::class, 'store'])->name('attendance.shifts.store');
     Route::get('attendance/employee-report', [EmployeeReportController::class, 'index'])->name('attendance.employee-report');
 
+    Route::get('attendance/import/template', [AttendanceImportController::class, 'template'])->name('attendance.import.template');
+    Route::post('attendance/import', [AttendanceImportController::class, 'store'])->name('attendance.import');
     Route::controller(RawDataController::class)->prefix('attendance/raw-data')->group(function () {
         Route::get('/', 'index')->name('attendance.raw-data');
         Route::post('/', 'store')->name('attendance.raw-data.store');

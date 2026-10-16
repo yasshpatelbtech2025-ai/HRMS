@@ -3,6 +3,14 @@
 
     <x-section-tabs section="attendance" />
 
+    <div class="mb-4 flex justify-end print:hidden">
+        <button type="button" x-data x-on:click="$dispatch('open-modal', 'import-attendance')"
+                class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">{{ __('Import Attendance') }}</button>
+    </div>
+    <x-import-errors />
+    <x-bulk-upload name="import-attendance" :title="__('Import Attendance (Excel)')" :action="route('attendance.import')" :template="route('attendance.import.template')" :companies="$companies"
+                   :hint="__('One row per punch: the employee code, the date and time, and IN or OUT. Punches already recorded are skipped.')" />
+
     @php
         $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
         $styles = [
