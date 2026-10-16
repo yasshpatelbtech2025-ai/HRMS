@@ -10,6 +10,7 @@ use App\Models\Concerns\Trashable;
 use App\Models\DocumentFile;
 use App\Models\Employee;
 use App\Models\Holiday;
+use App\Models\Invoice;
 use App\Models\LeaveApplication;
 use App\Models\LeaveType;
 use App\Models\Loan;
@@ -49,6 +50,7 @@ class RecentlyDeleted
         'medical-examination' => [MedicalExamination::class, 'Medical examination'],
         'register-entry' => [ComplianceRegisterEntry::class, 'Register row'],
         'compliance-task' => [ComplianceTask::class, 'Compliance task'],
+        'invoice' => [Invoice::class, 'Invoice'],
     ];
 
     public static function type(Model $model): ?string
@@ -88,6 +90,7 @@ class RecentlyDeleted
             $model instanceof SalaryAdvance => __('Advance of :amount', ['amount' => number_format((float) $model->amount, 2)]),
             $model instanceof MedicalExamination => __('Examination on :date', ['date' => $model->examined_on?->format('d M Y')]),
             $model instanceof ComplianceRegisterEntry => __(':form row for :month', ['form' => strtoupper($model->form), 'month' => $model->month?->format('M Y')]),
+            $model instanceof Invoice => __('Invoice :no', ['no' => $model->invoice_no]),
             $model instanceof Holiday => trim($model->name.' · '.$model->start_date?->format('d M Y')),
             default => (string) ($model->full_name ?? $model->establishment_name ?? $model->title ?? $model->original_name ?? $model->loan_no ?? $model->name ?? '#'.$model->getKey()),
         };

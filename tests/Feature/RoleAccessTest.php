@@ -78,6 +78,22 @@ class RoleAccessTest extends TestCase
         $this->get(route('company.index'))->assertDontSee('User access')->assertDontSee('ID Card Formats')->assertDontSee('Add company');
     }
 
+    public function test_invoice_is_admin_only_and_hidden_from_users_sidebar(): void
+    {
+        $this->actAsUser();
+
+        $this->get(route('invoice.index'))->assertForbidden();
+        $this->get(route('dashboard'))->assertOk()->assertSee('Payroll')->assertDontSee('Invoice');
+    }
+
+    public function test_admins_see_and_open_invoice(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $this->get(route('dashboard'))->assertSeeInOrder(['Payroll', 'Invoice', 'Reports']);
+        $this->get(route('invoice.index'))->assertOk()->assertSee('Invoices');
+    }
+
     public function test_inactive_accounts_cannot_sign_in_and_are_signed_out(): void
     {
         $user = User::factory()->create(['email' => 'off@example.com']);
