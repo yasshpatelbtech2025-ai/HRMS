@@ -3,16 +3,16 @@
 
     @php
         $cards = [
-            ['label' => __('Total employee'), 'value' => $stats['total'], 'accent' => 'bg-primary', 'href' => route('employees.index', $company ? ['company_id' => $company->id] : [])],
+            ['label' => __('Total employee'), 'value' => $stats['total'], 'accent' => 'bg-ink', 'href' => route('employees.index', $company ? ['company_id' => $company->id] : [])],
             ['label' => __('Today presents'), 'value' => $stats['present'], 'accent' => 'bg-success', 'href' => route('attendance.index', $company ? ['company' => $company->uuid] : [])],
-            ['label' => __('Today absents'), 'value' => $stats['absent'], 'accent' => 'bg-danger', 'href' => route('attendance.index', $company ? ['company' => $company->uuid] : [])],
+            ['label' => __('Today absents'), 'value' => $stats['absent'], 'accent' => 'bg-srympex', 'href' => route('attendance.index', $company ? ['company' => $company->uuid] : [])],
             ['label' => __('Today leave'), 'value' => $stats['leave'], 'accent' => 'bg-warn', 'href' => route('attendance.leave', $company ? ['company' => $company->uuid] : [])],
         ];
         // Status colours (good / warning / critical) with a neutral for days off; every bar also carries its counts as text.
         $segments = [
             'present' => ['label' => __('Present'), 'class' => 'bg-success'],
             'leave' => ['label' => __('Leave'), 'class' => 'bg-warn'],
-            'absent' => ['label' => __('Absent'), 'class' => 'bg-danger'],
+            'absent' => ['label' => __('Absent'), 'class' => 'bg-srympex'],
             'off' => ['label' => __('Week off / holiday'), 'class' => 'bg-gray-300'],
         ];
     @endphp
@@ -41,6 +41,66 @@
             <x-ui.button :href="route('employees.create')" icon="plus">{{ __('Add employee') }}</x-ui.button>
         </x-slot:actions>
     </x-ui.page-header>
+
+    {{-- Today's muster: the headline numbers, then one strip per client company with a
+         square per employee, like a page of the muster roll. Every number links to its list. --}}
+    @php
+        $square = [
+            'present' => ['class' => 'bg-success', 'label' => __('Present')],
+            'leave' => ['class' => 'bg-warn', 'label' => __('Leave')],
+            'absent' => ['class' => 'bg-srympex', 'label' => __('Absent')],
+            'off' => ['class' => 'bg-gray-400', 'label' => __('Week off / holiday')],
+            'none' => ['class' => 'bg-surface ring-1 ring-inset ring-line-strong', 'label' => __('No record')],
+        ];
+        $musterLimit = 60;
+    @endphp
+    <section class="card mb-5 overflow-hidden" aria-labelledby="muster-title">
+        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
+            <div class="flex items-baseline gap-2.5">
+                <h2 id="muster-title" class="text-base font-semibold text-ink">{{ __("Today's muster") }}</h2>
+                <span class="font-mono text-xs text-ink-3">{{ $today->format('D, d M Y') }}</span>
+            </div>
+            <a href="{{ route('attendance.index', $scope) }}" class="group inline-flex items-center gap-1 text-13 font-medium text-ink-2 hover:text-ink">
+                {{ __('Monthly attendance') }}<x-icon name="arrow-right" class="size-4 transition-transform group-hover:translate-x-0.5" />
+            </a>
+        </header>
+
+        <div class="grid grid-cols-2 border-b border-line sm:grid-cols-4">
+            @foreach ($cards as $i => $card)
+                <a href="{{ $card['href'] }}" class="group px-5 py-4 transition-colors hover:bg-sunken/60 {{ $i % 2 ? 'border-s border-line' : '' }} {{ $i >= 2 ? 'max-sm:border-t max-sm:border-line' : '' }} {{ $i === 2 ? 'sm:border-s sm:border-line' : '' }}">
+                    <p class="flex items-center gap-2 text-13 text-ink-2"><span class="size-2.5 rounded-[3px] {{ $card['accent'] }}"></span>{{ $card['label'] }}</p>
+                    <p class="mt-1.5 font-mono text-[28px] font-medium leading-none tabular text-ink">{{ number_format($card['value']) }}</p>
+                </a>
+            @endforeach
+        </div>
+
+        @if ($muster->isEmpty())
+            <p class="px-5 py-8 text-center text-sm text-ink-3">{{ __('No employees yet. Add a company and its employees to see today\'s muster.') }}</p>
+        @else
+            <ul class="divide-y divide-line">
+                @foreach ($muster as $row)
+                    @php $total = $row['cells']->count(); @endphp
+                    <li class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 px-5 py-3 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)_auto]">
+                        <a href="{{ route('attendance.index', ['company' => $row['company']->uuid]) }}" class="truncate text-sm font-medium text-ink hover:underline">{{ $row['company']->establishment_name }}</a>
+                        <div class="flex flex-wrap gap-[3px] max-sm:order-last max-sm:col-span-2" role="img" aria-label="{{ __(':present of :total present', ['present' => $row['present'], 'total' => $total]) }}">
+                            @foreach ($row['cells']->take($musterLimit) as $c)
+                                <span class="size-3 rounded-[3px] {{ $square[$c['state']]['class'] }}" title="{{ $c['label'] }} · {{ $square[$c['state']]['label'] }}"></span>
+                            @endforeach
+                            @if ($total > $musterLimit)
+                                <span class="ms-1 font-mono text-[11px] leading-3 text-ink-3">+{{ $total - $musterLimit }}</span>
+                            @endif
+                        </div>
+                        <p class="text-end font-mono text-13 tabular text-ink-2"><span class="font-medium text-ink">{{ $row['present'] }}</span>/{{ $total }} <span class="font-sans text-ink-3">{{ __('present') }}</span></p>
+                    </li>
+                @endforeach
+            </ul>
+            <ul class="flex flex-wrap gap-x-4 gap-y-1 border-t border-line bg-sunken/50 px-5 py-2.5 text-xs text-ink-2" aria-label="{{ __('Legend') }}">
+                @foreach ($square as $key => $sq)
+                    <li class="flex items-center gap-1.5"><span class="size-2.5 rounded-[3px] {{ $sq['class'] }}"></span>{{ $sq['label'] }}</li>
+                @endforeach
+            </ul>
+        @endif
+    </section>
 
     <div class="grid gap-5 xl:grid-cols-3">
         {{-- Needs attention: real counts, most urgent first, each opening its list. --}}
@@ -93,19 +153,6 @@
             </div>
             <p class="border-t border-line px-5 py-2.5 text-xs text-ink-3">{{ __('Tip: press') }} <kbd class="rounded border border-line bg-sunken px-1 font-mono">Ctrl K</kbd> {{ __('to find any employee or page.') }}</p>
         </section>
-    </div>
-
-    <h2 class="mb-2.5 mt-7 text-13 font-semibold text-ink-2">{{ __('Today') }}</h2>
-    <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        @foreach ($cards as $card)
-            <a href="{{ $card['href'] }}" class="group block rounded-lg border border-line bg-surface p-4 shadow-hairline transition-colors hover:border-primary/40 hover:bg-primary-soft/30">
-                <div class="flex items-start justify-between gap-2">
-                    <p class="flex items-center gap-2 text-13 font-medium text-ink-2"><span class="size-2 rounded-full {{ $card['accent'] }}"></span>{{ $card['label'] }}</p>
-                    <x-icon name="arrow-right" class="size-4 text-ink-3 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
-                </div>
-                <p class="mt-2 font-mono text-2xl font-medium tabular text-ink">{{ number_format($card['value']) }}</p>
-            </a>
-        @endforeach
     </div>
 
     <div class="mt-7 grid grid-cols-1 gap-5 xl:grid-cols-3">
