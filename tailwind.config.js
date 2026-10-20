@@ -2,20 +2,17 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /*
- * SRYMPEX HRMS design tokens ("Ledger").
+ * SRYMPEX HRMS design tokens ("Muster Roll").
  *
- * - A calm work tool: warm off-white pages, white cards, near-black ink and a
- *   deep teal for primary actions, links, focus and the active navigation.
- *   Colour is otherwise kept for meaning: emerald = success, amber = warning,
- *   red = danger. The SRYMPEX logo keeps its own red (components/brand-logo).
- * - `brand` is the teal and `gray` the warm neutral scale, so every existing
- *   page picks up the theme. Newer components use the semantic names
- *   (canvas, surface, ink, line, primary...), backed by CSS variables in
- *   resources/css/app.css.
- * - Type: IBM Plex Sans (UI) and IBM Plex Mono (IDs, numbers), self-hosted.
+ * - Paper (#F5F6F8) pages, white cards, Site Ink (#17181C) text and primary
+ *   buttons, Steel (#525A68) secondary text. Srympex Red (#DD2A1B) is kept for
+ *   the logo, the active navigation marker and the dashboard muster strip.
+ *   Colour is otherwise for meaning: Present Green, amber warning, crimson danger.
+ * - `brand` (legacy scale) and `gray` are CSS variables, so every page follows
+ *   the theme and dark mode. Newer components use the semantic names.
+ * - Type: Figtree (UI, self-hosted in resources/fonts) and IBM Plex Mono (IDs, numbers).
  *   Scale: xs 12 · sm 13.5 · base 15 · lg 17 · xl 20 · 2xl 24 · 3xl 28 · 4xl 34.
  * - Radius: controls 6px (md), cards 10px (lg), dialogs 14px (xl).
- * - Shadows are hairline for cards; md/lg only for menus, toasts and dialogs.
  */
 
 const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
@@ -34,23 +31,14 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"IBM Plex Sans"', ...defaultTheme.fontFamily.sans],
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
                 mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
             },
             colors: {
-                brand: {
-                    50: '#effaf7',
-                    100: '#d9f0ea',
-                    200: '#b3e0d5',
-                    300: '#82cabb',
-                    400: '#4fae9c',
-                    500: '#2a9080',
-                    600: '#0b6b5e',
-                    700: '#095a4f',
-                    800: '#0a4941',
-                    900: '#0b3c36',
-                    950: '#04221f',
-                },
+                // Legacy scale, now the Site Ink neutrals (CSS variables, flips in dark mode).
+                brand: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`brand-${n}`)])),
+                // Srympex Red: logo, active marker and the muster strip only.
+                srympex: { DEFAULT: token('brand'), soft: token('brand-soft'), ink: token('brand-ink') },
                 // Warm neutrals: surfaces stay paper-like, text stays crisp.
                 // The scale is backed by CSS variables so it flips in dark mode.
                 gray: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`gray-${n}`)])),

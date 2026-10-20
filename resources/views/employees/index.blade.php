@@ -289,7 +289,7 @@
                         @endforeach
                     </select>
                 </x-form-row>
-                <x-form-row :label="__('Excel Template')" x-show="company" x-transition>
+                <x-form-row :label="__('Excel Template')" x-show="company" x-transition="">
                     <a :href="templates[company]" class="inline-flex items-center gap-2 rounded-md border border-brand-300 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-50">
                         {{ __('Download Company-Specific Template') }}
                     </a>
