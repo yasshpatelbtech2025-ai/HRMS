@@ -38,6 +38,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'preferences' => 'array',
             'is_active' => 'boolean',
+            'is_demo' => 'boolean',
             'last_login_at' => 'datetime',
         ];
     }

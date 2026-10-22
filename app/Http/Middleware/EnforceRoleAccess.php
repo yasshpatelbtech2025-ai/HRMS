@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
  * - admin-only pages (by route name) are refused to users;
  * - users cannot delete anything: DELETE requests and bulk "delete"
  *   actions are refused;
- * - a deactivated account is signed out.
+ * - a deactivated account is signed out;
+ * - the shared demo login cannot change its profile or password.
  */
 class EnforceRoleAccess
 {
@@ -27,6 +28,11 @@ class EnforceRoleAccess
             $request->session()->invalidate();
 
             return redirect()->route('login')->withErrors(['email' => __('This account has been deactivated. Ask an admin.')]);
+        }
+
+        // The demo login is shared, so nobody may lock the others out of it.
+        if ($user->is_demo && $request->routeIs('profile.update', 'password.update')) {
+            return back()->with('error', __('The demo account cannot change its profile or password.'));
         }
 
         if ($user->isAdmin()) {

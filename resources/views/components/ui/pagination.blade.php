@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{{ __('Pagination') }}" class="flex items-center gap-1">
+    <nav role="navigation" aria-label="{{ __('Pages') }}" class="flex items-center gap-1">
         @php $link = 'inline-flex h-8 min-w-8 items-center justify-center rounded-control px-2 text-13 tabular'; @endphp
         @if ($paginator->onFirstPage())
             <span class="{{ $link }} text-ink-3/50" aria-disabled="true"><x-icon name="chevron-left" class="size-4" /><span class="sr-only">{{ __('Previous') }}</span></span>
