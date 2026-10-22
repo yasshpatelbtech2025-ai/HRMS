@@ -1,4 +1,4 @@
-# HRMS â€” HR, Attendance & Payroll Management
+# HRMS — HR, Attendance & Payroll Management
 
 A full-stack HR management system for staffing and contract-labour firms in India. It runs the whole monthly cycle for many client companies from one place: employee onboarding, attendance and leave, salary generation with statutory deductions, compliance registers, and client invoicing.
 
@@ -29,7 +29,7 @@ Built with **Laravel 13**, **PHP 8.3**, **Blade + Alpine.js** and **Tailwind CSS
 - Payslip generation as PDF
 
 ### Compliance
-- Statutory registers and forms generated from payroll and attendance data, e.g. Forms Aâ€“D, 13, 14, 16â€“21, Gratuity Form F, and PF Forms 10C and 19
+- Statutory registers and forms generated from payroll and attendance data, e.g. Forms A–D, 13, 14, 16–21, Gratuity Form F, and PF Forms 10C and 19
 - Monthly compliance task tracking
 
 ### Invoicing & Administration
@@ -96,4 +96,4 @@ tests/                Feature and unit tests
 
 ## Author
 
-**Yassh Patel** â€” [GitHub](https://github.com/yasshpatelbtech2025-ai)
+**Yassh Patel** — [GitHub](https://github.com/yasshpatelbtech2025-ai)
