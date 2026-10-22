@@ -6,10 +6,12 @@
     $fields = [
         'address_line_1' => ['Address Line 1', null],
         'address_line_2' => ['Address Line 2', null],
+        'city' => ['City', 'employee-cities'],
         'village' => ['Village', null],
+        'taluka' => ['Taluka', 'employee-talukas'],
         'district' => ['District', 'employee-districts'],
         'state' => ['State', 'employee-states'],
-        'taluka' => ['Taluka', 'employee-talukas'],
+        'country' => ['Country', 'employee-countries'],
     ];
 @endphp
 

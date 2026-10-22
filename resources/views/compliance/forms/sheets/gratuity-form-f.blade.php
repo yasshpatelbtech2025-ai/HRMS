@@ -3,8 +3,8 @@
 @else
 @php
     $period = 'employee:'.$employee->id;
-    $nominees = $employee->familyMembers->where('is_nominee', true)->values();
-    $share = $nominees->count() ? round(100 / $nominees->count(), 2) : null;
+    // The nominee from the employee form's Statutory Info; their age comes from Family Detail when the names match.
+    $nomineeMember = $employee->nominee_name ? $employee->familyMembers->first(fn ($m) => mb_strtolower(trim((string) $m->full_name)) === mb_strtolower(trim($employee->nominee_name))) : null;
     $nomineeAddress = \App\Services\Compliance\ComplianceForms::address($employee->address('nominee_permanent') ?? $employee->address('permanent'));
 @endphp
 @unless ($printing)
@@ -28,23 +28,24 @@
 <table class="reg">
     <tr><th>Name in full with full address of nominee(s)</th><th>Relationship with the employee</th><th>Age of nominee</th><th>Proportion by which the gratuity will be shared</th></tr>
     <tr class="colno">@foreach (range(1, 4) as $n)<td>{{ $n }}</td>@endforeach</tr>
-    @forelse ($nominees as $nominee)
+    @if ($employee->nominee_name)
         <tr>
-            <td>{{ $nominee->full_name }}{{ $nomineeAddress ? ', '.$nomineeAddress : '' }}</td>
-            <td>{{ config('employee.family_relations')[$nominee->relation] ?? $nominee->relation }}</td>
-            <td class="num">{{ $nominee->date_of_birth?->age }}</td>
-            <td class="num">{{ $share }}%</td>
+            <td>{{ $employee->nominee_name }}{{ $nomineeAddress ? ', '.$nomineeAddress : '' }}</td>
+            <td>{{ $employee->nominee_relationship }}</td>
+            <td class="num">{{ $nomineeMember?->date_of_birth?->age }}</td>
+            <td class="num">100%</td>
         </tr>
-    @empty
-        <tr><td colspan="4" class="empty">{{ __('No nominee is marked in this employee\'s family details.') }}</td></tr>
-    @endforelse
+    @else
+        <tr><td colspan="4" class="empty">{{ __('No nominee is entered in this employee\'s Statutory Info.') }}</td></tr>
+    @endif
 </table>
 <p class="caption">STATEMENT</p>
 <table class="info">
     @foreach ([
         'Name of employee in full.' => $employee->full_name,
         'Sex.' => $employee->gender?->label(),
-        'Religion.' => $employee->religion,
+        // Part of the prescribed form, so the line stays; religion is no longer collected.
+        'Religion.' => '',
         'Whether unmarried/married/widow/widower.' => config('employee.marital_statuses')[$employee->marital_status] ?? '',
         'Department/Branch/Section where employed.' => $employee->subDepartment?->name ?? $employee->department?->name,
         'Post held with Ticket No. or Serial No., if any.' => $employee->position?->name.' / '.$employee->employee_code,

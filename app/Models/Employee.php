@@ -147,6 +147,12 @@ class Employee extends Model
         return $this->separation_date !== null && $this->separation_date->lte(today());
     }
 
+    /** Monthly salary paid for payable days entered at Salary Generate (Salary ÷ 31 × days). */
+    public function usesFixedPayableDays(): bool
+    {
+        return $this->pay_frequency === 'monthly' && $this->monthly_salary_calculation === 'fixed_payable_days';
+    }
+
     /**
      * Employees still on the rolls: no separation date, or one in the future.
      */

@@ -88,8 +88,10 @@
         </x-modal>
     @endcan
 
-    {{-- Shared suggestions for the State / District / Taluka fields; any new value can be typed. --}}
-    <datalist id="company-states">@foreach ($states as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
-    <datalist id="company-districts">@foreach ($districts as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+    {{-- Shared suggestions for the City / Taluka / District / State / Country fields; any new value can be typed. --}}
+    <datalist id="company-cities">@foreach ($cities as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
     <datalist id="company-talukas">@foreach ($talukas as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+    <datalist id="company-districts">@foreach ($districts as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+    <datalist id="company-states">@foreach ($states as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+    <datalist id="company-countries">@foreach ($countries as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
 </x-app-layout>

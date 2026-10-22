@@ -2,12 +2,8 @@
 
 namespace App\Support;
 
-use App\Enums\EmploymentType;
 use App\Enums\Gender;
 use App\Models\Company;
-use App\Models\Department;
-use App\Models\Position;
-use App\Models\SubDepartment;
 use DateTimeInterface;
 use Illuminate\Support\Str;
 use OpenSpout\Common\Entity\Row;
@@ -34,27 +30,17 @@ class EmployeeImport
         'Phone *' => 'phone',
         'Alternate Phone' => 'alternate_phone',
         'Date of Birth * (YYYY-MM-DD)' => 'date_of_birth',
-        'Shift *' => 'shift',
         'Joining Date * (YYYY-MM-DD)' => 'date_of_joining',
-        'Working on hazardous process * (Yes/No)' => 'works_on_hazardous_process',
-        'Can Punch In Hybrid Mode * (Yes/No)' => 'can_punch_in_hybrid_mode',
-        'Department *' => 'department',
-        'Sub Department *' => 'sub_department',
-        'Designation *' => 'designation',
-        'Working Place *' => 'working_place',
-        'Employee Type *' => 'employment_type',
         'Blood Group' => 'blood_group',
         'Aadhar Card No' => 'aadhar_card_no',
         'PAN Card No' => 'pan_card_no',
-        'Bank Name' => 'bank_name',
+        'UAN No' => 'uan_code',
+        'ESIC No' => 'ip_number',
+        'Bank Name *' => 'bank_name',
+        'Account Number *' => 'account_number',
+        'IFSC Code *' => 'ifsc_code',
         'Branch Address' => 'branch_address',
-        'Account Number' => 'account_number',
-        'IFSC Code' => 'ifsc_code',
         'MICR Code' => 'micr_code',
-        'UAN Code' => 'uan_code',
-        'Name As Per UAN' => 'name_as_per_uan',
-        'IP Number' => 'ip_number',
-        'Name As Per ESIC' => 'name_as_per_esic',
         'Pay frequency * (Monthly/Daily/Hourly)' => 'pay_frequency',
         'Basic (monthly)' => 'basic_monthly',
         'Daily rate' => 'daily_rate',
@@ -145,11 +131,6 @@ class EmployeeImport
     {
         $lookup = fn (array $options, ?string $value) => $value === null || $value === '' ? null
             : (collect($options)->search(fn ($label, $key) => mb_strtolower($label) === mb_strtolower($value) || mb_strtolower((string) $key) === mb_strtolower($value)) ?: $value);
-        $yesNo = fn (?string $value) => match (mb_strtolower((string) $value)) {
-            'yes', 'y', '1', 'true' => 1, 'no', 'n', '0', 'false' => 0, default => $value,
-        };
-
-        $department = Department::where('company_id', $this->company->id)->whereRaw('lower(name) = ?', [mb_strtolower($row['department'] ?? '')])->first();
 
         return [
             'company_id' => $this->company->id,
@@ -162,15 +143,7 @@ class EmployeeImport
             'alternate_phone' => $row['alternate_phone'] ?? null,
             'date_of_birth' => $row['date_of_birth'] ?? null,
             'country' => 'India',
-            'shift_id' => $this->company->shifts()->whereRaw('lower(name) = ?', [mb_strtolower($row['shift'] ?? '')])->value('id'),
             'date_of_joining' => $row['date_of_joining'] ?? null,
-            'works_on_hazardous_process' => $yesNo($row['works_on_hazardous_process'] ?? null),
-            'can_punch_in_hybrid_mode' => $yesNo($row['can_punch_in_hybrid_mode'] ?? null),
-            'department_id' => $department?->id,
-            'sub_department_id' => $department ? SubDepartment::where('department_id', $department->id)->whereRaw('lower(name) = ?', [mb_strtolower($row['sub_department'] ?? '')])->value('id') : null,
-            'position_id' => Position::where('company_id', $this->company->id)->whereRaw('lower(name) = ?', [mb_strtolower($row['designation'] ?? '')])->value('id'),
-            'working_place' => $lookup(config('employee.working_places'), $row['working_place'] ?? null),
-            'employment_type' => $lookup(collect(EmploymentType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])->all(), $row['employment_type'] ?? null),
             'blood_group' => isset($row['blood_group']) && $row['blood_group'] !== '' ? strtoupper($row['blood_group']) : null,
             'aadhar_card_no' => isset($row['aadhar_card_no']) ? preg_replace('/\s+/', '', $row['aadhar_card_no']) : null,
             'pan_card_no' => isset($row['pan_card_no']) ? strtoupper($row['pan_card_no']) : null,
@@ -180,9 +153,7 @@ class EmployeeImport
             'ifsc_code' => isset($row['ifsc_code']) ? strtoupper($row['ifsc_code']) : null,
             'micr_code' => $row['micr_code'] ?? null,
             'uan_code' => $row['uan_code'] ?? null,
-            'name_as_per_uan' => $row['name_as_per_uan'] ?? null,
             'ip_number' => $row['ip_number'] ?? null,
-            'name_as_per_esic' => $row['name_as_per_esic'] ?? null,
             'pay_frequency' => $lookup(config('employee.pay_frequencies'), $row['pay_frequency'] ?? null),
             'salary' => ['basic' => ['monthly' => $row['basic_monthly'] ?? null]],
             'daily_rate' => $row['daily_rate'] ?? null,
@@ -214,17 +185,8 @@ class EmployeeImport
      */
     private function lists(): array
     {
-        $departments = Department::where('company_id', $this->company->id)->with('subDepartments')->orderBy('name')->get();
-
         return [
             'Gender' => array_map(fn ($g) => $g->label(), Gender::cases()),
-            'Yes/No' => ['Yes', 'No'],
-            'Shift' => $this->company->shifts()->orderBy('name')->pluck('name')->all(),
-            'Department' => $departments->pluck('name')->all(),
-            'Sub Department' => $departments->flatMap(fn ($d) => $d->subDepartments->where('is_active', true)->pluck('name'))->unique()->values()->all(),
-            'Designation' => Position::where('company_id', $this->company->id)->where('is_active', true)->orderBy('name')->pluck('name')->all(),
-            'Working Place' => array_values(config('employee.working_places')),
-            'Employee Type' => array_map(fn ($t) => $t->label(), EmploymentType::cases()),
             'Blood Group' => config('employee.blood_groups'),
             'Pay frequency' => array_values(config('employee.pay_frequencies')),
             'Monthly salary calculation type' => array_map(fn ($label) => Str::before($label, ' —'), array_values(config('employee.monthly_salary_calculations'))),

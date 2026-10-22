@@ -23,9 +23,11 @@ class SaveEmployee
         'aadhar_attachment' => 'aadhar_attachment_path',
         'pan_attachment' => 'pan_attachment_path',
         'bank_passbook' => 'bank_passbook_path',
+        'uan_document' => 'uan_document_path',
+        'nominee_document' => 'nominee_document_path',
     ];
 
-    private const ADDRESS_FIELDS = ['address_line_1', 'address_line_2', 'village', 'district', 'taluka', 'state'];
+    private const ADDRESS_FIELDS = ['address_line_1', 'address_line_2', 'city', 'village', 'taluka', 'district', 'state', 'country'];
 
     /**
      * @param  array<string, mixed>  $data  validated form data
@@ -64,7 +66,7 @@ class SaveEmployee
 
             $this->syncAddresses($employee, $data);
             $this->syncKeyed($employee->qualifications(), 'level', $data['qualifications'] ?? []);
-            $this->syncKeyed($employee->familyMembers(), 'relation', $data['family'] ?? [], ['is_nominee']);
+            $this->syncKeyed($employee->familyMembers(), 'relation', $data['family'] ?? []);
             $this->syncExperiences($employee, $data['experiences'] ?? []);
             $this->syncSalary($employee, $data['salary'] ?? []);
         });

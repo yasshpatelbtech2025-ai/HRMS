@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Payroll;
 use App\Rules\AccessibleCompany;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Employee;
 use App\Models\Payslip;
 use App\Models\SalarySheet;
 use App\Services\Payroll\SalaryGenerator;
@@ -36,6 +37,13 @@ class SalaryGenerateController extends Controller
                 'unpaid' => SalarySheet::where('status', 'approved')->whereNull('paid_date')->count(),
             ],
             'companies' => Company::with('parent')->orderBy('establishment_name')->get(),
+            // Employees whose payable days are entered here; the form shows those of the chosen company and month.
+            'fixedDaysEmployees' => Employee::where('pay_frequency', 'monthly')->where('monthly_salary_calculation', 'fixed_payable_days')
+                ->orderBy('employee_code')->get()
+                ->map(fn (Employee $e) => [
+                    'id' => $e->id, 'company' => $e->company_id, 'name' => $e->employee_code.' · '.$e->full_name,
+                    'from' => $e->date_of_joining?->format('Y-m'), 'until' => $e->separation_date?->format('Y-m-d'),
+                ]),
             'sheets' => SalarySheet::with(['company.parent', 'generator', 'approver'])->withCount('payslips')
                 ->orderByDesc('month')->orderByDesc('generated_at')->paginate(25),
         ]);
@@ -59,10 +67,12 @@ class SalaryGenerateController extends Controller
         $data = $request->validate([
             'company_id' => ['required', 'integer', new AccessibleCompany('id'), Rule::exists('companies', 'id')->whereNull('deleted_at')],
             'salary_month' => ['required', 'date_format:Y-m', 'before_or_equal:'.now()->format('Y-m')],
-        ], ['salary_month.before_or_equal' => __('Salary can only be generated for this month or earlier.')], ['company_id' => 'company', 'salary_month' => 'salary month']);
+            'payable_days' => ['nullable', 'array'],
+            'payable_days.*' => ['nullable', 'numeric', 'min:0', 'max:31'],
+        ], ['salary_month.before_or_equal' => __('Salary can only be generated for this month or earlier.')], ['company_id' => 'company', 'salary_month' => 'salary month', 'payable_days.*' => 'payable days']);
 
         $company = Company::findOrFail($data['company_id']);
-        $result = $this->generator->generate($company, CarbonImmutable::createFromFormat('!Y-m', $data['salary_month']), $request->user());
+        $result = $this->generator->generate($company, CarbonImmutable::createFromFormat('!Y-m', $data['salary_month']), $request->user(), $data['payable_days'] ?? []);
 
         $redirect = redirect()->route('payroll.approval', $result['sheet'])->with('status', __(':month salary generated for :count employee(s) of :company.', [
             'month' => $data['salary_month'], 'count' => $result['sheet']->payslips()->count(), 'company' => $company->establishment_name,

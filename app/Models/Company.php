@@ -27,10 +27,12 @@ class Company extends Model
         'parent_company_id',
         'address_line_1',
         'address_line_2',
+        'city',
         'village',
         'taluka',
         'district',
         'state',
+        'country',
     ];
 
     public function uniqueIds(): array

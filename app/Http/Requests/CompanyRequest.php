@@ -27,10 +27,12 @@ class CompanyRequest extends FormRequest
             ],
             'address_line_1' => ['nullable', 'string', 'max:255'],
             'address_line_2' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:255'],
             'village' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
-            'district' => ['nullable', 'string', 'max:255'],
             'taluka' => ['nullable', 'string', 'max:255'],
+            'district' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'max:255'],
         ];
     }
 

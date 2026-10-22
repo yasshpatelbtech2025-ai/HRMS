@@ -330,9 +330,11 @@ class EmployeeController extends Controller
             'shifts' => Shift::orderBy('type')->orderBy('slot')->get(['id', 'company_id', 'name']),
             'officers' => Employee::current()->when($employee->exists, fn ($q) => $q->whereKeyNot($employee->id))
                 ->orderBy('employee_code')->get(['id', 'company_id', 'employee_code', 'first_name', 'middle_name', 'last_name']),
-            'states' => collect(CompanyController::STATES)->merge($places('state'))->unique(fn ($v) => mb_strtolower($v))->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
-            'districts' => $places('district'),
+            'cities' => $places('city'),
             'talukas' => $places('taluka'),
+            'districts' => $places('district'),
+            'states' => collect(CompanyController::STATES)->merge($places('state'))->unique(fn ($v) => mb_strtolower($v))->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
+            'countries' => collect(config('employee.countries'))->merge($places('country'))->unique(fn ($v) => mb_strtolower($v))->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
         ];
     }
 }

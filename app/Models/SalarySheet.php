@@ -13,14 +13,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * A company's generated salary for one month.
  */
-#[Fillable(['company_id', 'month', 'generated_by', 'generated_at', 'status', 'approved_by', 'approved_at', 'paid_date'])]
+#[Fillable(['company_id', 'month', 'generated_by', 'generated_at', 'status', 'approved_by', 'approved_at', 'paid_date', 'payable_days'])]
 class SalarySheet extends Model
 {
     use Auditable, BelongsToCompany, HasUuids;
 
     protected function casts(): array
     {
-        return ['month' => 'date', 'generated_at' => 'datetime', 'approved_at' => 'datetime', 'paid_date' => 'date'];
+        return ['month' => 'date', 'generated_at' => 'datetime', 'approved_at' => 'datetime', 'paid_date' => 'date', 'payable_days' => 'array'];
     }
 
     public function uniqueIds(): array

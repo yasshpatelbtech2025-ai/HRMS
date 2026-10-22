@@ -39,7 +39,7 @@
         <tr><td class="no">7.</td><td class="label">Full Address (In Block Letters)</td><td class="sep">:</td><td>
             Sh. / Smt. / Km. <strong>{{ mb_strtoupper($e->full_name) }}</strong><br>
             S/o, W/o, D/o. <strong>{{ mb_strtoupper($female ? (($family['spouse']->full_name ?? '') ?: $father) : $father) }}</strong><br>
-            Address : {{ mb_strtoupper(collect([$postal?->address_line_1, $postal?->address_line_2, $postal?->village, $postal?->taluka, $postal?->district, $postal?->state])->filter()->implode(', ')) }}<br>
+            Address : {{ mb_strtoupper(collect([$postal?->address_line_1, $postal?->address_line_2, $postal?->city, $postal?->village, $postal?->taluka, $postal?->district, $postal?->state, $postal?->country])->filter()->implode(', ')) }}<br>
             PIN : {!! $value('pin', 'text', 100) !!}
         </td></tr>
     </table>
@@ -51,11 +51,20 @@
     </table>
     <table class="reg">
         <tr><th>Name</th><th>Date of Birth</th><th>Relationship with Member</th><th>Name of the guardian of minor</th></tr>
-        @forelse ($e->familyMembers->whereIn('relation', ['spouse', 'son', 'daughter', 'child'])->merge($e->familyMembers->where('is_nominee', true))->unique('id') as $member)
+        @php
+            $family = $e->familyMembers->whereIn('relation', ['spouse', 'son', 'daughter', 'child']);
+            // The Statutory Info nominee, unless already listed as spouse or child.
+            $nomineeListed = $family->contains(fn ($m) => mb_strtolower(trim((string) $m->full_name)) === mb_strtolower(trim((string) $e->nominee_name)));
+        @endphp
+        @foreach ($family as $member)
             <tr><td>{{ $member->full_name }}</td><td class="nw">{{ $member->date_of_birth?->format('d/m/Y') }}</td><td>{{ ucfirst($member->relation) }}</td><td></td></tr>
-        @empty
+        @endforeach
+        @if ($e->nominee_name && ! $nomineeListed)
+            <tr><td>{{ $e->nominee_name }}</td><td class="nw"></td><td>{{ $e->nominee_relationship }} ({{ __('Nominee') }})</td><td></td></tr>
+        @endif
+        @if ($family->isEmpty() && ! ($e->nominee_name && ! $nomineeListed))
             <tr style="height: 36px;"><td></td><td></td><td></td><td></td></tr>
-        @endforelse
+        @endif
     </table>
     <table class="fields">
         <tr><td class="no">10.</td><td colspan="3">In case of death of member after attaining the age of 58 years without filing the claim:-<br>

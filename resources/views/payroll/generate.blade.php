@@ -22,11 +22,13 @@
 
         <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
 
-        <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4">
+        <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4"
+              x-data="{ company: @js((string) old('company_id', '')), month: @js(old('salary_month', now()->subMonth()->format('Y-m'))), employees: @js($fixedDaysEmployees),
+                        get payable() { return this.employees.filter(e => String(e.company) === this.company && (! e.from || e.from <= this.month) && (! e.until || e.until > this.month + '-01')) } }">
             @csrf
             <label class="text-sm text-gray-700">
                 <span class="mb-1 block font-medium">{{ __('Company') }} <span class="text-red-600">*</span></span>
-                <select name="company_id" required class="{{ $select }} min-w-64">
+                <select name="company_id" required class="{{ $select }} min-w-64" x-model="company">
                     <option value="">{{ __('Select company') }}</option>
                     @foreach ($companies as $company)
                         <option value="{{ $company->id }}" @selected((string) old('company_id') === (string) $company->id)>{{ $company->label }}</option>
@@ -35,11 +37,24 @@
             </label>
             <label class="text-sm text-gray-700">
                 <span class="mb-1 block font-medium">{{ __('Salary month') }} <span class="text-red-600">*</span></span>
-                <input type="month" name="salary_month" value="{{ old('salary_month', now()->subMonth()->format('Y-m')) }}" max="{{ now()->format('Y-m') }}" required class="{{ $select }}">
+                <input type="month" name="salary_month" value="{{ old('salary_month', now()->subMonth()->format('Y-m')) }}" max="{{ now()->format('Y-m') }}" required class="{{ $select }}" x-model="month">
             </label>
             <x-primary-button>{{ __('Generate') }}</x-primary-button>
+            <div class="w-full" x-show="payable.length" style="display: none;">
+                <p class="mb-2 text-sm font-medium text-gray-700">{{ __('Payable days') }} <span class="text-red-600">*</span>
+                    <span class="font-normal text-gray-500">{{ __('— for employees on "Fixed payable days" (Salary ÷ 31 × payable days)') }}</span></p>
+                <div class="flex flex-wrap gap-3">
+                    <template x-for="e in payable" :key="e.id">
+                        <label class="text-sm text-gray-700">
+                            <span class="mb-1 block" x-text="e.name"></span>
+                            <input type="number" :name="'payable_days[' + e.id + ']'" min="0" max="31" step="0.5" required class="{{ $select }} w-28"
+                                   :value="@js(old('payable_days', []))[e.id] ?? ''">
+                        </label>
+                    </template>
+                </div>
+            </div>
             <div class="w-full">
-                <x-input-error :messages="array_merge($errors->get('company_id'), $errors->get('salary_month'))" />
+                <x-input-error :messages="array_merge($errors->get('company_id'), $errors->get('salary_month'), $errors->get('payable_days'), $errors->get('payable_days.*'))" />
                 <p class="text-xs text-gray-500">{{ __('Generating a month again replaces its payslips, until the month is approved.') }}</p>
             </div>
         </form>

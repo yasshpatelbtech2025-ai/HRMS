@@ -10,16 +10,19 @@
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
     $choices = $editing ? $parents->reject(fn ($parent) => $parent->id === $company->id) : $parents;
 
+    // In address order; fields with a list suggest values but accept new ones.
     $addressFields = [
-        'address_line_1' => 'Address Line 1',
-        'address_line_2' => 'Address Line 2',
-        'village' => 'Village',
-    ];
-    $lookupFields = [
-        'state' => ['State', 'company-states'],
-        'district' => ['District', 'company-districts'],
+        'address_line_1' => ['Address Line 1', null],
+        'address_line_2' => ['Address Line 2', null],
+        'city' => ['City', 'company-cities'],
+        'village' => ['Village', null],
         'taluka' => ['Taluka', 'company-talukas'],
+        'district' => ['District', 'company-districts'],
+        'state' => ['State', 'company-states'],
+        'country' => ['Country', 'company-countries'],
     ];
+    // New companies start in India.
+    $addressValue = fn (string $field) => $field === 'country' && ! $editing && ! $mine ? 'India' : $value($field);
 @endphp
 
 <form method="POST" action="{{ $editing ? route('company.update', $company) : route('company.store') }}"
@@ -62,23 +65,17 @@
 
         {{-- A connected company shares its parent's address, so these are hidden once one is chosen. --}}
         <div x-show="! parent" class="space-y-4">
-            @foreach ($addressFields as $field => $label)
+            @foreach ($addressFields as $field => [$label, $list])
                 <div class="lg:grid lg:grid-cols-4 lg:items-start lg:gap-4">
                     <label for="{{ $modal }}-{{ $field }}" class="block pt-2 text-sm font-medium text-gray-700">{{ __($label) }}</label>
                     <div class="mt-1 lg:col-span-3 lg:mt-0">
-                        <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" class="block w-full"
-                                      :value="$value($field)" :placeholder="__($label)" autocomplete="off" />
-                        <x-input-error class="mt-2" :messages="$error($field)" />
-                    </div>
-                </div>
-            @endforeach
-
-            @foreach ($lookupFields as $field => [$label, $list])
-                <div class="lg:grid lg:grid-cols-4 lg:items-start lg:gap-4">
-                    <label for="{{ $modal }}-{{ $field }}" class="block pt-2 text-sm font-medium text-gray-700">{{ __($label) }}</label>
-                    <div class="mt-1 lg:col-span-3 lg:mt-0">
-                        <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" :list="$list" class="block w-full"
-                                      :value="$value($field)" :placeholder="__('Select :field or type a new one', ['field' => strtolower(__($label))])" autocomplete="off" />
+                        @if ($list)
+                            <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" :list="$list" class="block w-full"
+                                          :value="$addressValue($field)" :placeholder="__('Select :field or type a new one', ['field' => strtolower(__($label))])" autocomplete="off" />
+                        @else
+                            <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" class="block w-full"
+                                          :value="$addressValue($field)" :placeholder="__($label)" autocomplete="off" />
+                        @endif
                         <x-input-error class="mt-2" :messages="$error($field)" />
                     </div>
                 </div>
