@@ -4,36 +4,45 @@
 
 /*
  * Global styles on top of the design tokens (tailwind.config.js).
- * "Ledger": IBM Plex Sans at 14px, 24px semibold page titles, sentence-case
+ * "Muster Roll": Figtree at 14px, 24px semibold page titles, sentence-case
  * 12px table headings over 13.5px cells, compact square row actions and
- * one teal focus ring. Statutory forms (.sheet), the attendance and roster
+ * one Site Ink focus ring. Statutory forms (.sheet), the attendance and roster
  * grids (text-xs tables) and print keep their compact layout.
  */
 @layer base {
     /* Semantic colours as RGB channels (Tailwind opacity modifiers work). */
+    /* Muster Roll palette. Brand red is the logo, the active-menu marker and the
+       muster strip only; buttons use Site Ink so red never reads as "delete". */
     :root,
     .dark .sheet {
-        --canvas: 247 247 244;       /* page background */
+        --canvas: 245 246 248;       /* Paper #F5F6F8 */
         --surface: 255 255 255;      /* cards, tables, menus */
-        --sunken: 240 240 236;       /* table headings, wells */
-        --rail: 251 251 249;         /* sidebar */
-        --line: 228 228 223;         /* borders */
-        --line-strong: 207 207 200;
-        --ink: 22 24 29;             /* main text */
-        --ink-2: 74 77 85;           /* secondary text */
-        --ink-3: 107 110 118;        /* hints (AA on canvas) */
-        --primary: 11 107 94;        /* #0b6b5e */
-        --primary-hover: 9 90 79;
-        --primary-soft: 230 242 239;
-        --primary-ink: 6 78 68;
+        --sunken: 238 240 243;       /* table headings, wells */
+        --rail: 251 251 252;         /* sidebar */
+        --line: 226 229 234;         /* Rule #E2E5EA */
+        --line-strong: 204 209 216;
+        --ink: 23 24 28;             /* Site Ink #17181C */
+        --ink-2: 82 90 104;          /* Steel #525A68 */
+        --ink-3: 99 107 121;         /* hints (AA on paper) */
+        --primary: 23 24 28;         /* primary buttons, focus */
+        --primary-hover: 52 56 65;
+        --primary-soft: 233 235 239;
+        --primary-ink: 23 24 28;
         --on-primary: 255 255 255;
-        --success: 21 128 61;   --success-soft: 228 244 233;
-        --warn: 180 83 9;       --warn-soft: 253 241 220;
-        --danger: 180 35 24;    --danger-hover: 150 28 19; --danger-soft: 252 233 231;
-        --info: 29 78 216;      --info-soft: 230 237 252;
-        --gray-50: 247 247 244;  --gray-100: 240 240 236; --gray-200: 228 228 223; --gray-300: 207 207 200;
-        --gray-400: 163 164 159; --gray-500: 107 110 118; --gray-600: 74 77 85;    --gray-700: 55 58 65;
-        --gray-800: 37 39 45;    --gray-900: 22 24 29;    --gray-950: 13 14 17;
+        --brand: 221 42 27;          /* Srympex Red #DD2A1B */
+        --brand-soft: 252 236 234;
+        --brand-ink: 168 28 18;
+        --success: 30 127 79;   --success-soft: 226 243 234;  /* Present Green #1E7F4F */
+        --warn: 173 92 8;       --warn-soft: 253 241 220;
+        --danger: 176 30 45;    --danger-hover: 146 22 36; --danger-soft: 251 232 234;
+        --info: 37 84 199;      --info-soft: 230 237 252;
+        --gray-50: 245 246 248;  --gray-100: 238 240 243; --gray-200: 226 229 234; --gray-300: 204 209 216;
+        --gray-400: 156 163 175; --gray-500: 99 107 121;  --gray-600: 82 90 104;   --gray-700: 58 63 74;
+        --gray-800: 37 40 47;    --gray-900: 23 24 28;    --gray-950: 12 13 15;
+        /* The legacy "brand" scale now follows Site Ink, so older pages match. */
+        --brand-50: 241 243 246; --brand-100: 228 231 236; --brand-200: 203 208 216; --brand-300: 165 172 184;
+        --brand-400: 120 128 142; --brand-500: 82 90 104; --brand-600: 37 40 47;   --brand-700: 23 24 28;
+        --brand-800: 18 19 22;   --brand-900: 12 13 15;  --brand-950: 8 8 10;
         --sidebar-w: 248px;
         --sidebar-rail-w: 64px;
         --topbar-h: 56px;
@@ -42,28 +51,44 @@
     /* Dark theme: <html class="dark">, set before first paint by the layouts. */
     :root.dark {
         color-scheme: dark;
-        --canvas: 16 17 21;
-        --surface: 24 26 31;
-        --sunken: 32 35 41;
-        --rail: 19 21 25;
-        --line: 43 46 53;
-        --line-strong: 63 67 76;
+        --canvas: 15 16 19;
+        --surface: 23 25 30;
+        --sunken: 31 34 40;
+        --rail: 18 20 24;
+        --line: 42 46 54;
+        --line-strong: 62 67 77;
         --ink: 236 237 240;
-        --ink-2: 178 181 189;
-        --ink-3: 143 147 156;
-        --primary: 62 168 150;
-        --primary-hover: 86 188 170;
-        --primary-soft: 20 52 48;
-        --primary-ink: 140 214 200;
-        --on-primary: 8 24 22;
-        --success: 74 197 120;  --success-soft: 22 48 34;
+        --ink-2: 178 183 192;
+        --ink-3: 145 151 162;
+        --primary: 236 237 240;
+        --primary-hover: 214 217 223;
+        --primary-soft: 38 42 50;
+        --primary-ink: 236 237 240;
+        --on-primary: 16 17 20;
+        --brand: 240 84 68;
+        --brand-soft: 58 26 24;
+        --brand-ink: 250 140 128;
+        --success: 82 196 132;  --success-soft: 22 48 34;
         --warn: 240 168 80;     --warn-soft: 56 40 18;
-        --danger: 248 113 100;  --danger-hover: 252 140 128; --danger-soft: 62 28 26;
+        --danger: 248 113 120;  --danger-hover: 252 140 146; --danger-soft: 62 26 30;
         --info: 125 163 250;    --info-soft: 28 40 70;
-        --gray-50: 32 35 41;   --gray-100: 38 41 48;  --gray-200: 47 50 58;  --gray-300: 66 70 79;
-        --gray-400: 122 126 135; --gray-500: 150 154 163; --gray-600: 178 181 189; --gray-700: 205 208 214;
-        --gray-800: 224 226 230; --gray-900: 238 239 242; --gray-950: 248 248 250;
+        --gray-50: 31 34 40;   --gray-100: 38 42 50;  --gray-200: 47 51 60;  --gray-300: 66 71 81;
+        --gray-400: 122 128 139; --gray-500: 150 156 167; --gray-600: 178 183 192; --gray-700: 205 209 215;
+        --gray-800: 224 226 231; --gray-900: 238 239 242; --gray-950: 248 248 250;
+        --brand-50: 32 35 42;  --brand-100: 40 44 52;  --brand-200: 58 63 73;  --brand-300: 92 99 112;
+        --brand-400: 140 147 160; --brand-500: 170 177 190; --brand-600: 72 78 90; --brand-700: 92 99 112;
+        --brand-800: 205 209 215; --brand-900: 228 230 234; --brand-950: 245 246 248;
     }
+
+    /* Dark mode: legacy text-brand-* links stay readable on dark cards. */
+    :root.dark :where(.text-brand-600, .text-brand-700, .text-brand-800, .text-brand-900) {
+        color: rgb(var(--ink));
+    }
+
+    @font-face { font-family: 'Figtree'; font-weight: 400; font-display: swap; src: url('../fonts/figtree/figtree-latin-400-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Figtree'; font-weight: 500; font-display: swap; src: url('../fonts/figtree/figtree-latin-500-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Figtree'; font-weight: 600; font-display: swap; src: url('../fonts/figtree/figtree-latin-600-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Figtree'; font-weight: 700; font-display: swap; src: url('../fonts/figtree/figtree-latin-700-normal.woff2') format('woff2'); }
 
     html {
         -webkit-tap-highlight-color: transparent;
@@ -73,7 +98,7 @@
         font-size: 14px;
         color: rgb(var(--ink));
         background-color: rgb(var(--canvas));
-        font-feature-settings: "ss02";
+        font-feature-settings: "tnum" 0;
     }
 
     /* One visible focus style for keyboard users, in the primary colour. */
@@ -147,6 +172,17 @@
         animation: shimmer 1.4s infinite;
     }
 
+    /* Login muster roll: the squares fill in day by day, once (the only load animation). */
+    .muster-cell {
+        animation: muster-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        animation-delay: calc(var(--i, 0) * 35ms + 150ms);
+    }
+
+    @keyframes muster-in {
+        from { opacity: 0; transform: scale(0.4); }
+        to { opacity: 1; transform: none; }
+    }
+
     /* A submit button while its form is being sent (resources/js/loading.js). */
     [data-loading] {
         pointer-events: none;
@@ -154,7 +190,21 @@
     }
 }
 
-/* Page titles. */
+/* Page titles, with a short Srympex Red rule underneath (like the letterhead). */
+main :is(h1, h2).text-2xl::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 3px;
+    margin-top: 8px;
+    border-radius: 2px;
+    background-color: rgb(var(--brand));
+}
+
+@media print {
+    main :is(h1, h2).text-2xl::after { display: none; }
+}
+
 main h2.text-2xl {
     font-size: 24px;
     line-height: 1.25;

@@ -10,7 +10,7 @@
         @php
             $tone = ['success' => 'text-success', 'warn' => 'text-warn', 'danger' => 'text-danger'][$item['tone'] ?? ''] ?? 'text-ink';
             $classes = 'block rounded-lg border bg-surface px-4 py-3 shadow-hairline '
-                .(($item['active'] ?? false) ? 'border-primary ring-1 ring-primary' : 'border-line')
+                .(($item['active'] ?? false) ? 'relative border-line-strong before:absolute before:inset-x-4 before:top-0 before:h-[3px] before:rounded-b-full before:bg-srympex' : 'border-line')
                 .(isset($item['href']) ? ' transition hover:border-line-strong hover:bg-sunken' : '');
         @endphp
         @if (isset($item['href']))

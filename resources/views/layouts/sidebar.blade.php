@@ -55,7 +55,7 @@
         @foreach ($groups as $groupLabel => $items)
             <div class="mt-4 first:mt-1">
                 @if ($groupLabel)
-                    <p class="rail-hide mb-1 px-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{{ __($groupLabel) }}</p>
+                    <p class="rail-hide mb-1 px-2.5 text-xs font-medium text-ink-3">{{ __($groupLabel) }}</p>
                     <div class="rail-show mx-2.5 mb-2 hidden border-t border-line"></div>
                 @endif
                 <ul class="space-y-0.5">
@@ -65,7 +65,7 @@
                             $active = $section === 'dashboard' ? request()->routeIs('dashboard') : request()->routeIs("{$section}.*");
                             $subs = $section === 'dashboard' ? collect() : $children($section);
                             $base = 'flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-sm transition-colors';
-                            $state = $active ? 'bg-primary-soft font-medium text-primary-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink';
+                            $state = $active ? 'relative bg-surface font-medium text-ink shadow-hairline ring-1 ring-line before:absolute before:inset-y-2 before:-start-2.5 before:w-[3px] before:rounded-e-full before:bg-srympex' : 'text-ink-2 hover:bg-sunken hover:text-ink';
                         @endphp
                         @if ($subs->count() > 1)
                             <li x-data="{ expanded: $persist({{ $active ? 'true' : 'false' }}).as('nav:{{ $section }}') }" @if ($active) x-init="expanded = true" @endif>
@@ -75,7 +75,7 @@
                                 </a>
                                 <button type="button" @click="expanded = !expanded" :aria-expanded="expanded" aria-controls="nav-{{ $section }}"
                                         class="rail-hide {{ $base }} {{ $active ? 'font-medium text-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink' }}">
-                                    <x-icon :name="$icon" class="size-[18px] {{ $active ? 'text-primary' : '' }}" />
+                                    <x-icon :name="$icon" class="size-[18px] {{ $active ? 'text-srympex' : '' }}" />
                                     <span class="flex-1 truncate text-start">{{ __($label) }}</span>
                                     <x-icon name="chevron-down" class="size-3.5 text-ink-3 transition-transform" ::class="expanded || '-rotate-90'" />
                                 </button>
@@ -83,7 +83,7 @@
                                     @foreach ($subs as $sub)
                                         <li>
                                             <a href="{{ route($sub['route']) }}" @if ($sub['active']) aria-current="page" @endif
-                                               class="relative block rounded-md px-2.5 py-1.5 text-13 transition-colors {{ $sub['active'] ? 'bg-primary-soft font-medium text-primary-ink before:absolute before:-start-[11px] before:inset-y-1.5 before:w-0.5 before:rounded-full before:bg-primary' : 'text-ink-2 hover:bg-sunken hover:text-ink' }}">
+                                               class="relative block rounded-md px-2.5 py-1.5 text-13 transition-colors {{ $sub['active'] ? 'bg-surface font-medium text-ink shadow-hairline ring-1 ring-line before:absolute before:-start-[11px] before:inset-y-1.5 before:w-0.5 before:rounded-full before:bg-srympex' : 'text-ink-2 hover:bg-sunken hover:text-ink' }}">
                                                 {{ __($sub['label']) }}
                                             </a>
                                         </li>
@@ -93,7 +93,7 @@
                         @else
                             <li>
                                 <a href="{{ route($route) }}" title="{{ __($label) }}" @if ($active) aria-current="page" @endif class="rail-center {{ $base }} {{ $state }}">
-                                    <x-icon :name="$icon" class="size-[18px] {{ $active ? 'text-primary' : '' }}" />
+                                    <x-icon :name="$icon" class="size-[18px] {{ $active ? 'text-srympex' : '' }}" />
                                     <span class="rail-hide truncate">{{ __($label) }}</span>
                                 </a>
                             </li>

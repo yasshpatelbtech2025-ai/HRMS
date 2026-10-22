@@ -15,7 +15,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\View\View;
 
 /**
- * Dashboard: what needs attention first (overdue compliance, missing punches,
+ * Dashboard: today's muster (attendance per client company) first, then what needs attention (overdue compliance, missing punches,
  * pending requests), then today's headcount and attendance, the same split by
  * department, requests waiting for a decision, and compliance health from the
  * To Do List. Follows the top-bar company; all companies when none is picked.
@@ -51,6 +51,8 @@ class DashboardController extends Controller
             ->filter(fn ($counts) => array_sum($counts) > 0)
             ->sortKeys();
 
+        $companies = Company::whereIn('id', $employees->pluck('company_id')->unique())->get()->keyBy('id');
+
         $counts = collect(['overdue', 'week', 'upcoming'])->mapWithKeys(fn ($s) => [$s => $tasks->filter(fn ($t) => $t->status() === $s)->count()])->all();
 
         return view('dashboard', [
@@ -72,6 +74,18 @@ class DashboardController extends Controller
                 'leave' => $states->filter(fn ($s) => $s === 'leave')->count(),
             ],
             'departments' => $departments,
+            // Today's muster: one row per client company, one square per employee (by code).
+            'muster' => $employees->groupBy('company_id')
+                ->map(fn ($group, $companyId) => [
+                    'company' => $companies[$companyId] ?? null,
+                    'cells' => $group->sortBy('employee_code', SORT_NATURAL)
+                        ->map(fn (Employee $e) => ['state' => $states[$e->id] ?? 'none', 'label' => trim($e->employee_code.' '.$e->full_name)])
+                        ->values(),
+                    'present' => $group->filter(fn ($e) => $states[$e->id] === 'present')->count(),
+                ])
+                ->filter(fn ($row) => $row['company'])
+                ->sortBy(fn ($row) => mb_strtolower($row['company']->establishment_name))
+                ->values(),
             'attendanceRequests' => $scope(AttendanceRequest::where('status', 'pending'))->with('employee')->latest()->limit(5)->get(),
             'leaveRequests' => $scope(LeaveApplication::where('status', LeaveApplication::PENDING))->with(['employee', 'leaveType'])->latest()->limit(5)->get(),
             'today' => $today,
