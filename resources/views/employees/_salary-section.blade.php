@@ -2,20 +2,20 @@
     Salary info section of the employee form. Expects the employeeForm
     Alpine scope plus $e, $grossLabels, $deductionLabels, $cell.
 --}}
-<x-form-section :title="__('Salary info')" required :fields="['pay_frequency', 'hourly_rate', 'daily_rate', 'daily_hour', 'tax_regime', 'monthly_salary_calculation', 'weekly_leave_day', 'salary']">
+<x-form-section :title="__('Salary info')" :fields="['pay_frequency', 'hourly_rate', 'daily_rate', 'daily_hour', 'tax_regime', 'monthly_salary_calculation', 'weekly_leave_day', 'salary']">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <x-select-field name="pay_frequency" :label="__('Pay frequency')" required :options="config('employee.pay_frequencies')" x-model="payFrequency" />
+        <x-select-field name="pay_frequency" :label="__('Pay frequency')" :options="config('employee.pay_frequencies')" x-model="payFrequency" />
         <div x-show="payFrequency === 'hourly'">
-            <x-field name="hourly_rate" type="number" step="0.01" min="0" :label="__('Hourly rate')" required x-model="hourlyRate" />
+            <x-field name="hourly_rate" type="number" step="0.01" min="0" :label="__('Hourly rate')" x-model="hourlyRate" />
         </div>
         <div x-show="payFrequency === 'daily'">
-            <x-field name="daily_rate" type="number" step="0.01" min="0" :label="__('Daily rate')" required x-model="dailyRate" />
+            <x-field name="daily_rate" type="number" step="0.01" min="0" :label="__('Daily rate')" x-model="dailyRate" />
         </div>
-        <x-field name="daily_hour" type="number" step="0.5" min="0" max="24" :label="__('Daily hour')" required :value="$e->daily_hour ?? 8" />
+        <x-field name="daily_hour" type="number" step="0.5" min="0" max="24" :label="__('Daily hour')" :value="$e->daily_hour ?? 8" />
         <x-select-field name="tax_regime" :label="__('Tax regime')" :value="$e->tax_regime ?? 'new'" :options="config('employee.tax_regimes')" />
-        <x-select-field name="weekly_leave_day" :label="__('Weekly leave day')" required :value="$e->weekly_leave_day" :placeholder="__('Select day')" :options="config('employee.weekdays')" />
+        <x-select-field name="weekly_leave_day" :label="__('Weekly leave day')" :value="$e->weekly_leave_day" :placeholder="__('Select day')" :options="config('employee.weekdays')" />
         <div class="sm:col-span-2 lg:col-span-3">
-            <x-select-field name="monthly_salary_calculation" :label="__('Monthly salary calculation type')" required :value="$e->monthly_salary_calculation"
+            <x-select-field name="monthly_salary_calculation" :label="__('Monthly salary calculation type')" :value="$e->monthly_salary_calculation"
                             :placeholder="__('Select calculation type')" :options="config('employee.monthly_salary_calculations')" />
         </div>
     </div>
@@ -79,9 +79,6 @@
                             </tr>
                         @endforeach
                         @if ($list === 'grossShown')
-                            <tr x-show="basicTooLow" style="display: none;">
-                                <td colspan="3" class="px-3 py-2 text-xs font-medium text-red-600">{{ __('Basic Salary must be greater than 50% of Gross Salary (this company uses the New Structure).') }}</td>
-                            </tr>
                             <tr class="bg-gray-50 font-semibold text-gray-900">
                                 <td class="px-3 py-2">{{ __('Gross (monthly)') }}</td>
                                 <td class="px-3 py-2" x-text="money(grossMonthly)"></td>

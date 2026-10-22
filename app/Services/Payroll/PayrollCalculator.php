@@ -23,7 +23,8 @@ use Illuminate\Support\Collection;
  * Earnings (monthly salary), by the employee's "Monthly salary calculation type":
  *   Calendar month       element × paid days ÷ days in month
  *   Every month 30 days  element × (30 − unpaid days) ÷ 30
- *   Exclude weekly offs  element × (paid days − week-offs) ÷ (days in month − week-offs)
+ *   Fixed payable days   element × payable days ÷ 31, the payable days being
+ *                        entered at Salary Generate (attendance not counted)
  * Daily-rate employees' elements are per day (× days paid); hourly-rate
  * employees get rate × hours worked. Performance and joining bonus are paid
  * in full; Bonus % is a share of earned basic when bonus is paid monthly.
@@ -96,9 +97,10 @@ class PayrollCalculator
 
     /**
      * @param  array{days: array<string, array>, totals: array<string, float>}  $attendance  from MonthlyAttendance
+     * @param  float|null  $payableDays  entered at Salary Generate, for the "Fixed payable days" calculation
      * @return array{attendance: array, earnings: list<array>, deductions: list<array>, employer: list<array>, gross: float, deduction_total: float, net: float}
      */
-    public function calculate(Employee $employee, CarbonImmutable $month, array $attendance, PayrollSetting $setting, int $organisationSize): array
+    public function calculate(Employee $employee, CarbonImmutable $month, array $attendance, PayrollSetting $setting, int $organisationSize, ?float $payableDays = null): array
     {
         $shift = $employee->shift;
         $elements = $employee->salaryElements->keyBy('element');
@@ -117,13 +119,16 @@ class PayrollCalculator
         $unpaidLeave = $count('LEAVE') - $paidLeave;
         $lop = $count('A');
         $notEmployed = $days->whereNull('status')->count();
-        $weekOffDays = $days->filter(fn ($d) => $d['status'] && $d['weeklyOff'])->count(); // incl. week-offs worked
         $otHours = round($days->sum('ot'), 2);
         $holidayOtHours = round($days->filter(fn ($d) => $d['holiday'] && $d['status'] === 'P')->sum('ot'), 2);
         $hoursWorked = round($days->sum('hours'), 2);
         $paysOffDays = $employee->pay_frequency === 'monthly' || ($shift?->pay_daily_rate_on_wo_ph ?? false);
         $paidDays = $present + $halfDays / 2 + $compOffs + $paidLeave + ($paysOffDays ? $weekOffs + $holidays : 0);
         $unpaidDays = $daysInMonth - $paidDays;
+        $fixedPayableDays = $employee->usesFixedPayableDays();
+        if ($fixedPayableDays) {
+            $paidDays = min(31, max(0, (float) $payableDays));
+        }
 
         // Earnings.
         $earnings = [];
@@ -136,8 +141,7 @@ class PayrollCalculator
             $factor = match (true) {
                 $employee->pay_frequency === 'daily' => null,
                 $employee->monthly_salary_calculation === 'thirty_days' => max(0, 30 - $unpaidDays) / 30,
-                $employee->monthly_salary_calculation === 'exclude_weekly_offs' => ($daysInMonth - $weekOffDays) > 0
-                    ? max(0, $paidDays - $weekOffDays) / ($daysInMonth - $weekOffDays) : 0,
+                $fixedPayableDays => $paidDays / 31,
                 default => $paidDays / $daysInMonth,
             };
 
@@ -234,8 +238,11 @@ class PayrollCalculator
         if ($monthly('vpf') > 0) {
             $deductions[] = $this->line('vpf', 'Voluntary Provident Fund (VPF)', $earnedBasic * $monthly('vpf') / 100);
         }
-        if ($monthly('notice_period_recovery') > 0) {
-            $deductions[] = $this->line('notice_period_recovery', 'NOTICE PERIOD RECOVERY', $monthly('notice_period_recovery'));
+        // Every other deduction element is a flat monthly amount.
+        foreach (array_diff_key(config('employee.deduction_elements'), ['vpf' => true]) as $element => $label) {
+            if ($monthly($element) > 0) {
+                $deductions[] = $this->line($element, $label, $monthly($element));
+            }
         }
 
         $advances = $this->preloaded('advances', $employee, $month)

@@ -31,9 +31,10 @@ class SalaryGenerator
     ) {}
 
     /**
+     * @param  array<int|string, float|string|null>  $payableDays  by employee id, for employees on "Fixed payable days"
      * @return array{sheet: SalarySheet, skipped: list<string>} skipped: employees without a salary structure
      */
-    public function generate(Company $company, CarbonImmutable $month, User $user): array
+    public function generate(Company $company, CarbonImmutable $month, User $user, array $payableDays = []): array
     {
         $month = $month->startOfMonth();
         $sheet = SalarySheet::where('company_id', $company->id)->whereDate('month', $month)->first();
@@ -46,13 +47,23 @@ class SalaryGenerator
 
         $this->revisions->applyDue();
 
-        $result = Activity::quietly(fn () => DB::transaction(function () use ($company, $month, $user, $sheet) {
+        // Every "Fixed payable days" employee on the sheet needs this month's days.
+        $missing = $this->inputs($company, $month)[0]
+            ->filter(fn (Employee $e) => $e->usesFixedPayableDays() && $this->hasSalary($e) && ! is_numeric($payableDays[$e->id] ?? null));
+        if ($missing->isNotEmpty()) {
+            throw ValidationException::withMessages(['payable_days' => __('Enter payable days for: :names', ['names' => $missing->pluck('full_name')->implode(', ')])]);
+        }
+
+        $result = Activity::quietly(fn () => DB::transaction(function () use ($company, $month, $user, $sheet, $payableDays) {
+            [$employees, $setting, $size] = $this->inputs($company, $month);
+            $days = $employees->filter(fn (Employee $e) => $e->usesFixedPayableDays())
+                ->mapWithKeys(fn (Employee $e) => [$e->id => (float) ($payableDays[$e->id] ?? 0)])->all();
+
             $sheet ??= new SalarySheet(['company_id' => $company->id, 'month' => $month->toDateString()]);
-            $sheet->fill(['generated_by' => $user->id, 'generated_at' => now(), 'status' => 'not_approved'])->save();
+            $sheet->fill(['generated_by' => $user->id, 'generated_at' => now(), 'status' => 'not_approved', 'payable_days' => $days ?: null])->save();
             $sheet->payslips()->delete();
 
             $skipped = [];
-            [$employees, $setting, $size] = $this->inputs($company, $month);
             $grid = $this->attendance->forMonth($employees, $month);
             $this->calculator->preload($employees, $month);
 
@@ -185,7 +196,7 @@ class SalaryGenerator
     /** The employee's payslip for the month, worked out but not yet saved. */
     private function make(SalarySheet $sheet, Employee $employee, CarbonImmutable $month, array $attendance, PayrollSetting $setting, int $size): Payslip
     {
-        $result = $this->calculator->calculate($employee, $month, $attendance, $setting, $size);
+        $result = $this->calculator->calculate($employee, $month, $attendance, $setting, $size, $sheet->payable_days[$employee->id] ?? null);
 
         return new Payslip([
             'salary_sheet_id' => $sheet->id, 'company_id' => $employee->company_id, 'employee_id' => $employee->id,

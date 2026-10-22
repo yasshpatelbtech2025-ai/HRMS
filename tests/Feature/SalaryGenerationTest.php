@@ -177,4 +177,24 @@ class SalaryGenerationTest extends TestCase
         $this->assertEquals(24, $payslip->attendance['paid_days']);
         $this->assertEquals(12000, $payslip->amount('earnings', 'basic'));
     }
+
+    public function test_fixed_payable_days_are_entered_at_generate(): void
+    {
+        $this->employee->update(['monthly_salary_calculation' => 'fixed_payable_days']);
+
+        $this->get(route('payroll.index'))->assertOk()->assertSee('0001 · Gopal Bhat');
+        $this->generate()->assertSessionHasErrors('payable_days');
+        $this->assertSame(0, SalarySheet::count());
+
+        $this->post(route('payroll.generate'), ['company_id' => $this->company->id, 'salary_month' => '2026-09', 'payable_days' => [$this->employee->id => 26]])
+            ->assertSessionHasNoErrors();
+        $payslip = Payslip::where('employee_id', $this->employee->id)->sole();
+        // 12,000 ÷ 31 × 26, whatever the attendance.
+        $this->assertEquals(26, $payslip->attendance['paid_days']);
+        $this->assertEquals(10064.52, $payslip->amount('earnings', 'basic'));
+
+        // Regenerating uses the days entered for the month.
+        $this->put(route('payroll.payslips.regenerate', $payslip))->assertRedirect();
+        $this->assertEquals(10064.52, Payslip::where('employee_id', $this->employee->id)->sole()->amount('earnings', 'basic'));
+    }
 }

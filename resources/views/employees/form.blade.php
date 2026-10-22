@@ -15,7 +15,7 @@
             'yearly' => old("salary.{$key}.yearly", $key === 'bonus' ? '' : ($savedSalary[$key]->yearly ?? '')),
         ]);
         $hasAmount = fn ($key) => filled($salary[$key]['monthly']) && (float) $salary[$key]['monthly'] > 0;
-        $addresses = collect($addressTypes)->map(fn ($label, $type) => collect(['address_line_1', 'address_line_2', 'village', 'district', 'taluka', 'state'])
+        $addresses = collect($addressTypes)->map(fn ($label, $type) => collect(['address_line_1', 'address_line_2', 'city', 'village', 'taluka', 'district', 'state', 'country'])
             ->mapWithKeys(fn ($field) => [$field => old("addresses.{$type}.{$field}", $editing ? $e->address($type)?->{$field} : '') ?? '']));
         $experiences = old('experiences', $editing ? $e->experiences->map->only(['company_name', 'designation', 'salary', 'total_years_worked', 'reason_of_leaving'])->values()->all() : []);
         $qualification = fn ($level, $field) => old("qualifications.{$level}.{$field}", $editing ? $e->qualifications->firstWhere('level', $level)?->{$field} : null);
@@ -124,7 +124,7 @@
             <div class="flex min-w-0 flex-col gap-4">
 
         {{-- 1. Basic info --}}
-        <x-form-section :title="__('Basic Info')" required open :fields="['first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone', 'alternate_phone', 'date_of_birth', 'marital_status', 'religion', 'caste', 'no_of_kids', 'country']">
+        <x-form-section :title="__('Basic Info')" required open :fields="['first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone', 'alternate_phone', 'date_of_birth', 'marital_status', 'country', 'company_id', 'date_of_joining']">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <x-field name="first_name" :label="__('First Name')" required :value="$e->first_name" />
                 <x-field name="middle_name" :label="__('Middle Name')" :value="$e->middle_name" />
@@ -136,53 +136,15 @@
                 <x-field name="alternate_phone" type="tel" :label="__('Alternate Phone')" :value="$e->alternate_phone" />
                 <x-field name="date_of_birth" type="date" :label="__('Date of Birth')" required :value="$e->date_of_birth" />
                 <x-select-field name="marital_status" :label="__('Marital Status')" :value="$e->marital_status" :placeholder="__('Select marital status')" :options="config('employee.marital_statuses')" />
-                <x-field name="religion" :label="__('Religion')" :value="$e->religion" />
-                <x-field name="caste" :label="__('Caste')" :value="$e->caste" />
-                <x-field name="no_of_kids" type="number" min="0" :label="__('No. of Kids')" :value="$e->no_of_kids" />
                 <x-select-field name="country" :label="__('Country')" required :value="$e->country ?? 'India'"
                                 :options="array_combine(config('employee.countries'), config('employee.countries'))" />
-            </div>
-        </x-form-section>
-
-        {{-- 2. Employee details --}}
-        <x-form-section :title="__('Employee Details')" required :open="! $editing" :fields="['company_id', 'shift_id', 'date_of_joining', 'works_on_hazardous_process', 'can_punch_in_hybrid_mode', 'department_id', 'sub_department_id', 'position_id', 'working_place', 'employment_type', 'reporting_officer_id']">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <x-select-field name="company_id" :label="__('Company')" required :placeholder="__('Select company')" x-model="company" x-on:change="companyChanged()">
                     @foreach ($companies as $company)
                         <option value="{{ $company->id }}">{{ $company->label }}</option>
                     @endforeach
                 </x-select-field>
-                <x-select-field name="shift_id" :label="__('Shift')" required :placeholder="__('Select shift')" x-model="shift" x-bind:disabled="! company">
-                    <template x-for="s in shifts" :key="s.id"><option :value="s.id" x-text="s.name" :selected="String(s.id) === String(shift)"></option></template>
-                </x-select-field>
                 <x-field name="date_of_joining" type="date" :label="__('Joining Date')" required :value="$e->date_of_joining" />
-                <x-select-field name="works_on_hazardous_process" :label="__('Working on hazardous process')" required :value="$e->works_on_hazardous_process ?? false" :options="$yesNo" />
-                <x-select-field name="can_punch_in_hybrid_mode" :label="__('Can Punch In Hybrid Mode')" required :value="$e->can_punch_in_hybrid_mode ?? false" :options="$yesNo" />
-                <x-select-field name="department_id" :label="__('Department')" required :placeholder="__('Select department')" x-model="department" x-on:change="departmentChanged()" x-bind:disabled="! company">
-                    <template x-for="d in departments" :key="d.id"><option :value="d.id" x-text="d.name" :selected="String(d.id) === String(department)"></option></template>
-                </x-select-field>
-                <x-select-field name="sub_department_id" :label="__('Sub Department')" required :placeholder="__('Select sub department')" x-model="subDepartment" x-bind:disabled="! department">
-                    <template x-for="s in subDepartments" :key="s.id"><option :value="s.id" x-text="s.name" :selected="String(s.id) === String(subDepartment)"></option></template>
-                </x-select-field>
-                <x-select-field name="position_id" :label="__('Designation')" required :placeholder="__('Select designation')" x-model="position" x-bind:disabled="! company">
-                    <template x-for="p in positions" :key="p.id"><option :value="p.id" x-text="p.name" :selected="String(p.id) === String(position)"></option></template>
-                </x-select-field>
-                <x-select-field name="working_place" :label="__('Working Place')" required :value="$e->working_place" :placeholder="__('Select Working Place')" :options="config('employee.working_places')" />
-                <x-select-field name="employment_type" :label="__('Employee Type')" required :value="$e->employment_type ?? \App\Enums\EmploymentType::FullTime"
-                                :options="collect(\App\Enums\EmploymentType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])->all()" />
-                <x-select-field name="reporting_officer_id" :label="__('Reporting Officer')" :placeholder="__('Select reporting officer')" x-model="officer" x-bind:disabled="! company">
-                    <template x-for="o in officers" :key="o.id"><option :value="o.id" x-text="o.label" :selected="String(o.id) === String(officer)"></option></template>
-                </x-select-field>
             </div>
-            <p class="mt-3 text-xs text-gray-500" x-show="company && ! departments.length">
-                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-brand-600 hover:underline">{{ __('Add them in the Department tab.') }}</a>
-            </p>
-            <p class="mt-1 text-xs text-gray-500" x-show="company && ! shifts.length">
-                {{ __('This company has no shifts yet.') }} <a href="{{ route('configs.index') }}" class="text-brand-600 hover:underline">{{ __('Set them up in Configs › Attendance.') }}</a>
-            </p>
-            <p class="mt-1 text-xs text-gray-500" x-show="company && ! positions.length">
-                {{ __('This company has no designations yet.') }} <a href="{{ route('employees.positions') }}" class="text-brand-600 hover:underline">{{ __('Add them in the Positions tab.') }}</a>
-            </p>
         </x-form-section>
 
         {{-- 3. Address info --}}
@@ -205,10 +167,8 @@
         </x-form-section>
 
         {{-- 4. Employee docs --}}
-        <x-form-section :title="__('Employee Docs')" :fields="['aadhar_card_no', 'pan_card_no', 'passport_no', 'driving_license_no', 'photo', 'photo_data', 'aadhar_attachment', 'pan_attachment']">
+        <x-form-section :title="__('Employee Docs')" :fields="['passport_no', 'driving_license_no', 'photo', 'photo_data', 'aadhar_attachment', 'pan_attachment']">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <x-field name="aadhar_card_no" :label="__('Aadhar Card No')" :value="$e->aadhar_card_no" inputmode="numeric" maxlength="14" />
-                <x-field name="pan_card_no" :label="__('PAN Card No')" :value="$e->pan_card_no" class="uppercase" maxlength="10" />
                 <x-field name="passport_no" :label="__('Passport No')" :value="$e->passport_no" />
                 <x-field name="driving_license_no" :label="__('Driving License No')" :value="$e->driving_license_no" />
                 @foreach (['aadhar_attachment' => 'Aadhar (attachment)', 'pan_attachment' => 'PAN (attachment)'] as $field => $label)
@@ -252,24 +212,32 @@
             </div>
         </x-form-section>
 
-        {{-- 5. Bank info --}}
-        <x-form-section :title="__('Bank Info')" :fields="['bank_name', 'branch_address', 'account_number', 'bank_passbook', 'micr_code', 'ifsc_code', 'uan_code', 'name_as_per_uan', 'ip_number', 'name_as_per_esic']">
+        {{-- 5. Statutory info --}}
+        {{-- Every statutory field is mandatory when adding an employee. --}}
+        <x-form-section :title="__('Statutory Info')" :required="! $editing" :fields="['aadhar_card_no', 'pan_card_no', 'uan_code', 'uan_document', 'ip_number', 'nominee_name', 'nominee_relationship', 'nominee_document']">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <x-field name="bank_name" :label="__('Bank Name')" :value="$e->bank_name" />
+                <x-field name="aadhar_card_no" :label="__('Aadhar No')" :required="! $editing" :value="$e->aadhar_card_no" inputmode="numeric" maxlength="14" />
+                <x-field name="pan_card_no" :label="__('PAN No')" :required="! $editing" :value="$e->pan_card_no" class="uppercase" maxlength="10" />
+                <x-field name="uan_code" :label="__('UAN No')" :required="! $editing" :value="$e->uan_code" inputmode="numeric" maxlength="12" />
+                <x-field name="ip_number" :label="__('ESIC No')" :required="! $editing" :value="$e->ip_number" inputmode="numeric" maxlength="20" />
+                <x-field name="nominee_name" :label="__('Nominee Name')" :required="! $editing" :value="$e->nominee_name" />
+                <x-field name="nominee_relationship" :label="__('Nominee Relationship')" :required="! $editing" :value="$e->nominee_relationship" list="nominee-relationships" autocomplete="off" />
+                {{-- The two uploads share the last row. --}}
+                @include('employees._file-field', ['field' => 'uan_document', 'label' => 'UAN Document (attachment)', 'required' => ! $editing])
+                @include('employees._file-field', ['field' => 'nominee_document', 'label' => 'Nominee Document (attachment)', 'required' => ! $editing])
+            </div>
+            <datalist id="nominee-relationships">@foreach (['Father', 'Mother', 'Spouse', 'Son', 'Daughter', 'Brother', 'Sister'] as $relation)<option value="{{ __($relation) }}"></option>@endforeach</datalist>
+        </x-form-section>
+
+        {{-- 6. Bank info --}}
+        <x-form-section :title="__('Bank Info')" required :fields="['bank_name', 'account_number', 'ifsc_code', 'branch_address', 'micr_code', 'bank_passbook']">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <x-field name="bank_name" :label="__('Bank Name')" required :value="$e->bank_name" />
+                <x-field name="account_number" :label="__('Account Number')" required :value="$e->account_number" inputmode="numeric" />
+                <x-field name="ifsc_code" :label="__('IFSC Code')" required :value="$e->ifsc_code" class="uppercase" maxlength="11" />
                 <x-field name="branch_address" :label="__('Branch Address')" :value="$e->branch_address" />
-                <x-field name="account_number" :label="__('Account Number')" :value="$e->account_number" inputmode="numeric" />
-                <div>
-                    <x-field name="bank_passbook" type="file" :label="__('Bank Passbook (attachment)')" accept=".pdf,.jpg,.jpeg,.png" :hint="__('PDF, JPG or PNG, up to 5 MB.')" />
-                    @if ($e->bank_passbook_path)
-                        <a href="{{ route('employees.file', [$e, 'bank_passbook']) }}" target="_blank" class="text-xs text-brand-600 hover:underline">{{ __('View current file') }}</a>
-                    @endif
-                </div>
                 <x-field name="micr_code" :label="__('MICR Code')" :value="$e->micr_code" inputmode="numeric" maxlength="9" />
-                <x-field name="ifsc_code" :label="__('IFSC Code')" :value="$e->ifsc_code" class="uppercase" maxlength="11" />
-                <x-field name="uan_code" :label="__('UAN Code')" :value="$e->uan_code" inputmode="numeric" maxlength="12" />
-                <x-field name="name_as_per_uan" :label="__('Name As Per UAN')" :value="$e->name_as_per_uan" />
-                <x-field name="ip_number" :label="__('IP Number')" :value="$e->ip_number" />
-                <x-field name="name_as_per_esic" :label="__('Name As Per ESIC')" :value="$e->name_as_per_esic" />
+                @include('employees._file-field', ['field' => 'bank_passbook', 'label' => 'Bank Passbook (attachment)'])
             </div>
         </x-form-section>
 
@@ -373,12 +341,6 @@
                             <x-field name="family.{{ $relation }}.full_name" :label="__('Full name')" :value="$member?->full_name" />
                             <x-field name="family.{{ $relation }}.date_of_birth" type="date" :label="__('Date Of Birth')" :value="$member?->date_of_birth" />
                             <x-field name="family.{{ $relation }}.aadhar_card_no" :label="__('Aadhar Card No')" :value="$member?->aadhar_card_no" inputmode="numeric" />
-                            <label class="inline-flex items-center gap-2 self-end pb-2 text-sm text-gray-700">
-                                <input type="hidden" name="family[{{ $relation }}][is_nominee]" value="0">
-                                <input type="checkbox" name="family[{{ $relation }}][is_nominee]" value="1" @checked(old("family.{$relation}.is_nominee", $member?->is_nominee))
-                                       class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
-                                {{ __('Is nominee') }}
-                            </label>
                         </div>
                     </fieldset>
                 @endforeach
@@ -420,8 +382,10 @@
         </div>
 
         {{-- Suggestions for the address fields; any new value can be typed. --}}
-        <datalist id="employee-states">@foreach ($states as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
-        <datalist id="employee-districts">@foreach ($districts as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+        <datalist id="employee-cities">@foreach ($cities as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
         <datalist id="employee-talukas">@foreach ($talukas as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+        <datalist id="employee-districts">@foreach ($districts as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+        <datalist id="employee-states">@foreach ($states as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
+        <datalist id="employee-countries">@foreach ($countries as $option)<option value="{{ $option }}"></option>@endforeach</datalist>
     </form>
 </x-app-layout>

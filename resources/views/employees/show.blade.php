@@ -81,9 +81,6 @@
             __('Alternate Phone') => $e->alternate_phone,
             __('Gender') => $e->gender?->label(),
             __('Marital Status') => config('employee.marital_statuses')[$e->marital_status] ?? '',
-            __('Religion') => $e->religion,
-            __('Caste') => $e->caste,
-            __('No. of Kids') => $e->no_of_kids,
             __('Country') => $e->country,
         ]])
 
@@ -113,19 +110,24 @@
         @foreach (['present' => '4. '.__('Present Address'), 'permanent' => '5. '.__('Permanent Address')] as $type => $title)
             @php $address = $e->address($type); @endphp
             @include('employees._details-section', ['title' => $title, 'rows' => [
-                __('Address Line 1') => $address?->address_line_1, __('Address Line 2') => $address?->address_line_2, __('Village') => $address?->village,
-                __('District') => $address?->district, __('Taluka') => $address?->taluka, __('State') => $address?->state,
+                __('Address Line 1') => $address?->address_line_1, __('Address Line 2') => $address?->address_line_2, __('City') => $address?->city,
+                __('Village') => $address?->village, __('Taluka') => $address?->taluka, __('District') => $address?->district,
+                __('State') => $address?->state, __('Country') => $address?->country,
             ]])
         @endforeach
 
-        @include('employees._details-section', ['title' => '6. '.__('Document Information'), 'rows' => [
+        @include('employees._details-section', ['title' => '6. '.__('Statutory & Document Information'), 'rows' => [
             __('Aadhar No.') => $masked($e->aadhar_card_no),
             __('PAN No.') => $e->pan_card_no,
+            __('UAN No.') => $e->uan_code,
+            __('ESIC No.') => $e->ip_number,
+            __('Nominee Name') => $e->nominee_name,
+            __('Nominee Relationship') => $e->nominee_relationship,
             __('Passport No.') => $e->passport_no,
             __('Driving License No.') => $e->driving_license_no,
         ]])
         <p class="-mt-3 mb-5 flex flex-wrap gap-3 text-xs print:hidden">
-            @foreach (['aadhar_attachment' => 'Aadhar (attachment)', 'pan_attachment' => 'PAN (attachment)', 'bank_passbook' => 'Bank Passbook (attachment)'] as $file => $label)
+            @foreach (['aadhar_attachment' => 'Aadhar (attachment)', 'pan_attachment' => 'PAN (attachment)', 'uan_document' => 'UAN Document (attachment)', 'nominee_document' => 'Nominee Document (attachment)', 'bank_passbook' => 'Bank Passbook (attachment)'] as $file => $label)
                 @if ($e->{$file.'_path'})
                     <a href="{{ route('employees.file', [$e, $file]) }}" target="_blank" class="text-brand-600 hover:underline">{{ __($label) }}</a>
                 @endif
@@ -134,8 +136,7 @@
 
         @include('employees._details-section', ['title' => '7. '.__('Bank Information'), 'rows' => [
             __('Bank Name') => $e->bank_name, __('Branch') => $e->branch_address, __('Account No.') => $masked($e->account_number),
-            __('IFSC Code') => $e->ifsc_code, __('MICR Code') => $e->micr_code, __('UAN Code') => $e->uan_code,
-            __('Name as per UAN') => $e->name_as_per_uan, __('IP Number') => $e->ip_number, __('Name as per ESIC') => $e->name_as_per_esic,
+            __('IFSC Code') => $e->ifsc_code, __('MICR Code') => $e->micr_code,
         ]])
 
         @include('employees._details-section', ['title' => '8. '.__('Medical Information'), 'rows' => [
@@ -175,11 +176,11 @@
         <section class="mb-5 break-inside-avoid">
             <h2 class="mb-2 border-b border-gray-200 pb-1 font-semibold text-gray-900">11. {{ __('Family Details') }}</h2>
             <table class="w-full text-left">
-                <thead class="text-gray-600"><tr><th class="py-1">{{ __('Relation') }}</th><th>{{ __('Full Name') }}</th><th>{{ __('Date of Birth') }}</th><th>{{ __('Aadhar No') }}</th><th>{{ __('Is Nominee') }}</th></tr></thead>
+                <thead class="text-gray-600"><tr><th class="py-1">{{ __('Relation') }}</th><th>{{ __('Full Name') }}</th><th>{{ __('Date of Birth') }}</th><th>{{ __('Aadhar No') }}</th></tr></thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach (config('employee.family_relations') as $relation => $label)
                         @php $m = $e->familyMembers->firstWhere('relation', $relation); @endphp
-                        <tr><td class="py-1">{{ $label }}</td><td>{{ $m?->full_name }}</td><td>{{ $date($m?->date_of_birth) }}</td><td>{{ $masked($m?->aadhar_card_no) }}</td><td>{{ $m ? $yesNo($m->is_nominee) : '' }}</td></tr>
+                        <tr><td class="py-1">{{ $label }}</td><td>{{ $m?->full_name }}</td><td>{{ $date($m?->date_of_birth) }}</td><td>{{ $masked($m?->aadhar_card_no) }}</td></tr>
                     @endforeach
                 </tbody>
             </table>
@@ -188,8 +189,9 @@
         @foreach (['nominee_current' => '11(a). '.__('Nominee Present Address'), 'nominee_permanent' => '11(b). '.__('Nominee Permanent Address')] as $type => $title)
             @php $address = $e->address($type); @endphp
             @include('employees._details-section', ['title' => $title, 'rows' => [
-                __('Address Line 1') => $address?->address_line_1, __('Address Line 2') => $address?->address_line_2, __('Village') => $address?->village,
-                __('District') => $address?->district, __('Taluka') => $address?->taluka, __('State') => $address?->state,
+                __('Address Line 1') => $address?->address_line_1, __('Address Line 2') => $address?->address_line_2, __('City') => $address?->city,
+                __('Village') => $address?->village, __('Taluka') => $address?->taluka, __('District') => $address?->district,
+                __('State') => $address?->state, __('Country') => $address?->country,
             ]])
         @endforeach
     </article>

@@ -89,7 +89,7 @@ class ComplianceForms
 
     public static function address(?EmployeeAddress $address): string
     {
-        return $address ? collect([$address->address_line_1, $address->address_line_2, $address->village, $address->taluka, $address->district, $address->state])->filter()->implode(', ') : '';
+        return $address ? collect([$address->address_line_1, $address->address_line_2, $address->city, $address->village, $address->taluka, $address->district, $address->state, $address->country])->filter()->implode(', ') : '';
     }
 
     /** Where the employee lives: the present address, or the permanent one when they are the same. */
@@ -105,7 +105,7 @@ class ComplianceForms
 
     private function companyAddress(Company $company): string
     {
-        return collect([$company->address_line_1, $company->address_line_2, $company->village, $company->taluka, $company->district, $company->state])->filter()->implode(', ');
+        return collect([$company->address_line_1, $company->address_line_2, $company->city, $company->village, $company->taluka, $company->district, $company->state, $company->country])->filter()->implode(', ');
     }
 
     private function employees(Company $company)

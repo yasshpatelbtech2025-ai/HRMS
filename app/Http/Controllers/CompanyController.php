@@ -40,9 +40,11 @@ class CompanyController extends Controller
             'companies' => $companies,
             'perPage' => $perPage,
             'parents' => Company::orderBy('establishment_name')->get(['id', 'establishment_name']),
-            'states' => $this->choices('state', self::STATES),
-            'districts' => $this->choices('district'),
+            'cities' => $this->choices('city'),
             'talukas' => $this->choices('taluka'),
+            'districts' => $this->choices('district'),
+            'states' => $this->choices('state', self::STATES),
+            'countries' => $this->choices('country', config('employee.countries')),
         ]);
     }
 
@@ -80,10 +82,10 @@ class CompanyController extends Controller
         $companies = $this->filtered($request)->get();
 
         return TableExport::download('csv', 'companies',
-            ['Sl', 'Establishment Name', 'Organization size', 'Connected company', 'Address Line 1', 'Address Line 2', 'Village', 'State', 'District', 'Taluka'],
+            ['Sl', 'Establishment Name', 'Organization size', 'Connected company', 'Address Line 1', 'Address Line 2', 'City', 'Village', 'Taluka', 'District', 'State', 'Country'],
             $companies->map(fn (Company $company, int $i) => [
                 $i + 1, $company->establishment_name, $company->employees_count, $company->parent?->establishment_name,
-                $company->address_line_1, $company->address_line_2, $company->village, $company->state, $company->district, $company->taluka,
+                $company->address_line_1, $company->address_line_2, $company->city, $company->village, $company->taluka, $company->district, $company->state, $company->country,
             ]),
         );
     }

@@ -18,12 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', \App\Http\Middleware\UseCurrentCompany::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
-        // Behind a forwarding proxy (e.g. a GitHub Codespaces link) the app must trust its
-        // X-Forwarded-* headers, or it links styles and scripts to an address the browser
-        // can't reach. Off unless TRUSTED_PROXIES is set ("*" or a comma-separated list).
-        if ($proxies = env('TRUSTED_PROXIES')) {
-            $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
-        }
+        // Published through a Cloudflare Tunnel: cloudflared on this server forwards to
+        // localhost, so trust X-Forwarded-* (notably Proto=https) only from loopback.
+        // Fixed here because .env isn't loaded yet when this runs (nor with config:cache).
+        $middleware->trustProxies(at: ['127.0.0.1', '::1']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

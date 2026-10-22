@@ -50,7 +50,7 @@ return [
     'monthly_salary_calculations' => [
         'calendar_month' => 'CALENDAR MONTH — Ex: March - 31 days, April - 30 days etc (Per day salary = Salary / No. of days in month)',
         'thirty_days' => 'EVERY MONTH 30 DAYS — Ex: March - 30 days, April - 30 days etc (Per day salary = Salary / 30)',
-        'exclude_weekly_offs' => 'EXCLUDE WEEKLY OFFS — Ex: Month with 31 days and 4 weekly-off will have 27 payable days (Per day salary = Salary / Payable days)',
+        'fixed_payable_days' => 'FIXED PAYABLE DAYS — Ex: Every month taken as 31 days; payable days are entered when generating salary (Per day salary = Salary / 31)',
     ],
 
     'weekdays' => [
@@ -87,6 +87,11 @@ return [
     'deduction_elements' => [
         'vpf' => 'Voluntary Provident Fund (VPF)',
         'notice_period_recovery' => 'NOTICE PERIOD RECOVERY',
+        'advance' => 'ADVANCE',
+        'fine' => 'FINE',
+        'penalty' => 'PENALTY',
+        'arrears' => 'ARREARS',
+        'loan' => 'LOAN',
     ],
 
     // Optional Employee list columns ("Select Columns") and whether each is

@@ -17,16 +17,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class CompanyImportController extends Controller
 {
     private const HEADINGS = [
-        'Establishment Name *', 'Connected company', 'Address Line 1', 'Address Line 2', 'Village', 'State', 'District', 'Taluka',
+        'Establishment Name *', 'Connected company', 'Address Line 1', 'Address Line 2', 'City', 'Village', 'Taluka', 'District', 'State', 'Country',
     ];
 
     private const FIELDS = [
-        'establishment_name', 'parent', 'address_line_1', 'address_line_2', 'village', 'state', 'district', 'taluka',
+        'establishment_name', 'parent', 'address_line_1', 'address_line_2', 'city', 'village', 'taluka', 'district', 'state', 'country',
     ];
 
     public function template(): StreamedResponse
     {
-        return SheetImport::template('companies-template.xlsx', self::HEADINGS, [['Example Industries Pvt Ltd', '', '12 Main Road', '', 'Example Village', 'Gujarat', 'Surat', 'Choryasi']]);
+        return SheetImport::template('companies-template.xlsx', self::HEADINGS, [['Example Industries Pvt Ltd', '', '12 Main Road', '', 'Surat', 'Example Village', 'Choryasi', 'Surat', 'Gujarat', 'India']]);
     }
 
     public function store(Request $request): RedirectResponse

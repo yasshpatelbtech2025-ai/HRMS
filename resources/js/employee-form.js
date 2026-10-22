@@ -9,7 +9,7 @@
 // Gross elements a "New Structure" company (Configs › Payroll) may use.
 const NEW_STRUCTURE_ELEMENTS = ['basic', 'allowance', 'bonus'];
 
-const ADDRESS_FIELDS = ['address_line_1', 'address_line_2', 'village', 'district', 'taluka', 'state'];
+const ADDRESS_FIELDS = ['address_line_1', 'address_line_2', 'city', 'village', 'taluka', 'district', 'state', 'country'];
 
 const round2 = (value) => Math.round(value * 100) / 100;
 const num = (value) => parseFloat(value) || 0;
@@ -85,11 +85,6 @@ export function employeeForm(config) {
         offered(element) {
             return !this.newStructure || NEW_STRUCTURE_ELEMENTS.includes(element) || element in this.deductionLabels;
         },
-        // New Structure: basic must be at least half of gross, i.e. not below the allowance.
-        get basicTooLow() {
-            return this.newStructure && num(this.salary.basic?.monthly) < num(this.salary.allowance?.monthly);
-        },
-
         isShown(element) {
             return element === 'basic' || this.grossShown.includes(element) || this.deductionsShown.includes(element);
         },

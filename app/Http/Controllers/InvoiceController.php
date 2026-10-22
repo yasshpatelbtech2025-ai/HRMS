@@ -62,7 +62,7 @@ class InvoiceController extends Controller
             $invoice->fill([
                 'company_id' => $company->id,
                 'customer_name' => $last->customer_name ?? $company->establishment_name,
-                'customer_address' => $last->customer_address ?? collect([$company->address_line_1, $company->address_line_2, $company->village, $company->taluka, $company->district, $company->state])->filter()->implode(",\n"),
+                'customer_address' => $last->customer_address ?? collect([$company->address_line_1, $company->address_line_2, $company->city, $company->village, $company->taluka, $company->district, $company->state, $company->country])->filter()->implode(",\n"),
                 'customer_gst' => $last?->customer_gst,
             ]);
 
