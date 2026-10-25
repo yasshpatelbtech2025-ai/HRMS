@@ -59,8 +59,8 @@
         @endisset
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-3 py-3">{{ __('Sl') }}</th>
                         @foreach ($headings as $heading)
@@ -68,9 +68,9 @@
                         @endforeach
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($rows as $row)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-3 py-2 text-gray-500">{{ $loop->iteration }}</td>
                             @foreach ($row as $cell)
                                 <td class="whitespace-nowrap px-3 py-2">{{ is_float($cell) ? rtrim(rtrim(number_format($cell, 2, '.', ''), '0'), '.') : $cell }}</td>

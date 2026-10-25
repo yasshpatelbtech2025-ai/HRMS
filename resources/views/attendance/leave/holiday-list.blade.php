@@ -26,8 +26,8 @@
         <x-list-toolbar :action="route('attendance.leave.holiday-list')" :per-page="$perPage" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="name" class="px-5 py-3">{{ __('Holiday name') }}</x-sort-header>
@@ -38,10 +38,10 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($holidays as $holiday)
                         @php($modal = 'edit-holiday-'.$holiday->uuid)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $holidays->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $holiday->name }}</td>
                             <td class="px-5 py-3 whitespace-nowrap">{{ $holiday->start_date->toDateString() }}</td>

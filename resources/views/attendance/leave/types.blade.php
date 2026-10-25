@@ -14,8 +14,8 @@
         <x-list-toolbar :action="route('attendance.leave.types')" :per-page="$perPage" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <th class="px-5 py-3">{{ __('Company name') }}</th>
@@ -25,10 +25,10 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($leaveTypes as $leaveType)
                         @php($modal = 'edit-leave-type-'.$leaveType->uuid)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $leaveTypes->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3">{{ $leaveType->company?->establishment_name }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $leaveType->name }} <span class="text-gray-500">({{ $leaveType->code }})</span></td>

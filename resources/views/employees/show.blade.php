@@ -145,45 +145,45 @@
         ]])
 
         <section class="mb-5 break-inside-avoid">
-            <h2 class="mb-2 border-b border-gray-200 pb-1 font-semibold text-gray-900">9. {{ __('Qualification Details') }}</h2>
-            <table class="w-full text-left">
+            <h2 class="mb-3 border-b border-line pb-1.5 font-semibold text-ink">9. {{ __('Qualification Details') }}</h2>
+            <div class="overflow-x-auto print:overflow-visible"><table class="w-full text-left">
                 <thead class="text-gray-600"><tr><th class="py-1">{{ __('Qualification') }}</th><th>{{ __('School/College Name') }}</th><th>{{ __('Tenure') }}</th><th>{{ __('Year of Passing') }}</th><th>{{ __('Percentage') }}</th></tr></thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @foreach (config('employee.qualification_levels') as $level => $label)
                         @php $q = $e->qualifications->firstWhere('level', $level); @endphp
                         <tr><td class="py-1">{{ $label }}</td><td>{{ $q?->school }}</td><td>{{ $q?->tenure }}</td><td>{{ $q?->passing_year }}</td><td>{{ $q?->percentage }}</td></tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table></div>
             <p class="mt-1 text-gray-600">{{ __('Job status') }}: {{ config('employee.job_statuses')[$e->job_status] ?? '' }}</p>
         </section>
 
         <section class="mb-5 break-inside-avoid">
-            <h2 class="mb-2 border-b border-gray-200 pb-1 font-semibold text-gray-900">10. {{ __('Experience Details') }}</h2>
-            <table class="w-full text-left">
+            <h2 class="mb-3 border-b border-line pb-1.5 font-semibold text-ink">10. {{ __('Experience Details') }}</h2>
+            <div class="overflow-x-auto print:overflow-visible"><table class="w-full text-left">
                 <thead class="text-gray-600"><tr><th class="py-1">{{ __('Company Name') }}</th><th>{{ __('Designation') }}</th><th>{{ __('Salary') }}</th><th>{{ __('Total Years Worked') }}</th><th>{{ __('Reason of Leaving') }}</th></tr></thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($e->experiences as $x)
                         <tr><td class="py-1">{{ $x->company_name }}</td><td>{{ $x->designation }}</td><td>{{ $x->salary }}</td><td>{{ $x->total_years_worked }}</td><td>{{ $x->reason_of_leaving }}</td></tr>
                     @empty
                         <tr><td colspan="5" class="py-1 text-gray-500">{{ __('None') }}</td></tr>
                     @endforelse
                 </tbody>
-            </table>
+            </table></div>
             <p class="mt-1 text-gray-600">{{ __('Date of exit from the previous organisation') }}: {{ $date($e->date_of_exit_prev_org) }}</p>
         </section>
 
         <section class="mb-5 break-inside-avoid">
-            <h2 class="mb-2 border-b border-gray-200 pb-1 font-semibold text-gray-900">11. {{ __('Family Details') }}</h2>
-            <table class="w-full text-left">
+            <h2 class="mb-3 border-b border-line pb-1.5 font-semibold text-ink">11. {{ __('Family Details') }}</h2>
+            <div class="overflow-x-auto print:overflow-visible"><table class="w-full text-left">
                 <thead class="text-gray-600"><tr><th class="py-1">{{ __('Relation') }}</th><th>{{ __('Full Name') }}</th><th>{{ __('Date of Birth') }}</th><th>{{ __('Aadhar No') }}</th></tr></thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @foreach (config('employee.family_relations') as $relation => $label)
                         @php $m = $e->familyMembers->firstWhere('relation', $relation); @endphp
                         <tr><td class="py-1">{{ $label }}</td><td>{{ $m?->full_name }}</td><td>{{ $date($m?->date_of_birth) }}</td><td>{{ $masked($m?->aadhar_card_no) }}</td></tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table></div>
         </section>
 
         @foreach (['nominee_current' => '11(a). '.__('Nominee Present Address'), 'nominee_permanent' => '11(b). '.__('Nominee Permanent Address')] as $type => $title)

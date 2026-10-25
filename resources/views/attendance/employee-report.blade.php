@@ -21,14 +21,14 @@
         </div>
         <div class="card">
 
-        <form method="GET" action="{{ route('attendance.employee-report') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
-            <label class="text-sm text-gray-700">
-                <span class="mb-1 block font-medium">{{ __('Date') }}</span>
+        <form method="GET" action="{{ route('attendance.employee-report') }}" class="flex flex-wrap items-end gap-3 border-b border-line px-5 py-4 print:hidden">
+            <label class="text-sm text-ink max-sm:w-full">
+                <span class="mb-1.5 block text-13 font-medium">{{ __('Date') }}</span>
                 <input type="month" name="month" value="{{ $month->format('Y-m') }}" class="{{ $select }}">
             </label>
-            <label class="text-sm text-gray-700">
-                <span class="mb-1 block font-medium">{{ __('Employee') }}</span>
-                <select name="employee" class="{{ $select }} min-w-72">
+            <label class="text-sm text-ink max-sm:w-full">
+                <span class="mb-1.5 block text-13 font-medium">{{ __('Employee') }}</span>
+                <select name="employee" class="{{ $select }} w-full sm:w-auto sm:min-w-72">
                     <option value="">{{ __('Select employee') }}</option>
                     @foreach ($employees as $option)
                         <option value="{{ $option->uuid }}" @selected($employee?->is($option))>{{ $option->employee_code }} - {{ $option->full_name }} ({{ $option->company?->establishment_name }})</option>
@@ -55,8 +55,8 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+                <table class="min-w-full divide-y divide-line text-sm">
+                    <thead class="text-left">
                         <tr>
                             <th class="px-4 py-3">{{ __('Sl') }}</th>
                             <th class="px-4 py-3">{{ __('Date') }}</th>
@@ -71,7 +71,7 @@
                             <th class="px-4 py-3">{{ __('Lock') }}</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-line">
                         @foreach ($report['days'] as $date => $d)
                             <tr @class(['hover:bg-gray-50', 'text-gray-400' => ! $d['status']])>
                                 <td class="px-4 py-2">{{ $loop->iteration }}</td>

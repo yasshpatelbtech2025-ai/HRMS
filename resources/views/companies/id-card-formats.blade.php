@@ -38,7 +38,7 @@
 
         <div class="flex flex-wrap items-start justify-center gap-6 px-5 py-6">
             @foreach ($formats as $format)
-                <div class="flex flex-col items-center gap-4 rounded-lg p-4 ring-1 ring-gray-200">
+                <div class="flex max-w-full flex-col items-center gap-4 overflow-x-auto rounded-card border border-line p-4">
                     <div @class(['flip-card', 'landscape' => $format['orientation'] === 'landscape'])>
                         <div class="flip-card-inner">
                             <div class="flip-card-front">{{ IdCardFormats::render($format, 'front', $sample) }}</div>

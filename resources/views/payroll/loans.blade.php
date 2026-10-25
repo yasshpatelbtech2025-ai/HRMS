@@ -39,8 +39,8 @@
         ]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         @foreach (['Sl', 'Company name', 'Employee name', 'Permitted by', 'Loan no', 'Amount', 'Interest rate', 'Installment period', 'Installment cleared', 'Repayment amount', 'Approved date', 'Repayment from', 'Attachment', 'Status', 'Action'] as $heading)
                             @if ($sortKey = ['Employee name' => 'employee', 'Loan no' => 'loan', 'Amount' => 'amount', 'Approved date' => 'approved', 'Status' => 'status'][$heading] ?? null)
@@ -51,10 +51,10 @@
                         @endforeach
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($loans as $loan)
                         @php $modal = 'edit-loan-'.$loan->uuid; @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-3 py-3 text-gray-500">{{ $loans->firstItem() + $loop->index }}</td>
                             <td class="px-3 py-3">{{ $loan->employee->company?->establishment_name }}</td>
                             <td class="px-3 py-3 font-medium text-gray-900">{{ $loan->employee->full_name }}</td>

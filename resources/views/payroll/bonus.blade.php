@@ -16,9 +16,9 @@
                 <p class="text-sm text-gray-500">{{ __('Accounting year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
             </div>
             <form method="GET" action="{{ route('payroll.bonus') }}" class="flex flex-wrap items-center gap-2">
-                <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+                <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                     @foreach ($companies as $option)<option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>@endforeach
-                </select>
+                </select></label>
                 <select name="fy" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Accounting year') }}">
                     @foreach (range((int) date('Y'), 2020) as $year)<option value="{{ $year }}" @selected($fy === $year)>{{ $year }} - {{ $year + 1 }}</option>@endforeach
                 </select>
@@ -101,8 +101,8 @@
                     @csrf
                     @method('PUT')
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 text-sm">
-                            <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+                        <table class="min-w-full divide-y divide-line text-sm">
+                            <thead class="text-left">
                                 <tr>
                                     <th class="px-3 py-3">{{ __('Employee') }}</th>
                                     <th class="px-3 py-3 text-right">{{ __('Days worked') }}</th>
@@ -114,9 +114,9 @@
                                     <th class="px-3 py-3 text-right">{{ __('Bonus paid') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-line">
                                 @forelse ($sheet->entries as $entry)
-                                    <tr class="hover:bg-gray-50">
+                                    <tr>
                                         <td class="px-3 py-3">
                                             <p class="font-medium text-gray-900">{{ $entry->employee->full_name }}</p>
                                             <p class="text-xs text-gray-500">{{ $entry->employee->employee_code }}{{ $entry->employee->position ? ' · '.$entry->employee->position->name : '' }}</p>
@@ -160,7 +160,7 @@
                     </div>
                     @if (! $approved && $sheet->entries->isNotEmpty())
                         <div class="flex justify-end border-t border-gray-100 px-5 py-3">
-                            <button class="rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-4 py-2 text-sm font-medium">{{ __('Save amounts') }}</button>
+                            <button class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Save amounts') }}</button>
                         </div>
                     @endif
                 </form>

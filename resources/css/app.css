@@ -495,3 +495,8 @@ thead .grid-today { box-shadow: inset 2px 0 0 rgb(var(--primary)), inset -2px 0 
     .modal-panel :where(.border-t.px-6.py-4):last-child { position: sticky; bottom: 0; z-index: 5; }
     .modal-panel :where(.justify-end.gap-3.border-t) > * { flex: 1 1 0; }
 }
+/* Older pop-up forms laid out label-left: labels go above their fields. */
+.modal-panel :where(.lg\:grid.lg\:grid-cols-4) { display: block; }
+.modal-panel :where(.lg\:grid.lg\:grid-cols-4) > label:first-child { display: block; padding-top: 0; margin-bottom: 6px; font-size: 13px; line-height: 18px; font-weight: 500; color: rgb(var(--ink)); }
+.modal-panel :where(.lg\:grid.lg\:grid-cols-4) > div { margin-top: 0; }
+.modal-panel :where(.space-y-4) > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem; }

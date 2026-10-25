@@ -19,8 +19,8 @@
         <x-list-toolbar :action="route('employees.separations')" :per-page="$perPage" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <th class="px-5 py-3">{{ __('Company name') }}</th>
@@ -33,9 +33,9 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($employees as $employee)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $employees->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3">{{ $employee->company?->establishment_name }}</td>
                             <td class="px-5 py-3 font-mono">{{ $employee->employee_code }}</td>

@@ -24,8 +24,8 @@
         ]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         @foreach (['Sl', 'Company name', 'Employee name', 'Salary month', 'Total salary', 'Action'] as $heading)
                             @if ($sortKey = ['Employee name' => 'employee', 'Salary month' => 'month', 'Total salary' => 'total'][$heading] ?? null)
@@ -36,9 +36,9 @@
                         @endforeach
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($payslips as $payslip)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 text-gray-500">{{ $payslips->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-3">{{ $payslip->company->label }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $payslip->employee->full_name }}</td>
@@ -46,8 +46,8 @@
                             <td class="px-4 py-3 font-semibold">{{ number_format((float) $payslip->net_pay, 2) }}</td>
                             <td class="px-4 py-3 print:hidden">
                                 <div class="flex flex-wrap gap-1">
-                                    <a href="{{ route('payroll.payslips.show', $payslip) }}" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Payslip') }}</a>
-                                    <a href="{{ route('payroll.payslips.show', ['payslip' => $payslip, 'print' => 1]) }}" target="_blank" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Download pay slip') }}</a>
+                                    <a href="{{ route('payroll.payslips.show', $payslip) }}" class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Payslip') }}</a>
+                                    <a href="{{ route('payroll.payslips.show', ['payslip' => $payslip, 'print' => 1]) }}" target="_blank" class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Download pay slip') }}</a>
                                     @unless ($payslip->sheet->isApproved())
                                         <form method="POST" action="{{ route('payroll.payslips.regenerate', $payslip) }}">
                                             @csrf

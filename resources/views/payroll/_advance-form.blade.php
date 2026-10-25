@@ -13,8 +13,8 @@
         @method('PUT')
     @endif
     <input type="hidden" name="_modal" value="{{ $modal }}">
-    <div class="border-b border-gray-200 px-6 py-4">
-        <h2 class="text-lg font-semibold text-gray-900">{{ $editing ? __('Edit salary advance') : __('Add salary advance') }}</h2>
+    <div class="border-b border-line px-6 py-4">
+        <h2 class="text-lg font-semibold text-ink">{{ $editing ? __('Edit salary advance') : __('Add salary advance') }}</h2>
     </div>
     <div class="space-y-4 px-6 py-5">
         <x-form-row :label="__('Employee')" for="{{ $modal }}-employee" required :messages="$error('employee')">

@@ -37,18 +37,18 @@
         <div class="card">
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         @foreach (['Employee id', 'Name of employee', 'Revised date', 'Effective from', 'Revised salary (yearly)', 'Revised percentage %', 'Status', 'Action'] as $heading)
                             <th class="px-4 py-3">{{ __($heading) }}</th>
                         @endforeach
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($revisions as $revision)
                         @php $pct = $revision->percentage(); @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 font-mono">{{ $revision->employee->employee_code }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $revision->employee->full_name }}</td>
                             <td class="px-4 py-3">{{ $revision->revised_on->toDateString() }}</td>
@@ -62,7 +62,7 @@
                                         <form method="POST" action="{{ route('payroll.revisions.apply', $revision) }}" data-confirm="{{ __('Apply this revision now?') }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Apply now') }}</button>
+                                            <button class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Apply now') }}</button>
                                         </form>
                                         <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" data-confirm="{{ __('Cancel this revision?') }}">
                                             @csrf

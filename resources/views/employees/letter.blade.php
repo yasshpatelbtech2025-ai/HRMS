@@ -4,7 +4,7 @@
     <x-section-tabs section="employees" />
 
     <div class="mx-auto max-w-2xl card p-6">
-        <h2 class="text-lg font-semibold text-gray-900">{{ __(':letter Letter', ['letter' => ucfirst($letter)]) }} — {{ $employee->full_name }}</h2>
+        <h2 class="text-lg font-semibold text-ink">{{ __(':letter Letter', ['letter' => ucfirst($letter)]) }} — {{ $employee->full_name }}</h2>
         <p class="mt-3 text-sm text-gray-600">
             {{ __("The :letter letter template hasn't been set up yet. Share the old system's letter (saved as a page or PDF) and it will be generated here with this employee's details filled in.", ['letter' => $letter]) }}
         </p>

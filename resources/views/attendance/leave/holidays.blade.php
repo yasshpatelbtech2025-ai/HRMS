@@ -16,11 +16,11 @@
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
                     </select>
-                    <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+                    <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                         @foreach ($companies as $option)
                             <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                         @endforeach
-                    </select>
+                    </select></label>
                 </form>
                 @if ($company)
                     <x-add-button modal="add-company-holiday">{{ __('Add holiday') }}</x-add-button>
@@ -30,8 +30,8 @@
         <div class="card">
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <th class="px-5 py-3">{{ __('Holiday name') }}</th>
@@ -41,9 +41,9 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($holidays as $holiday)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $loop->iteration }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $holiday->name }}</td>
                             <td class="px-5 py-3 whitespace-nowrap">{{ $holiday->start_date->toDateString() }}</td>
@@ -78,8 +78,8 @@
         <x-modal name="add-company-holiday" :show="$errors->has('holidays') || $errors->has('company_id')" max-width="2xl">
             <form method="POST" action="{{ route('attendance.leave.holidays.store') }}">
                 @csrf
-                <div class="border-b border-gray-200 px-6 py-4">
-                    <h2 class="text-lg font-semibold text-gray-900">{{ __('New holiday') }}</h2>
+                <div class="border-b border-line px-6 py-4">
+                    <h2 class="text-lg font-semibold text-ink">{{ __('New holiday') }}</h2>
                 </div>
                 <div class="space-y-4 px-6 py-5">
                     <x-form-row :label="__('Company')" for="holiday-company" required :messages="$errors->get('company_id')">

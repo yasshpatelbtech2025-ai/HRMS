@@ -242,8 +242,8 @@
                 @csrf
                 <input type="hidden" name="employee" :value="cell.employee" value="{{ old('employee') }}">
                 <input type="hidden" name="date" :value="cell.date" value="{{ old('date') }}">
-                <div class="border-b border-gray-200 px-6 py-4">
-                    <h2 class="text-lg font-semibold text-gray-900">{{ __('Enter In-Time & Out-Time') }}</h2>
+                <div class="border-b border-line px-6 py-4">
+                    <h2 class="text-lg font-semibold text-ink">{{ __('Enter In-Time & Out-Time') }}</h2>
                     <p class="text-sm text-ink-2"><span x-text="cell.name"></span> · <span x-text="cell.date"></span> · {{ __('Shift') }}: <span x-text="cell.shift || '—'"></span></p>
                 </div>
                 <div class="space-y-4 px-6 py-5">
@@ -266,8 +266,8 @@
             <form method="POST" action="{{ route('attendance.monthly.leave') }}">
                 @csrf
                 <input type="hidden" name="employee" :value="cell.employee" value="{{ old('employee') }}">
-                <div class="border-b border-gray-200 px-6 py-4">
-                    <h2 class="text-lg font-semibold text-gray-900">{{ __('Enter Leave') }}</h2>
+                <div class="border-b border-line px-6 py-4">
+                    <h2 class="text-lg font-semibold text-ink">{{ __('Enter Leave') }}</h2>
                     <p class="text-sm text-ink-2" x-text="cell.name"></p>
                 </div>
                 <div class="space-y-4 px-6 py-5">

@@ -10,11 +10,11 @@
             <h1 class="text-2xl font-semibold text-ink">{{ __('Company compliance') }}</h1>
             <form method="GET" action="{{ route('compliance.index') }}">
                 <input type="hidden" name="act" value="{{ $act }}">
-                <select name="company" onchange="this.form.submit()" class="min-w-64 control-inline" aria-label="{{ __('Company') }}">
+                <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="min-w-64 control-inline">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach
-                </select>
+                </select></label>
             </form>
         </div>
         @php

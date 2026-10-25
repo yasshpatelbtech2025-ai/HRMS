@@ -41,17 +41,5 @@
         </ol>
     </nav>
 @elseif ($tabs->count() > 1)
-    <nav class="mb-4 overflow-x-auto print:hidden" aria-label="{{ __('Sub-section') }}">
-        <ul class="flex w-max gap-0.5 rounded-md bg-sunken p-0.5">
-            @foreach ($tabs as $name => $label)
-                @php $active = $name === $activeTab; @endphp
-                <li>
-                    <a href="{{ route($name) }}" @if ($active) aria-current="page" @endif
-                       class="block whitespace-nowrap rounded-[5px] px-2.5 py-1 text-sm transition {{ $active ? 'bg-surface font-medium text-ink shadow-hairline' : 'text-ink-2 hover:text-ink' }}">
-                        {{ __($label) }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-    </nav>
+    <x-ui.tabs :label="__('Sub-section')" :items="$tabs->map(fn ($label, $name) => ['label' => __($label), 'href' => route($name), 'active' => $name === $activeTab])->values()->all()" />
 @endif

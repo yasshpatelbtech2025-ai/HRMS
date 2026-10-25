@@ -8,9 +8,9 @@
         <form method="POST" :action="target.action">
             @csrf
             @method('PUT')
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h2 class="text-lg font-semibold text-gray-900">{{ __('Select Separation Date') }}</h2>
-                <p class="text-sm text-gray-500" x-text="target.name"></p>
+            <div class="border-b border-line px-6 py-4">
+                <h2 class="text-lg font-semibold text-ink">{{ __('Select Separation Date') }}</h2>
+                <p class="text-sm text-ink-2" x-text="target.name"></p>
             </div>
             <div class="px-6 py-5">
                 <label for="separation_date" class="control-label">{{ __('Separation date') }}</label>

@@ -19,8 +19,8 @@
         <x-list-toolbar :action="route('employees.positions')" :per-page="$perPage" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="w-16 px-5 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="company" default>{{ __('Company name') }}</x-sort-header>
@@ -29,9 +29,9 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($positions as $position)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $positions->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3">{{ $position->company->label }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $position->name }}</td>

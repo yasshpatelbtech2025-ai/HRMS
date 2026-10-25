@@ -248,9 +248,9 @@
     {{-- Letters --}}
     <div x-data="{ letters: null }" x-on:show-letters.window="letters = $event.detail; $dispatch('open-modal', 'employee-letters')">
         <x-modal name="employee-letters" max-width="md">
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h2 class="text-lg font-semibold text-gray-900">{{ __("Employee's Letters") }}</h2>
-                <p class="text-sm text-gray-500" x-text="letters?.name"></p>
+            <div class="border-b border-line px-6 py-4">
+                <h2 class="text-lg font-semibold text-ink">{{ __("Employee's Letters") }}</h2>
+                <p class="text-sm text-ink-2" x-text="letters?.name"></p>
             </div>
             <div class="flex flex-col gap-2 px-6 py-5">
                 <a :href="letters?.call" target="_blank" class="rounded-md border border-brand-300 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">📄 {{ __('Call Letter') }}</a>
@@ -268,8 +268,8 @@
         <form method="POST" action="{{ route('employees.import') }}" enctype="multipart/form-data"
               x-data="{ company: @js(old('company_id', '')), templates: @js($importCompanies->mapWithKeys(fn ($c) => [$c->id => route('employees.import.template', $c)])) }">
             @csrf
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h2 class="text-lg font-semibold text-gray-900">{{ __('Import Employees (Excel)') }}</h2>
+            <div class="border-b border-line px-6 py-4">
+                <h2 class="text-lg font-semibold text-ink">{{ __('Import Employees (Excel)') }}</h2>
             </div>
             <div class="space-y-4 px-6 py-5">
                 <x-form-row :label="__('Company')" for="import_company_id" required :messages="$errors->get('company_id')">

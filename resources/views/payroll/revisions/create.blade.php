@@ -50,13 +50,13 @@
 
         <div class="overflow-x-auto px-5">
             <table class="min-w-full text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+                <thead class="text-left">
                     <tr><th class="px-3 py-2">{{ __('Element') }}</th><th class="px-3 py-2">{{ __('Current (monthly)') }}</th><th class="px-3 py-2">{{ __('Revised monthly') }}</th><th class="px-3 py-2">{{ __('Revised yearly') }}</th></tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @foreach ($rows as $key => $row)
                         <tr>
-                            <td class="px-3 py-2 font-medium text-gray-700">{{ $row['label'] }} @if ($key === 'basic')<span class="text-red-600">*</span>@endif</td>
+                            <td class="px-3 py-2 font-medium text-gray-700">{{ $row['label'] }} @if ($key === 'basic')<span class="text-danger" aria-hidden="true">*</span>@endif</td>
                             <td class="px-3 py-2 text-gray-500">{{ number_format((float) $row['current'], 2) }}</td>
                             <td class="px-3 py-2">
                                 <input type="number" step="0.01" min="0" name="salary[{{ $key }}][monthly]" x-model="rows['{{ $key }}'].monthly"

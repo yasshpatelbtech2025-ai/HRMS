@@ -19,11 +19,11 @@
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
                     </select>
-                    <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+                    <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                         @foreach ($companies as $option)
                             <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                         @endforeach
-                    </select>
+                    </select></label>
                 </form>
                 @if ($company && $types->isNotEmpty())
                     <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Export Data') }}</a>
@@ -38,7 +38,7 @@
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __(':company has no leave types.', ['company' => $company->establishment_name]) }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a></p>
         @else
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <table class="min-w-full divide-y divide-line text-sm">
                     <thead class="bg-gray-50 text-center font-semibold text-gray-700">
                         <tr>
                             <th rowspan="2" class="px-4 py-2 text-left">{{ __('SL') }}</th>
@@ -57,10 +57,10 @@
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-line">
                         @forelse ($employees as $employee)
                             @php $modal = 'balance-'.$employee->uuid; @endphp
-                            <tr class="hover:bg-gray-50">
+                            <tr>
                                 <td class="px-4 py-2 text-gray-500">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-2 font-mono">{{ $employee->employee_code }}</td>
                                 <td class="px-4 py-2 font-medium text-gray-900">{{ $employee->full_name }}</td>
@@ -77,7 +77,7 @@
                                     </button>
                                     <x-modal :name="$modal" max-width="lg">
                                         <div class="border-b border-gray-200 px-6 py-4 text-left">
-                                            <h2 class="text-lg font-semibold text-gray-900">{{ __('Update leave balance') }}</h2>
+                                            <h2 class="text-lg font-semibold text-ink">{{ __('Update leave balance') }}</h2>
                                             <p class="text-sm text-gray-500">{{ $employee->full_name }} · {{ $year }}</p>
                                         </div>
                                         <div class="divide-y divide-gray-100 px-6 text-left">

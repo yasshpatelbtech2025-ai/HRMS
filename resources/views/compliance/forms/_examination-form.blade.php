@@ -17,12 +17,12 @@
     <input type="hidden" name="_modal" value="{{ $modal }}">
     <input type="hidden" name="form" value="{{ $form }}">
 
-    <h2 class="text-lg font-semibold text-gray-900">{{ $examination ? __('Edit examination') : __('Add examination') }}</h2>
+    <h2 class="text-lg font-semibold text-ink">{{ $examination ? __('Edit examination') : __('Add examination') }}</h2>
     <p class="mt-1 text-sm text-gray-500">{{ __('Fill in what the certifying surgeon recorded. Form 5, 27-A, 30 and the Form 32 health register are all printed from this examination; leave out what does not apply.') }}</p>
 
     <div class="mt-5 grid gap-4 sm:grid-cols-2">
         <div class="sm:col-span-2">
-            <label for="{{ $id('employee') }}" class="{{ $label }}">{{ __('Employee') }} <span class="text-red-600">*</span></label>
+            <label for="{{ $id('employee') }}" class="{{ $label }}">{{ __('Employee') }} <span class="text-danger" aria-hidden="true">*</span></label>
             @if ($examination)
                 <p class="mt-2 text-sm text-gray-900">{{ $examination->employee->employee_code }} - {{ $examination->employee->full_name }}</p>
             @else
@@ -35,7 +35,7 @@
             @endif
         </div>
         <div>
-            <label for="{{ $id('examined_on') }}" class="{{ $label }}">{{ __('Examination date') }} <span class="text-red-600">*</span></label>
+            <label for="{{ $id('examined_on') }}" class="{{ $label }}">{{ __('Examination date') }} <span class="text-danger" aria-hidden="true">*</span></label>
             <input id="{{ $id('examined_on') }}" type="date" name="examined_on" required value="{{ $val('examined_on', $examination?->examined_on ?? today()) }}" class="{{ $input }}">
         </div>
         <div>

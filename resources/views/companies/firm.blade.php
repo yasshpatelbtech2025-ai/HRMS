@@ -57,7 +57,7 @@
             <section x-show="step === 1" class="space-y-6 px-5 py-5" @if ($step !== 1) style="display: none;" @endif>
                 <h3 class="text-lg font-semibold text-gray-900">{{ __('Establishment Details:') }}</h3>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <div><label class="{{ $label }}" for="establishment_name">{{ __('Establishment Name') }} <span class="text-red-600">*</span></label>
+                    <div><label class="{{ $label }}" for="establishment_name">{{ __('Establishment Name') }} <span class="text-danger" aria-hidden="true">*</span></label>
                         <input id="establishment_name" name="establishment_name" required value="{{ $val('establishment_name') }}" class="{{ $input }}"></div>
                     @foreach (['sector' => [__('Sector (Ownership Type)'), Firm::SECTORS], 'organization_type' => [__('Organization Type'), Firm::ORGANIZATION_TYPES], 'establishment_category' => [__('Establishment Category'), Firm::CATEGORIES]] as $field => [$text, $options])
                         <div><label class="{{ $label }}" for="{{ $field }}">{{ $text }}</label>

@@ -40,8 +40,8 @@
         ]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="employee" class="px-4 py-3">{{ __('Employee name') }}</x-sort-header>
@@ -56,13 +56,13 @@
                         <th class="px-4 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($leaves as $leave)
                         @php
                             $approved = $leave->status === 'approved';
                             $modal = 'approve-leave-'.$leave->uuid;
                         @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 text-gray-500">{{ $leaves->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $leave->employee->full_name }} <span class="font-normal text-gray-500">({{ $leave->employee->employee_code }})</span></td>
                             <td class="px-4 py-3">{{ $leave->leaveType->code }}</td>
@@ -82,7 +82,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
                                     @unless ($approved)
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Approve') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Approve') }}</button>
                                     @endunless
                                     @if ($leave->status !== 'rejected')
                                         <form method="POST" action="{{ route('attendance.leave.reject', $leave) }}" data-confirm="{{ __('Reject this leave?') }}">
@@ -107,8 +107,8 @@
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="_modal" value="{{ $modal }}">
-                                            <div class="border-b border-gray-200 px-6 py-4">
-                                                <h2 class="text-lg font-semibold text-gray-900">{{ __('Application approved by manager') }}</h2>
+                                            <div class="border-b border-line px-6 py-4">
+                                                <h2 class="text-lg font-semibold text-ink">{{ __('Application approved by manager') }}</h2>
                                                 <p class="text-sm text-gray-500">{{ $leave->employee->full_name }} · {{ $leave->leaveType->name }}</p>
                                             </div>
                                             <div class="space-y-4 px-6 py-5">
@@ -158,8 +158,8 @@
                   count() { if (this.start && this.end) this.days = Math.max(1, (new Date(this.end) - new Date(this.start)) / 86400000 + 1) },
               }">
             @csrf
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h2 class="text-lg font-semibold text-gray-900">{{ __('Leave application create') }}</h2>
+            <div class="border-b border-line px-6 py-4">
+                <h2 class="text-lg font-semibold text-ink">{{ __('Leave application create') }}</h2>
             </div>
             <div class="space-y-4 px-6 py-5">
                 <x-form-row :label="__('Employee')" for="leave-employee" required :messages="$errors->get('employee')">

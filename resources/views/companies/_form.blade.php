@@ -33,54 +33,47 @@
     @endif
     <input type="hidden" name="_modal" value="{{ $modal }}">
 
-    <div class="border-b border-gray-200 px-6 py-4">
-        <h2 class="text-lg font-semibold text-gray-900">{{ $editing ? __('Edit company') : __('Add company') }}</h2>
+    <div class="border-b border-line px-6 py-4">
+        <h2 class="text-lg font-semibold text-ink">{{ $editing ? __('Edit company') : __('Add company') }}</h2>
     </div>
 
-    <div class="space-y-4 px-6 py-5">
-        <div class="lg:grid lg:grid-cols-4 lg:items-start lg:gap-4">
-            <label for="{{ $modal }}-establishment_name" class="block pt-2 text-sm font-medium text-gray-700">
-                {{ __('Establishment Name') }} <span class="text-red-600">*</span>
-            </label>
-            <div class="mt-1 lg:col-span-3 lg:mt-0">
-                <x-text-input id="{{ $modal }}-establishment_name" name="establishment_name" class="block w-full"
-                              :value="$value('establishment_name')" :placeholder="__('Establishment Name')" required autocomplete="off" />
-                <x-input-error class="mt-2" :messages="$error('establishment_name')" />
-            </div>
-        </div>
+    <div class="space-y-6 px-6 py-5">
+        <div class="space-y-5">
+            <x-form-row :label="__('Establishment Name')" for="{{ $modal }}-establishment_name" required :messages="$error('establishment_name')"
+                        :help="__('The registered name, as it should appear on registers and invoices.')">
+                <x-text-input id="{{ $modal }}-establishment_name" name="establishment_name"
+                              :value="$value('establishment_name')" :placeholder="__('e.g. Shree Ganesh Fabricators')" required autocomplete="off" />
+            </x-form-row>
 
-        <div class="lg:grid lg:grid-cols-4 lg:items-start lg:gap-4">
-            <label for="{{ $modal }}-parent_company_id" class="block pt-2 text-sm font-medium text-gray-700">{{ __('Connected Company (if any)') }}</label>
-            <div class="mt-1 lg:col-span-3 lg:mt-0">
-                <select id="{{ $modal }}-parent_company_id" name="parent_company_id" x-model="parent"
-                        class="control">
+            <x-form-row :label="__('Connected Company (if any)')" for="{{ $modal }}-parent_company_id" :messages="$error('parent_company_id')"
+                        :help="__('Pick one if this is a branch or sister unit. It then uses that company\'s address.')">
+                <select id="{{ $modal }}-parent_company_id" name="parent_company_id" x-model="parent" class="control">
                     <option value="">{{ __('Select company') }}</option>
                     @foreach ($choices as $parent)
                         <option value="{{ $parent->id }}">{{ $parent->establishment_name }}</option>
                     @endforeach
                 </select>
-                <x-input-error class="mt-2" :messages="$error('parent_company_id')" />
-            </div>
+            </x-form-row>
         </div>
 
         {{-- A connected company shares its parent's address, so these are hidden once one is chosen. --}}
-        <div x-show="! parent" class="space-y-4">
-            @foreach ($addressFields as $field => [$label, $list])
-                <div class="lg:grid lg:grid-cols-4 lg:items-start lg:gap-4">
-                    <label for="{{ $modal }}-{{ $field }}" class="block pt-2 text-sm font-medium text-gray-700">{{ __($label) }}</label>
-                    <div class="mt-1 lg:col-span-3 lg:mt-0">
+        <fieldset x-show="! parent" class="border-t border-line pt-5">
+            <legend class="sr-only">{{ __('Address') }}</legend>
+            <p class="mb-4 text-sm font-semibold text-ink" aria-hidden="true">{{ __('Address') }}</p>
+            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
+                @foreach ($addressFields as $field => [$label, $list])
+                    <x-form-row :label="__($label)" for="{{ $modal }}-{{ $field }}" :messages="$error($field)" :class="str_starts_with($field, 'address_line') ? 'sm:col-span-2' : ''">
                         @if ($list)
-                            <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" :list="$list" class="block w-full"
+                            <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" :list="$list"
                                           :value="$addressValue($field)" :placeholder="__('Select :field or type a new one', ['field' => strtolower(__($label))])" autocomplete="off" />
                         @else
-                            <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field" class="block w-full"
-                                          :value="$addressValue($field)" :placeholder="__($label)" autocomplete="off" />
+                            <x-text-input id="{{ $modal }}-{{ $field }}" :name="$field"
+                                          :value="$addressValue($field)" autocomplete="off" />
                         @endif
-                        <x-input-error class="mt-2" :messages="$error($field)" />
-                    </div>
-                </div>
-            @endforeach
-        </div>
+                    </x-form-row>
+                @endforeach
+            </div>
+        </fieldset>
     </div>
 
     <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">

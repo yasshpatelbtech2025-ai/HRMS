@@ -19,13 +19,30 @@
         ];
     @endphp
 
+    @php
+        $groups = [
+            [__('Employment terms'), __('Probation and notice for new and leaving employees.'), ['probation_period_months', 'notice_period_days']],
+            [__('Salary and bonus'), __('How salaries are built and when bonus is paid.'), ['salary_structure', 'bonus_frequency', 'tax_deduction']],
+            [__('Statutory deductions'), __('Who pays LWF, and which salary PF and ESI are worked out on.'), ['lwf_paid_by_company', 'pf_effect_on', 'esi_effect_on']],
+        ];
+        $help = [
+            'probation_period_months' => __('How many months a new employee stays on probation.'),
+            'notice_period_days' => __('Days of notice an employee gives before leaving.'),
+            'salary_structure' => __('New Structure limits salary elements to Basic, Allowance and Bonus, with Basic at least half of gross.'),
+            'bonus_frequency' => __('How often the bonus is paid out.'),
+            'tax_deduction' => __('Yes deducts income tax (TDS) from salary every month.'),
+            'lwf_paid_by_company' => __('Yes means the company pays the Labour Welfare Fund contribution.'),
+            'pf_effect_on' => __('The part of the salary PF is worked out on.'),
+            'esi_effect_on' => __('The part of the salary ESI is worked out on.'),
+        ];
+    @endphp
+
     <div>
-        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h1 class="text-2xl font-semibold text-ink">{{ __('Payroll setting') }}</h1>
-            <div class="flex flex-wrap items-center gap-2">
-                <form method="GET" action="{{ route('configs.payroll') }}">
-                    <label for="payroll-company" class="sr-only">{{ __('Company') }}</label>
-                    <select id="payroll-company" name="company" onchange="this.form.submit()" class="{{ $select }} min-w-56">
+        <x-ui.page-header :title="__('Payroll setting')" :description="__('Rules every salary for this company follows. Changes apply from the next salary you generate.')">
+            <x-slot:actions>
+                <form method="GET" action="{{ route('configs.payroll') }}" class="flex items-center gap-2">
+                    <label for="payroll-company" class="text-13 font-medium text-ink-2">{{ __('Company') }}</label>
+                    <select id="payroll-company" name="company" onchange="this.form.submit()" class="control-inline min-w-56">
                         @foreach ($companies as $option)
                             <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                         @endforeach
@@ -34,51 +51,50 @@
                 @if ($company)
                     <x-add-button modal="create-payroll-rule">{{ __('Create setting') }}</x-add-button>
                 @endif
-            </div>
-        </div>
-        <div class="card">
+            </x-slot:actions>
+        </x-ui.page-header>
 
         @if (! $company)
-            <p class="px-5 py-10 text-center text-sm text-gray-500">
-                {{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a>
-            </p>
+            <div class="card"><x-empty-state icon="building" :title="__('No company yet')" class="py-12">
+                {{ __('Add a company first.') }}
+                <x-slot name="action"><x-ui.button variant="secondary" :href="route('company.index')">{{ __('Go to Company') }}</x-ui.button></x-slot>
+            </x-empty-state></div>
         @else
-            <form method="POST" action="{{ route('configs.payroll.update', $company) }}" class="space-y-6 px-5 py-6">
+            <form method="POST" action="{{ route('configs.payroll.update', $company) }}" data-unsaved-warning>
                 @csrf
                 @method('PUT')
-                <h3 class="text-center text-xl font-semibold text-gray-900">{{ $company->establishment_name }}</h3>
-
-                <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-                    @foreach ($questions as $field => [$question, $kind])
-                        <div class="rounded-lg border border-gray-200 p-4">
-                            <label for="payroll-{{ $field }}" class="mb-2 block text-sm font-semibold text-gray-900">{{ __($question) }}</label>
-                            @if ($kind === 'number')
-                                <input type="number" min="0" id="payroll-{{ $field }}" name="{{ $field }}" value="{{ $value($field) }}" class="{{ $select }}">
-                            @else
-                                <select id="payroll-{{ $field }}" name="{{ $field }}" class="{{ $select }}">
-                                    @foreach ($kind as $option => $label)
-                                        <option value="{{ $option }}" @selected((string) $value($field) === (string) $option)>{{ __($label) }}</option>
-                                    @endforeach
-                                </select>
-                            @endif
-                            @if ($field === 'salary_structure')
-                                <p class="mt-1 text-xs text-gray-500">{{ __('New Structure limits salary elements to Basic, Allowance and Bonus, with Basic at least half of gross.') }}</p>
-                            @endif
-                            <x-input-error class="mt-1" :messages="$errors->get($field)" />
-                        </div>
+                <div class="card px-5 py-7 sm:px-6">
+                    <p class="mb-6 text-sm text-ink-2">{{ __('Settings for') }} <span class="font-semibold text-ink">{{ $company->establishment_name }}</span></p>
+                    @foreach ($groups as [$groupTitle, $groupHelp, $fields])
+                        <x-ui.form-section :title="$groupTitle" :description="$groupHelp">
+                            @foreach ($fields as $field)
+                                @php [$question, $kind] = $questions[$field]; @endphp
+                                <x-ui.field :label="__($question)" for="payroll-{{ $field }}" :name="$field" :help="$help[$field]">
+                                    @if ($kind === 'number')
+                                        <input type="number" min="0" id="payroll-{{ $field }}" name="{{ $field }}" value="{{ $value($field) }}" class="control px-3" aria-describedby="payroll-{{ $field }}-help">
+                                    @else
+                                        <select id="payroll-{{ $field }}" name="{{ $field }}" class="control" aria-describedby="payroll-{{ $field }}-help">
+                                            @foreach ($kind as $option => $label)
+                                                <option value="{{ $option }}" @selected((string) $value($field) === (string) $option)>{{ __($label) }}</option>
+                                            @endforeach
+                                        </select>
+                                    @endif
+                                </x-ui.field>
+                            @endforeach
+                        </x-ui.form-section>
                     @endforeach
                 </div>
-
-                <div class="flex justify-end">
+                <x-ui.save-bar>
+                    <x-slot:status>{{ __('Saved settings apply to salaries generated from now on.') }}</x-slot:status>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
-                </div>
+                </x-ui.save-bar>
             </form>
 
-            <div class="border-t border-gray-200">
-                <h3 class="px-5 pt-5 text-lg font-semibold text-gray-900">{{ __('Payroll rules') }}</h3>
+            <div class="card mt-8">
+                <div class="border-b border-line px-5 py-4"><h2 class="text-[15px] font-semibold text-ink">{{ __('Payroll rules') }}</h2><p class="mt-0.5 text-13 text-ink-2">{{ __('One-off extras such as a festival bonus, for a chosen month.') }}</p></div>
                 <div class="overflow-x-auto">
-                    <table class="mt-3 min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+                    <table class="min-w-full divide-y divide-line text-sm">
+                        <thead class="text-left">
                             <tr>
                                 <th class="px-5 py-3">{{ __('Sl') }}</th>
                                 <th class="px-5 py-3">{{ __('Type') }}</th>
@@ -89,10 +105,10 @@
                                 <th class="px-5 py-3">{{ __('Action') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-line">
                             @forelse ($rules as $rule)
                                 @php $modal = 'edit-payroll-rule-'.$rule->uuid; @endphp
-                                <tr class="hover:bg-gray-50">
+                                <tr>
                                     <td class="px-5 py-3 text-gray-500">{{ $loop->iteration }}</td>
                                     <td class="px-5 py-3">{{ \App\Models\PayrollRule::TYPES[$rule->type] ?? $rule->type }}</td>
                                     <td class="px-5 py-3 font-medium text-gray-900">{{ $rule->name }}</td>
@@ -117,7 +133,6 @@
                 </div>
             </div>
         @endif
-    </div>
     </div>
 
     @if ($company)

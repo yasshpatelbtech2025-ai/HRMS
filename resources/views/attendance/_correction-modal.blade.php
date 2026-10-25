@@ -3,8 +3,8 @@
     <form method="POST" action="{{ route('attendance.raw-data.correct') }}">
         @csrf
         <input type="hidden" name="employee" value="{{ $employee->uuid }}">
-        <div class="border-b border-gray-200 px-6 py-4">
-            <h2 class="text-lg font-semibold text-gray-900">{{ __('Attendance Correction Range') }}</h2>
+        <div class="border-b border-line px-6 py-4">
+            <h2 class="text-lg font-semibold text-ink">{{ __('Attendance Correction Range') }}</h2>
             <p class="text-sm text-gray-500">{{ __('Re-works the day, shift and missing flags of unlocked punches, e.g. after changing the shift.') }}</p>
         </div>
         <div class="space-y-4 px-6 py-5">

@@ -16,11 +16,11 @@
         <div class="card">
 
         <form method="GET" action="{{ route('attendance.shifts') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4">
-            <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+            <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                 @foreach ($companies as $option)
                     <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                 @endforeach
-            </select>
+            </select></label>
             <select name="year" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Year') }}">
                 @foreach (range((int) date('Y') + 1, 2020) as $year)
                     <option value="{{ $year }}" @selected($month->year === $year)>{{ $year }}</option>
@@ -101,7 +101,7 @@
                                     <td colspan="{{ $month->daysInMonth }}" class="border-t border-gray-200"></td>
                                 </tr>
                                 <template x-for="(entry, index) in group.entries" :key="entry.uuid">
-                                    <tr class="hover:bg-gray-50">
+                                    <tr>
                                         <td colspan="4" class="border-t border-gray-100"></td>
                                         <td class="whitespace-nowrap border-t border-gray-100 px-2 py-1 text-left text-sm">
                                             <span x-text="entry.label"></span>

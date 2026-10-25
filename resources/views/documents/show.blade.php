@@ -23,8 +23,8 @@
         <x-input-error class="px-5 pt-3" :messages="array_merge($errors->get('files'), $errors->get('files.*'))" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('File') }}</th>
                         <th class="px-5 py-3">{{ __('Size') }}</th>
@@ -33,9 +33,9 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($files as $file)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3"><a href="{{ route('documents.file', $file) }}" target="_blank" class="font-medium text-brand-600 hover:underline">{{ $file->original_name }}</a></td>
                             <td class="px-5 py-3">{{ number_format($file->size / 1024, 0) }} KB</td>
                             <td class="px-5 py-3">{{ $file->created_at->format('d M Y H:i') }}</td>

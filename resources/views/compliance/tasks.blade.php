@@ -57,7 +57,7 @@
         <div class="overflow-x-auto" x-data="bulkSelect">
             <x-bulk-bar :action="route('compliance.tasks.bulk')" noun="task|tasks"
                         :actions="['complete' => [__('Complete'), 'default', null], 'reopen' => [__('Reopen'), 'default', null], 'delete' => [__('Delete'), 'danger', 'Delete :count selected task(s)? Deleted tasks are not created again.']]" />
-            <table class="w-full divide-y divide-gray-200 text-sm">
+            <table class="w-full divide-y divide-line text-sm">
                 <thead class="bg-gray-50 text-left text-gray-600">
                     <tr>
                         <th class="w-10 px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-field text-primary focus:ring-primary/30" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all') }}"></th>
@@ -157,7 +157,7 @@
         <form method="POST" action="{{ route('compliance.tasks.store') }}" class="p-6">
             @csrf
             <input type="hidden" name="_modal" value="add-task">
-            <h2 class="text-lg font-semibold text-gray-900">{{ __('Add task') }}</h2>
+            <h2 class="text-lg font-semibold text-ink">{{ __('Add task') }}</h2>
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <x-select-field name="company" :label="__('Company')" required :value="$company?->uuid ?? $companies->first()?->uuid" :options="$companies->mapWithKeys(fn ($c) => [$c->uuid => $c->label])->all()" />

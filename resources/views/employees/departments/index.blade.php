@@ -23,8 +23,8 @@
         ]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="w-16 px-5 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="company" default>{{ __('Company name') }}</x-sort-header>
@@ -34,9 +34,9 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($subDepartments as $subDepartment)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $subDepartments->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3">{{ $subDepartment->company->establishment_name }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $subDepartment->name }}</td>

@@ -3,8 +3,8 @@
 <x-modal :name="$name" :show="$errors->has('file') || $errors->has('company_id')" max-width="2xl">
     <form method="POST" action="{{ $action }}" enctype="multipart/form-data">
         @csrf
-        <div class="border-b border-gray-200 px-6 py-4">
-            <h2 class="text-lg font-semibold text-gray-900">{{ $title }}</h2>
+        <div class="border-b border-line px-6 py-4">
+            <h2 class="text-lg font-semibold text-ink">{{ $title }}</h2>
         </div>
         <div class="space-y-4 px-6 py-5">
             @if ($companies)

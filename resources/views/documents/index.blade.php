@@ -25,7 +25,7 @@
 
         @foreach ($categories as $key => $category)
             <section x-show="category === 'all' || category === @js($key)">
-                <h3 class="mb-4 border-b border-gray-200 pb-2 text-xl font-semibold text-gray-900">{{ $category['title'] }}</h3>
+                <h2 class="mb-4 border-b border-line pb-2 text-[15px] font-semibold text-ink">{{ $category['title'] }}</h2>
                 @if (empty($category['slots']))
                     <p class="text-sm text-gray-500">{{ __('Add a company to get its documents here.') }}</p>
                 @endif

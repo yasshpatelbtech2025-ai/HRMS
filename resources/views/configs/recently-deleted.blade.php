@@ -25,7 +25,7 @@
         <div class="card">
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <table class="min-w-full divide-y divide-line text-sm">
                 <thead class="bg-gray-50 text-left">
                     <tr>
                         <th class="px-4 py-3">{{ __('Type') }}</th>
@@ -35,10 +35,10 @@
                         <th class="px-4 py-3 text-right">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($rows as $row)
                         @php $deletedAt = $row['model']->deleted_at; @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3"><span class="inline-flex whitespace-nowrap rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">{{ __($row['label']) }}</span></td>
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-900">{{ $row['title'] }}</p>

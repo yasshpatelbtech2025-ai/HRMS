@@ -20,8 +20,8 @@
         <div class="card">
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Name') }}</th>
                         <th class="px-5 py-3">{{ __('Role') }}</th>
@@ -31,10 +31,10 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @foreach ($users as $user)
                         @php $modal = 'edit-user-'.$user->id; @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3">
                                 <p class="font-medium text-gray-900">{{ $user->name }} @if ($user->is(auth()->user()))<span class="text-xs font-normal text-gray-500">({{ __('you') }})</span>@endif</p>
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>

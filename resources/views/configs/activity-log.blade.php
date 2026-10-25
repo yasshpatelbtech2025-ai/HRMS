@@ -55,8 +55,8 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('When') }}</th>
                         <th class="px-5 py-3">{{ __('Who') }}</th>
@@ -66,7 +66,7 @@
                         <th class="px-5 py-3">{{ __('Details') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($entries as $entry)
                         <tr class="align-top hover:bg-gray-50">
                             <td class="whitespace-nowrap px-5 py-3 text-gray-700" title="{{ $entry->created_at->format('d M Y H:i:s') }}">

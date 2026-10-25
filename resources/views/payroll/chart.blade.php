@@ -71,7 +71,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-right">
                         @foreach ($chart['rows'] as $row)
-                            <tr class="hover:bg-gray-50">
+                            <tr>
                                 <td class="px-2 py-2 text-left text-gray-500">{{ $loop->iteration }}</td>
                                 <td class="whitespace-nowrap px-2 py-2 text-left"><span class="font-medium text-gray-900">{{ $row['name'] }}</span> <span class="text-gray-500">{{ $row['code'] }}</span></td>
                                 <td class="px-2 py-2">{{ $row['paid_days'] + 0 }}</td>
