@@ -28,7 +28,7 @@
             </x-form-row>
         </div>
         <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-            <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+            <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
             <x-primary-button>{{ __('Import') }}</x-primary-button>
         </div>
     </form>

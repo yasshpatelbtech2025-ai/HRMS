@@ -3,10 +3,6 @@
 
     <x-section-tabs section="attendance" />
 
-    <div class="mb-4 flex justify-end print:hidden">
-        <button type="button" x-data x-on:click="$dispatch('open-modal', 'import-attendance')"
-                class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">{{ __('Import Attendance') }}</button>
-    </div>
     <x-import-errors />
     <x-bulk-upload name="import-attendance" :title="__('Import Attendance (Excel)')" :action="route('attendance.import')" :template="route('attendance.import.template')" :companies="$companies"
                    :hint="__('One row per punch: the employee code, the date and time, and IN or OUT. Punches already recorded are skipped.')" />
@@ -16,12 +12,17 @@
         $styles = [
             'P' => 'bg-success-soft text-success border-success/30',
             'HD' => 'bg-violet-100 text-violet-800 border-violet-200',
-            'A' => 'bg-danger-soft text-danger border-red-200',
-            'WO' => 'bg-warn-soft text-warn border-warn/30',
-            'PH' => 'bg-blue-100 text-info border-info/30',
+            'A' => 'bg-danger-soft text-danger border-danger/30',
+            'WO' => 'bg-sunken text-ink-2 border-line-strong',
+            'PH' => 'bg-info-soft text-info border-info/30',
             'LEAVE' => 'bg-teal-100 text-teal-800 border-teal-200',
-            'COFF' => 'bg-gray-200 text-gray-700 border-gray-300',
+            'COFF' => 'bg-primary-soft text-primary-ink border-primary/30',
         ];
+        $legend = [
+            'P' => [__('Present'), 'P'], 'HD' => [__('Half day'), 'HD'], 'A' => [__('Absent, loss of pay'), 'LOP'], 'MP' => [__('Missing punch'), 'MP'],
+            'WO' => [__('Week off'), 'WO'], 'PH' => [__('Holiday'), 'PH'], 'LEAVE' => [__('On leave'), 'LEAVE'], 'COFF' => [__('Comp-off'), 'COFF'],
+        ];
+        $mpStyle = 'bg-warn-soft text-warn border-warn/40';
         $labels = ['A' => 'LOP'];
         $days = collect(range(1, $month->daysInMonth))->map(fn ($d) => $month->setDay($d));
         $employeeOptions = $allEmployees->when(request('sub_department'), fn ($c) => $c->where('sub_department_id', (int) request('sub_department')));
@@ -82,9 +83,15 @@
                  this.leave.days = days > 0 ? days : '';
              },
          }">
-        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h1 class="text-2xl font-semibold text-ink">{{ __('Monthly present report') }}</h1>
-        </div>
+        <x-ui.page-header :title="__('Monthly present report')" :description="__('One row per employee, one box per day. Change a box to mark the day; the totals on the right update after saving.')">
+            <x-slot:actions>
+                <x-ui.button variant="secondary" type="button" onclick="window.print()">{{ __('Print') }}</x-ui.button>
+                <x-ui.button type="button" x-on:click="$dispatch('open-modal', 'import-attendance')">
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                    {{ __('Import Attendance') }}
+                </x-ui.button>
+            </x-slot:actions>
+        </x-ui.page-header>
         @if ($company && $employees->isNotEmpty())
             @php $sum = fn (string $key) => collect($grid)->sum(fn ($row) => $row['totals'][$key]) + 0; @endphp
             <x-stat-strip :items="[
@@ -97,76 +104,82 @@
 
         <div class="card">
 
-        <form method="GET" action="{{ route('attendance.index') }}" class="grid grid-cols-1 gap-3 border-b border-gray-200 px-5 py-4 sm:grid-cols-3 lg:grid-cols-6 print:hidden">
-            <select name="company" onchange="this.form.querySelectorAll('[data-reset]').forEach(el => el.value = ''); this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+        <form method="GET" action="{{ route('attendance.index') }}" class="grid grid-cols-2 gap-x-3 gap-y-3 border-b border-line px-4 py-3.5 sm:grid-cols-3 lg:grid-cols-5 print:hidden">
+            <label class="block min-w-0"><span class="mb-1 block text-xs font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.querySelectorAll('[data-reset]').forEach(el => el.value = ''); this.form.submit()" class="{{ $select }} w-full" aria-label="{{ __('Company') }}">
                 @foreach ($companies as $option)
                     <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                 @endforeach
-            </select>
-            <select name="sub_department" data-reset onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Department') }}">
+            </select></label>
+            <label class="block min-w-0"><span class="mb-1 block text-xs font-medium text-ink-2">{{ __('Department') }}</span><select name="sub_department" data-reset onchange="this.form.submit()" class="{{ $select }} w-full" aria-label="{{ __('Department') }}">
                 <option value="">{{ __('All departments') }}</option>
                 @foreach ($subDepartments as $option)
                     <option value="{{ $option->id }}" @selected((string) request('sub_department') === (string) $option->id)>{{ $option->name }}</option>
                 @endforeach
-            </select>
-            <select name="employee" data-reset onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Employee') }}">
+            </select></label>
+            <label class="block min-w-0"><span class="mb-1 block text-xs font-medium text-ink-2">{{ __('Employee') }}</span><select name="employee" data-reset onchange="this.form.submit()" class="{{ $select }} w-full" aria-label="{{ __('Employee') }}">
                 <option value="">{{ __('All employees') }}</option>
                 @foreach ($employeeOptions as $option)
                     <option value="{{ $option->uuid }}" @selected(request('employee') === $option->uuid)>{{ $option->employee_code }} - {{ $option->full_name }}</option>
                 @endforeach
-            </select>
-            <select name="year" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Year') }}">
+            </select></label>
+            <label class="block min-w-0"><span class="mb-1 block text-xs font-medium text-ink-2">{{ __('Year') }}</span><select name="year" onchange="this.form.submit()" class="{{ $select }} w-full" aria-label="{{ __('Year') }}">
                 @foreach (range((int) date('Y'), 2020) as $year)
                     <option value="{{ $year }}" @selected($month->year === $year)>{{ $year }}</option>
                 @endforeach
-            </select>
-            <select name="month" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Month') }}">
+            </select></label>
+            <label class="block min-w-0"><span class="mb-1 block text-xs font-medium text-ink-2">{{ __('Month') }}</span><select name="month" onchange="this.form.submit()" class="{{ $select }} w-full" aria-label="{{ __('Month') }}">
                 @foreach (range(1, 12) as $m)
                     <option value="{{ $m }}" @selected($month->month === $m)>{{ \Carbon\Carbon::create(2000, $m)->format('F') }}</option>
                 @endforeach
-            </select>
-            <div class="flex items-center gap-2">
-                <button type="button" onclick="window.print()" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Print') }}</button>
-            </div>
+            </select></label>
         </form>
 
         <x-input-error class="px-5 pt-3" :messages="$errors->get('date')" />
 
         @if (! $company)
-            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
+            <x-empty-state icon="building" :title="__('No company yet')" class="py-12">{{ __('Add a company first.') }}</x-empty-state>
         @elseif ($employees->isEmpty())
-            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('No employees were employed in :month.', ['month' => $month->format('F Y')]) }}</p>
+            <x-empty-state icon="users" :title="__('Nobody to show')" class="py-12">{{ __('No employees were employed in :month.', ['month' => $month->format('F Y')]) }}</x-empty-state>
         @else
+            <ul class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-2.5 text-xs text-ink-2 print:hidden" aria-label="{{ __('Legend') }}">
+                @foreach ($legend as $key => [$meaning, $code])
+                    <li class="flex items-center gap-1.5">
+                        <span class="inline-flex h-5 min-w-9 items-center justify-center rounded border px-1 font-mono text-2xs font-semibold {{ $key === 'MP' ? $mpStyle : $styles[$key] }}">{{ $code }}</span>{{ $meaning }}
+                    </li>
+                @endforeach
+                <li class="flex items-center gap-1.5"><span class="inline-block size-4 rounded-sm bg-primary-soft ring-2 ring-inset ring-primary"></span>{{ __('Today') }}</li>
+            </ul>
             <div class="max-h-[70vh] overflow-auto">
                 <table class="min-w-full border-separate border-spacing-0 text-xs">
-                    <thead class="sticky top-0 z-20 bg-gray-50 text-center font-semibold text-gray-700">
+                    <thead class="sticky top-0 z-20 bg-surface text-center font-medium text-ink-2">
                         <tr>
-                            <th class="sticky left-0 z-30 min-w-52 border-b border-gray-200 bg-gray-50 px-3 py-2 text-left">{{ __('Employee') }}</th>
+                            <th class="sticky left-0 z-30 min-w-52 border-b border-e border-line bg-surface px-3 py-2 text-left">{{ __('Employee') }}</th>
                             @foreach ($days as $day)
-                                <th class="border-b border-gray-200 px-1 py-2 {{ $day->isSunday() ? 'text-warn' : '' }}">{{ $day->format('d') }}<br><span class="font-normal">{{ $day->format('D') }}</span></th>
+                                <th @if ($day->isToday()) aria-current="date" @endif class="border-b border-line bg-surface px-1 py-2 {{ $day->isToday() ? 'grid-today' : ($day->isSunday() ? '!bg-sunken text-ink-3' : '') }}"><span class="font-mono text-13 font-medium {{ $day->isToday() ? 'text-primary-ink' : 'text-ink' }}">{{ $day->format('d') }}</span><br><span class="font-normal">{{ $day->format('D') }}</span></th>
                             @endforeach
                             @foreach (['P' => 'P', 'A' => 'LOP', 'PH' => 'PH', 'WO' => 'WO', 'HD' => 'HD', 'LEAVE' => 'LEAVE', 'COFF' => 'COFF'] as $total)
-                                <th class="border-b border-l border-gray-200 bg-gray-100 px-2 py-2">{{ $total }}</th>
+                                <th class="border-b border-l border-line bg-sunken px-2 py-2 font-mono">{{ $total }}</th>
                             @endforeach
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($employees as $employee)
                             @php $row = $grid[$employee->id]; @endphp
-                            <tr class="hover:bg-gray-50">
-                                <td class="sticky left-0 z-10 border-b border-gray-100 bg-white px-3 py-1.5">
-                                    <a href="{{ route('attendance.employee-report', ['employee' => $employee->uuid, 'month' => $month->format('Y-m')]) }}" target="_blank" class="flex items-center gap-2">
+                            <tr class="group/row">
+                                <td class="sticky left-0 z-10 border-b border-e border-line bg-surface px-3 py-1.5 group-hover/row:bg-sunken">
+                                    <a href="{{ route('attendance.employee-report', ['employee' => $employee->uuid, 'month' => $month->format('Y-m')]) }}" target="_blank" class="group flex items-center gap-2 rounded">
                                         <x-employee-photo :employee="$employee" class="h-8 w-8 shrink-0" />
                                         <span class="min-w-0">
-                                            <span class="block truncate text-sm font-semibold text-gray-900">{{ $employee->full_name }}</span>
-                                            <span class="block text-gray-500">{{ $employee->employee_code }}</span>
+                                            <span class="block truncate text-sm font-medium text-ink group-hover:text-primary group-hover:underline">{{ $employee->full_name }}</span>
+                                            <span class="block font-mono text-ink-3">{{ $employee->employee_code }}</span>
                                         </span>
                                     </a>
                                 </td>
                                 @foreach ($row['days'] as $date => $d)
-                                    <td class="border-b border-gray-100 px-0.5 py-1 text-center">
+                                    @php $isToday = $date === now()->toDateString(); @endphp
+                                    <td class="border-b border-line px-0.5 py-1 text-center {{ $isToday ? 'grid-today' : 'group-hover/row:bg-sunken/60' }}">
                                         @if (! $d['status'])
-                                            <span class="text-gray-300">-</span>
+                                            <span class="text-ink-3" aria-label="{{ __('No record') }}">–</span>
                                         @else
                                             @php
                                                 $status = $d['status'];
@@ -200,9 +213,9 @@
                                                 ];
                                             @endphp
                                             <select data-day="{{ (int) substr($date, 8, 2) }}" x-on:change="choose($event, @js($cell))" x-on:keydown="step($event, @js($cell))" title="{{ $title }}" aria-label="{{ $employee->full_name }} {{ $date }}"
-                                                    class="w-16 cursor-pointer rounded border px-1 py-1 text-center text-xs font-semibold {{ $d['missing'] && $status === 'A' ? 'bg-warn-soft text-warn border-amber-300' : $styles[$status] }} {{ $d['locked'] ? 'ring-1 ring-gray-500' : '' }}">
+                                                    class="w-16 cursor-pointer rounded border px-1 py-1 text-center font-mono text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 {{ $d['missing'] && $status === 'A' ? $mpStyle : $styles[$status] }} {{ $d['locked'] ? 'ring-1 ring-ink-3' : '' }}">
                                                 @foreach ($options as $value => $label)
-                                                    <option value="{{ $value === 'P_EDIT' ? 'P' : $value }}" @selected($value === $status) class="bg-white text-gray-900">
+                                                    <option value="{{ $value === 'P_EDIT' ? 'P' : $value }}" @selected($value === $status) class="bg-surface font-sans text-ink">
                                                         {{ $value === $status && $status === 'A' && $d['missing'] ? 'MP' : $label }}
                                                     </option>
                                                 @endforeach
@@ -210,16 +223,16 @@
                                         @endif
                                     </td>
                                 @endforeach
-                                @foreach (['P' => 'text-success', 'A' => 'text-red-600', 'PH' => 'text-info', 'WO' => 'text-warn', 'HD' => 'text-violet-700', 'LEAVE' => 'text-teal-700', 'COFF' => 'text-gray-700'] as $key => $color)
-                                    <td class="border-b border-l border-gray-100 bg-gray-50 px-2 text-center text-sm font-bold {{ $color }}">{{ $row['totals'][$key] + 0 }}</td>
+                                @foreach (['P' => 'text-success', 'A' => 'text-danger', 'PH' => 'text-info', 'WO' => 'text-ink-2', 'HD' => 'text-violet-700', 'LEAVE' => 'text-teal-700', 'COFF' => 'text-primary-ink'] as $key => $color)
+                                    <td class="border-b border-l border-line bg-sunken/60 px-2 text-center font-mono text-sm font-medium {{ $color }}">{{ $row['totals'][$key] + 0 }}</td>
                                 @endforeach
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            <p class="px-5 py-3 text-xs text-gray-500 print:hidden">
-                {{ __('P present · HD half day · LOP absent (MP: missing punch) · WO week off · PH holiday · LEAVE · COFF compensatory off. Hover a day for its times; click a name for the day-by-day report. Keyboard: arrow keys move between days, then press P, L, V or C to mark Present, LOP, Leave or Comp-off.') }}
+            <p class="flex items-start gap-2 border-t border-line px-4 py-3 text-xs text-ink-2 print:hidden"><x-icon name="info" class="size-4 shrink-0 text-ink-3" />
+                <span>{{ __('P present · HD half day · LOP absent (MP: missing punch) · WO week off · PH holiday · LEAVE · COFF compensatory off. Hover a day for its times; click a name for the day-by-day report. Keyboard: arrow keys move between days, then press P, L, V or C to mark Present, LOP, Leave or Comp-off.') }}</span>
             </p>
         @endif
 
@@ -231,18 +244,18 @@
                 <input type="hidden" name="date" :value="cell.date" value="{{ old('date') }}">
                 <div class="border-b border-gray-200 px-6 py-4">
                     <h2 class="text-lg font-semibold text-gray-900">{{ __('Enter In-Time & Out-Time') }}</h2>
-                    <p class="text-sm text-gray-500"><span x-text="cell.name"></span> · <span x-text="cell.date"></span> · {{ __('Shift') }}: <span x-text="cell.shift || '—'"></span></p>
+                    <p class="text-sm text-ink-2"><span x-text="cell.name"></span> · <span x-text="cell.date"></span> · {{ __('Shift') }}: <span x-text="cell.shift || '—'"></span></p>
                 </div>
                 <div class="space-y-4 px-6 py-5">
                     <x-form-row :label="__('In-Time')" for="grid-in" required :messages="$errors->get('in_time')">
-                        <input type="datetime-local" id="grid-in" name="in_time" :value="cell.in" value="{{ old('in_time') }}" required class="block w-full {{ $select }}">
+                        <input type="datetime-local" id="grid-in" name="in_time" :value="cell.in" value="{{ old('in_time') }}" required class="control">
                     </x-form-row>
                     <x-form-row :label="__('Out-Time')" for="grid-out" required :messages="$errors->get('out_time')">
-                        <input type="datetime-local" id="grid-out" name="out_time" :value="cell.out" value="{{ old('out_time') }}" required class="block w-full {{ $select }}">
+                        <input type="datetime-local" id="grid-out" name="out_time" :value="cell.out" value="{{ old('out_time') }}" required class="control">
                     </x-form-row>
                 </div>
                 <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
-                    <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+                    <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>
             </form>
@@ -255,35 +268,35 @@
                 <input type="hidden" name="employee" :value="cell.employee" value="{{ old('employee') }}">
                 <div class="border-b border-gray-200 px-6 py-4">
                     <h2 class="text-lg font-semibold text-gray-900">{{ __('Enter Leave') }}</h2>
-                    <p class="text-sm text-gray-500" x-text="cell.name"></p>
+                    <p class="text-sm text-ink-2" x-text="cell.name"></p>
                 </div>
                 <div class="space-y-4 px-6 py-5">
                     <x-form-row :label="__('Leave type')" for="grid-leave-type" required :messages="$errors->get('leave_type_id')">
-                        <select id="grid-leave-type" name="leave_type_id" required class="block w-full {{ $select }}">
+                        <select id="grid-leave-type" name="leave_type_id" required class="control">
                             <option value="">{{ __('Select leave type') }}</option>
                             @foreach ($leaveTypes as $type)
                                 <option value="{{ $type->id }}" @selected((string) old('leave_type_id') === (string) $type->id)>{{ $type->code }} — {{ $type->name }}</option>
                             @endforeach
                         </select>
                         @if ($leaveTypes->isEmpty())
-                            <p class="mt-1 text-xs text-gray-500">{{ __('This company has no leave types.') }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a></p>
+                            <p class="control-help">{{ __('This company has no leave types.') }} <a href="{{ route('attendance.leave.types') }}" class="font-medium text-primary hover:underline">{{ __('Add them first.') }}</a></p>
                         @endif
                     </x-form-row>
                     <x-form-row :label="__('From date')" for="grid-leave-start" required :messages="$errors->get('start_date')">
-                        <input type="date" id="grid-leave-start" name="start_date" x-model="leave.start" x-on:change="countDays()" required class="block w-full {{ $select }}">
+                        <input type="date" id="grid-leave-start" name="start_date" x-model="leave.start" x-on:change="countDays()" required class="control">
                     </x-form-row>
                     <x-form-row :label="__('End date')" for="grid-leave-end" required :messages="$errors->get('end_date')">
-                        <input type="date" id="grid-leave-end" name="end_date" x-model="leave.end" x-on:change="countDays()" required class="block w-full {{ $select }}">
+                        <input type="date" id="grid-leave-end" name="end_date" x-model="leave.end" x-on:change="countDays()" required class="control">
                     </x-form-row>
                     <x-form-row :label="__('Total days')" for="grid-leave-days" required :messages="$errors->get('days')">
-                        <input type="number" step="0.5" min="0.5" id="grid-leave-days" name="days" x-model="leave.days" required class="block w-full {{ $select }}">
+                        <input type="number" step="0.5" min="0.5" id="grid-leave-days" name="days" x-model="leave.days" required class="control">
                     </x-form-row>
                     <x-form-row :label="__('Reason')" for="grid-leave-reason">
-                        <input id="grid-leave-reason" name="reason" value="{{ old('reason') }}" class="block w-full {{ $select }}">
+                        <input id="grid-leave-reason" name="reason" value="{{ old('reason') }}" class="control">
                     </x-form-row>
                 </div>
                 <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
-                    <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+                    <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>
             </form>

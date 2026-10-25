@@ -42,7 +42,7 @@
 <div x-show="drawer" x-transition.opacity.duration.200ms @click="drawer = false" class="fixed inset-0 z-40 bg-ink/40 dark:bg-black/60 lg:hidden" style="display: none;"></div>
 
 <aside id="sidebar" aria-label="{{ __('Main') }}" :data-open="drawer"
-       class="app-sidebar fixed inset-y-0 start-0 z-50 flex flex-col border-e border-line bg-rail transition-[transform,width] duration-base ease-out print:hidden max-lg:shadow-xl" x-trap.inert="drawer && window.innerWidth < 1024">
+       class="app-sidebar fixed inset-y-0 start-0 z-50 flex flex-col border-e border-line bg-rail transition-[transform,width] duration-base ease-out print:hidden max-lg:data-[open=true]:shadow-xl" x-trap.inert="drawer && window.innerWidth < 1024">
     <div class="flex h-[var(--topbar-h)] shrink-0 items-center justify-between gap-2 border-b border-line px-4">
         <a href="{{ route('dashboard') }}" class="min-w-0 rounded-md" aria-label="{{ __(':name home', ['name' => config('branding.name')]) }}">
             <x-brand-logo class="rail-hide" />

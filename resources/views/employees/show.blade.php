@@ -15,12 +15,12 @@
     <a href="{{ route('employees.index') }}" class="mb-3 inline-flex items-center gap-1 text-sm text-ink-2 hover:text-ink print:hidden"><x-icon name="chevron-left" class="size-4" /> {{ __('Back to employee list') }}</a>
 
     {{-- Profile header (screen only; the printed form below carries its own header). --}}
-    <section class="mb-5 rounded-lg border border-line bg-surface p-5 shadow-hairline print:hidden">
+    <section class="card mb-6 p-5 sm:p-6 print:hidden">
         <div class="flex flex-wrap items-start gap-5">
             <x-employee-photo :employee="$e" class="size-20 shrink-0 text-xl" />
             <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-2xl font-semibold text-ink">{{ $e->full_name }}</h2>
+                    <h1 class="text-2xl font-semibold text-ink">{{ $e->full_name }}</h1>
                     <x-status-badge :active="$e->status === \App\Enums\EmployeeStatus::Active" />
                     @if ($e->separation_date)<span class="text-xs text-warn">{{ __('Separation date: :date', ['date' => $date($e->separation_date)]) }}</span>@endif
                 </div>
@@ -30,8 +30,8 @@
                 </p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('employees.edit', $e) }}" class="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-white shadow-hairline hover:bg-primary-hover"><x-icon name="pencil" class="size-4" /> {{ __('Edit') }}</a>
-                <button type="button" onclick="window.print()" class="inline-flex h-9 items-center rounded-md border border-line-strong bg-surface px-3.5 text-sm font-medium text-ink hover:bg-sunken">{{ __('Print') }}</button>
+                <x-ui.button variant="secondary" type="button" onclick="window.print()">{{ __('Print') }}</x-ui.button>
+                <x-ui.button :href="route('employees.edit', $e)" icon="pencil">{{ __('Edit') }}</x-ui.button>
             </div>
         </div>
 
@@ -51,14 +51,14 @@
         </dl>
 
         <div class="mt-4 flex flex-wrap gap-2 border-t border-line pt-4 text-sm">
-            <a href="{{ route('attendance.employee-report', ['employee' => $e->uuid, 'month' => now()->format('Y-m')]) }}" class="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3 py-1.5 text-ink-2 hover:bg-sunken hover:text-ink"><x-icon name="clock" class="size-4" /> {{ __('Attendance this month') }}</a>
-            <a href="{{ route('payroll.revisions', ['employee' => $e->uuid]) }}" class="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-3 py-1.5 text-ink-2 hover:bg-sunken hover:text-ink"><x-icon name="wallet" class="size-4" /> {{ __('Salary revisions') }}</a>
+            <a href="{{ route('attendance.employee-report', ['employee' => $e->uuid, 'month' => now()->format('Y-m')]) }}" class="inline-flex h-control-sm items-center gap-1.5 rounded-control border border-line-strong px-3 text-13 font-medium text-ink hover:bg-sunken"><x-icon name="clock" class="size-4" /> {{ __('Attendance this month') }}</a>
+            <a href="{{ route('payroll.revisions', ['employee' => $e->uuid]) }}" class="inline-flex h-control-sm items-center gap-1.5 rounded-control border border-line-strong px-3 text-13 font-medium text-ink hover:bg-sunken"><x-icon name="wallet" class="size-4" /> {{ __('Salary revisions') }}</a>
         </div>
     </section>
 
-    <h3 class="mb-2 text-sm font-medium text-ink-2 print:hidden">{{ __('Full details') }}</h3>
+    <h2 class="mb-3 text-[15px] font-semibold text-ink print:hidden">{{ __('Full details') }}</h2>
 
-    <article class="rounded-lg bg-white p-6 text-sm shadow-sm ring-1 ring-gray-200 print:max-w-none print:p-0 print:shadow-none print:ring-0">
+    <article class="card p-5 text-sm sm:p-6 print:max-w-none print:border-0 print:p-0 print:shadow-none print:ring-0">
         <header class="mb-6 hidden items-start justify-between gap-6 border-b border-gray-200 pb-4 print:flex">
             <div>
                 <h1 class="text-xl font-bold tracking-wide text-gray-900">{{ __('EMPLOYEE DETAILS FORM') }}</h1>

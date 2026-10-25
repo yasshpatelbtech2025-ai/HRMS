@@ -5,14 +5,14 @@
         $cards = [
             ['label' => __('Total employee'), 'value' => $stats['total'], 'accent' => 'bg-ink', 'href' => route('employees.index', $company ? ['company_id' => $company->id] : [])],
             ['label' => __('Today presents'), 'value' => $stats['present'], 'accent' => 'bg-success', 'href' => route('attendance.index', $company ? ['company' => $company->uuid] : [])],
-            ['label' => __('Today absents'), 'value' => $stats['absent'], 'accent' => 'bg-srympex', 'href' => route('attendance.index', $company ? ['company' => $company->uuid] : [])],
+            ['label' => __('Today absents'), 'value' => $stats['absent'], 'accent' => 'bg-danger', 'href' => route('attendance.index', $company ? ['company' => $company->uuid] : [])],
             ['label' => __('Today leave'), 'value' => $stats['leave'], 'accent' => 'bg-warn', 'href' => route('attendance.leave', $company ? ['company' => $company->uuid] : [])],
         ];
         // Status colours (good / warning / critical) with a neutral for days off; every bar also carries its counts as text.
         $segments = [
             'present' => ['label' => __('Present'), 'class' => 'bg-success'],
             'leave' => ['label' => __('Leave'), 'class' => 'bg-warn'],
-            'absent' => ['label' => __('Absent'), 'class' => 'bg-srympex'],
+            'absent' => ['label' => __('Absent'), 'class' => 'bg-danger'],
             'off' => ['label' => __('Week off / holiday'), 'class' => 'bg-gray-300'],
         ];
     @endphp
@@ -42,25 +42,79 @@
         </x-slot:actions>
     </x-ui.page-header>
 
+    <div class="mb-5 grid gap-5 xl:grid-cols-3">
+        {{-- Needs attention: real counts, most urgent first, each opening its list. --}}
+        <section class="card self-start xl:col-span-2">
+            <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
+                <div>
+                    <h2 class="text-[15px] font-semibold text-ink">{{ __('Needs attention today') }}</h2>
+                    <p class="text-13 text-ink-2">{{ __('Most urgent first. Open one to deal with it.') }}</p>
+                </div>
+                @if ($attentionItems->isNotEmpty())
+                    <x-ui.badge tone="warn" dot>{{ trans_choice(':count item|:count items', $attentionItems->count()) }}</x-ui.badge>
+                @endif
+            </header>
+            <ul class="divide-y divide-line">
+                @forelse ($attentionItems as $item)
+                    <li>
+                        <a href="{{ $item['href'] }}" class="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-fast hover:bg-sunken/60">
+                            <span class="w-12 shrink-0 text-end font-mono text-xl font-medium tabular {{ $item['tone'] }}">{{ number_format($item['count']) }}</span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block text-sm font-medium text-ink">{{ $item['label'] }}</span>
+                                <span class="block text-13 text-ink-3">{{ $item['hint'] }}</span>
+                            </span>
+                            <span class="flex items-center gap-1 text-13 font-medium text-primary max-sm:sr-only">{{ __('Review') }}<x-icon name="arrow-right" class="size-4 transition duration-fast group-hover:translate-x-0.5" /></span>
+                        </a>
+                    </li>
+                @empty
+                    <li class="flex items-center gap-3 px-5 py-6 text-sm text-ink-2">
+                        <span class="flex size-9 items-center justify-center rounded-full bg-success-soft text-success"><x-icon name="check-circle" class="size-5" /></span>
+                        {{ __('All clear: nothing overdue, no missing punches and no requests waiting.') }}
+                    </li>
+                @endforelse
+            </ul>
+        </section>
+
+        {{-- Quick actions --}}
+        <section class="card self-start overflow-hidden">
+            <header class="border-b border-line px-5 py-4"><h2 class="text-[15px] font-semibold text-ink">{{ __('Quick actions') }}</h2></header>
+            <div class="grid grid-cols-2 gap-px bg-line">
+                @foreach ([
+                    ['Add employee', 'users', route('employees.create')],
+                    ['Monthly attendance', 'calendar', route('attendance.index', $scope)],
+                    ['Missing punch', 'clock', route('attendance.missing-punch', $scope)],
+                    ['Generate salary', 'wallet', route('payroll.index')],
+                    ['To Do List', 'shield', route('compliance.to-do', $scope)],
+                    ['Reports', 'chart', route('reports.index', $scope)],
+                ] as [$label, $icon, $href])
+                    <a href="{{ $href }}" class="group flex items-center gap-2.5 bg-surface px-4 py-3.5 text-sm text-ink transition-colors duration-fast hover:bg-primary-soft/60">
+                        <x-icon :name="$icon" class="size-[18px] text-ink-3 group-hover:text-primary" />{{ __($label) }}
+                    </a>
+                @endforeach
+            </div>
+            <p class="border-t border-line px-5 py-2.5 text-xs text-ink-3">{{ __('Tip: press') }} <kbd class="rounded border border-line bg-sunken px-1 font-mono">Ctrl K</kbd> {{ __('to find any employee or page.') }}</p>
+        </section>
+    </div>
+
     {{-- Today's muster: the headline numbers, then one strip per client company with a
          square per employee, like a page of the muster roll. Every number links to its list. --}}
     @php
         $square = [
             'present' => ['class' => 'bg-success', 'label' => __('Present')],
             'leave' => ['class' => 'bg-warn', 'label' => __('Leave')],
-            'absent' => ['class' => 'bg-srympex', 'label' => __('Absent')],
+            'absent' => ['class' => 'bg-danger', 'label' => __('Absent')],
             'off' => ['class' => 'bg-gray-400', 'label' => __('Week off / holiday')],
             'none' => ['class' => 'bg-surface ring-1 ring-inset ring-line-strong', 'label' => __('No record')],
         ];
         $musterLimit = 60;
     @endphp
     <section class="card mb-5 overflow-hidden" aria-labelledby="muster-title">
-        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
+        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
             <div class="flex items-baseline gap-2.5">
-                <h2 id="muster-title" class="text-base font-semibold text-ink">{{ __("Today's muster") }}</h2>
+                <h2 id="muster-title" class="text-[15px] font-semibold text-ink">{{ __("Today's attendance") }}</h2>
                 <span class="font-mono text-xs text-ink-3">{{ $today->format('D, d M Y') }}</span>
             </div>
-            <a href="{{ route('attendance.index', $scope) }}" class="group inline-flex items-center gap-1 text-13 font-medium text-ink-2 hover:text-ink">
+            <a href="{{ route('attendance.index', $scope) }}" class="group inline-flex items-center gap-1 text-13 font-medium text-primary hover:underline">
                 {{ __('Monthly attendance') }}<x-icon name="arrow-right" class="size-4 transition-transform group-hover:translate-x-0.5" />
             </a>
         </header>
@@ -69,7 +123,7 @@
             @foreach ($cards as $i => $card)
                 <a href="{{ $card['href'] }}" class="group px-5 py-4 transition-colors hover:bg-sunken/60 {{ $i % 2 ? 'border-s border-line' : '' }} {{ $i >= 2 ? 'max-sm:border-t max-sm:border-line' : '' }} {{ $i === 2 ? 'sm:border-s sm:border-line' : '' }}">
                     <p class="flex items-center gap-2 text-13 text-ink-2"><span class="size-2.5 rounded-[3px] {{ $card['accent'] }}"></span>{{ $card['label'] }}</p>
-                    <p class="mt-1.5 font-mono text-[28px] font-medium leading-none tabular text-ink">{{ number_format($card['value']) }}</p>
+                    <p class="mt-2 font-mono text-3xl font-medium leading-none tabular text-ink">{{ number_format($card['value']) }}</p>
                 </a>
             @endforeach
         </div>
@@ -102,68 +156,15 @@
         @endif
     </section>
 
-    <div class="grid gap-5 xl:grid-cols-3">
-        {{-- Needs attention: real counts, most urgent first, each opening its list. --}}
-        <section class="card self-start xl:col-span-2">
-            <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5">
-                <h2 class="text-sm font-semibold text-ink">{{ __('Needs attention') }}</h2>
-                @if ($attentionItems->isNotEmpty())
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn ring-1 ring-inset ring-warn/20">
-                        <span class="size-1.5 rounded-full bg-current"></span>{{ trans_choice(':count item|:count items', $attentionItems->count()) }}
-                    </span>
-                @endif
-            </header>
-            <ul class="divide-y divide-line">
-                @forelse ($attentionItems as $item)
-                    <li>
-                        <a href="{{ $item['href'] }}" class="group flex items-center gap-4 px-5 py-3 transition-colors hover:bg-sunken/60">
-                            <span class="w-14 shrink-0 text-end font-mono text-lg font-medium tabular {{ $item['tone'] }}">{{ number_format($item['count']) }}</span>
-                            <span class="min-w-0 flex-1">
-                                <span class="block text-sm font-medium text-ink">{{ $item['label'] }}</span>
-                                <span class="block text-13 text-ink-3">{{ $item['hint'] }}</span>
-                            </span>
-                            <span class="flex items-center gap-1 text-13 font-medium text-primary opacity-70 group-hover:opacity-100">{{ __('Review') }}<x-icon name="arrow-right" class="size-4 transition group-hover:translate-x-0.5" /></span>
-                        </a>
-                    </li>
-                @empty
-                    <li class="flex items-center gap-3 px-5 py-5 text-sm text-ink-2">
-                        <x-icon name="check-circle" class="text-success" />
-                        {{ __('All clear: nothing overdue, no missing punches and no requests waiting.') }}
-                    </li>
-                @endforelse
-            </ul>
-        </section>
-
-        {{-- Quick actions --}}
-        <section class="card self-start overflow-hidden">
-            <header class="border-b border-line px-5 py-3.5"><h2 class="text-sm font-semibold text-ink">{{ __('Quick actions') }}</h2></header>
-            <div class="grid grid-cols-2 gap-px bg-line">
-                @foreach ([
-                    ['Add employee', 'users', route('employees.create')],
-                    ['Monthly attendance', 'calendar', route('attendance.index', $scope)],
-                    ['Missing punch', 'clock', route('attendance.missing-punch', $scope)],
-                    ['Generate salary', 'wallet', route('payroll.index')],
-                    ['To Do List', 'shield', route('compliance.to-do', $scope)],
-                    ['Reports', 'chart', route('reports.index', $scope)],
-                ] as [$label, $icon, $href])
-                    <a href="{{ $href }}" class="flex items-center gap-2.5 bg-surface px-4 py-3.5 text-sm text-ink-2 transition-colors hover:bg-primary-soft/50 hover:text-ink">
-                        <x-icon :name="$icon" class="size-[18px] text-ink-3" />{{ __($label) }}
-                    </a>
-                @endforeach
-            </div>
-            <p class="border-t border-line px-5 py-2.5 text-xs text-ink-3">{{ __('Tip: press') }} <kbd class="rounded border border-line bg-sunken px-1 font-mono">Ctrl K</kbd> {{ __('to find any employee or page.') }}</p>
-        </section>
-    </div>
-
-    <div class="mt-7 grid grid-cols-1 gap-5 xl:grid-cols-3">
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
         {{-- Daily attendance statistic (department wise) --}}
         <section class="card xl:col-span-2" x-data="{ table: false }">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
                 <div>
-                    <h2 class="text-sm font-semibold text-ink">{{ __('Daily attendance statistic (department wise)') }}</h2>
+                    <h2 class="text-[15px] font-semibold text-ink">{{ __('Daily attendance statistic (department wise)') }}</h2>
                     <p class="text-xs text-ink-3">{{ $today->format('l, d M Y') }}</p>
                 </div>
-                <button type="button" x-on:click="table = ! table" class="text-xs font-medium text-primary hover:underline" x-text="table ? @js(__('Show chart')) : @js(__('Show table'))"></button>
+                <button type="button" x-on:click="table = ! table" class="rounded-control border border-line-strong px-2.5 py-1 text-xs font-medium text-ink hover:bg-sunken" x-text="table ? @js(__('Show chart')) : @js(__('Show table'))"></button>
             </div>
 
             @if ($departments->isEmpty())
@@ -200,8 +201,8 @@
                 </div>
 
                 <div class="overflow-x-auto" x-show="table" style="display: none;">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50 text-left font-semibold text-ink-2">
+                    <table class="min-w-full divide-y divide-line text-sm">
+                        <thead class="text-left">
                             <tr>
                                 <th class="px-5 py-2">{{ __('Department') }}</th>
                                 @foreach ($segments as $segment)<th class="px-3 py-2 text-right">{{ $segment['label'] }}</th>@endforeach
@@ -221,14 +222,14 @@
         </section>
 
         {{-- Requests --}}
-        <section class="card" x-data="{ tab: 'attendance' }">
-            <div class="flex items-center justify-between gap-2 border-b border-line px-5 py-3.5">
-                <h2 class="text-sm font-semibold text-ink">{{ __('Requests') }}</h2>
+        <section class="card self-start" x-data="{ tab: 'attendance' }">
+            <div class="flex items-center justify-between gap-2 border-b border-line px-5 py-4">
+                <h2 class="text-[15px] font-semibold text-ink">{{ __('Requests') }}</h2>
                 <div class="flex gap-0.5 rounded-md bg-sunken p-0.5" role="tablist">
                     <button type="button" role="tab" :aria-selected="tab === 'attendance'" x-on:click="tab = 'attendance'"
-                            class="rounded-[5px] px-2 py-1 text-xs font-medium" :class="tab === 'attendance' ? 'bg-surface text-ink shadow-hairline' : 'text-ink-2 hover:text-ink'">{{ __('Attendance') }}</button>
+                            class="rounded-[5px] px-2 py-1 text-xs font-medium" :class="tab === 'attendance' ? 'bg-surface text-ink shadow-sm' : 'text-ink-2 hover:text-ink'">{{ __('Attendance') }}</button>
                     <button type="button" role="tab" :aria-selected="tab === 'leave'" x-on:click="tab = 'leave'"
-                            class="rounded-[5px] px-2 py-1 text-xs font-medium" :class="tab === 'leave' ? 'bg-surface text-ink shadow-hairline' : 'text-ink-2 hover:text-ink'">{{ __('Leave') }}</button>
+                            class="rounded-[5px] px-2 py-1 text-xs font-medium" :class="tab === 'leave' ? 'bg-surface text-ink shadow-sm' : 'text-ink-2 hover:text-ink'">{{ __('Leave') }}</button>
                 </div>
             </div>
 
@@ -267,9 +268,9 @@
         $tone = $health >= 90 ? ['text-success', 'bg-success'] : ($health >= 60 ? ['text-warn', 'bg-warn'] : ['text-danger', 'bg-danger']);
     @endphp
     <section class="card mt-5">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3.5">
-            <h2 class="text-sm font-semibold text-ink">{{ __('Compliance Health') }}</h2>
-            <a href="{{ route('compliance.to-do') }}" class="text-sm font-semibold text-primary hover:underline">{{ __('Open To Do List') }}</a>
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
+            <h2 class="text-[15px] font-semibold text-ink">{{ __('Compliance Health') }}</h2>
+            <a href="{{ route('compliance.to-do') }}" class="text-13 font-medium text-primary hover:underline">{{ __('Open To Do List') }}</a>
         </div>
         <div class="grid grid-cols-1 gap-6 px-5 py-5 lg:grid-cols-3">
             <div>

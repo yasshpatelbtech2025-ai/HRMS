@@ -13,7 +13,7 @@
         <form method="GET" action="{{ route('payroll.salaries') }}" x-show="filtersOpen" x-transition class="flex flex-wrap items-end gap-3 border-b border-gray-200 bg-gray-50 px-5 py-4" style="display: none;">
             <input type="month" name="salary_month" value="{{ $month }}" class="control-inline" aria-label="{{ __('Salary month') }}">
             <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Find') }}</button>
-            <a href="{{ route('payroll.salaries') }}" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">{{ __('Reset') }}</a>
+            <a href="{{ route('payroll.salaries') }}" class="inline-flex h-control items-center rounded-control px-3 text-sm font-medium text-ink-2 hover:bg-sunken hover:text-ink">{{ __('Reset') }}</a>
         </form>
 
         @php $exportQuery = request()->only('salary_month', 'search'); @endphp

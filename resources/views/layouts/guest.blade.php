@@ -14,55 +14,49 @@
     <body class="bg-canvas font-sans text-ink antialiased">
         <x-toasts />
         @php
-            // A decorative muster roll: one row per shift, one square per day. P present,
-            // L leave, A absent, W week off. Fixed pattern so it never looks like real data.
-            $roll = [
-                'General' => 'PPPPPPWPPPLPPW',
-                'Shift A' => 'PPAPPPWPPPPPPW',
-                'Shift B' => 'PPPPLLWPPPPAPW',
-                'Night'   => 'PPPPPPWPAPPPPW',
-                'Boiler'  => 'PLPPPPWPPPPPPW',
+            // A decorative register page: what a month looks like in the app. Fixed wording,
+            // so it never reads as real data.
+            $entries = [
+                ['01', __('Muster roll opened'), __('All sites')],
+                ['07', __('Salary sheet generated'), __('Payroll')],
+                ['15', __('PF and ESIC returns filed'), __('Compliance')],
+                ['20', __('Leave requests approved'), __('Attendance')],
+                ['25', __('Tax invoices sent'), __('Invoice')],
+                ['30', __('Month closed'), __('Reports')],
             ];
-            $cell = ['P' => 'bg-[#2fa36b]', 'L' => 'bg-[#e0a43a]', 'A' => 'bg-srympex', 'W' => 'bg-white/15'];
-            $today = 12;
         @endphp
         <div class="grid min-h-screen lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
-            {{-- Brand panel: Site Ink, the Srympex wordmark and a muster roll filling in. --}}
-            <aside class="relative hidden overflow-hidden bg-[#17181C] text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16" aria-hidden="true">
-                <x-brand-logo size="lg" invert />
+            {{-- Brand panel: a ruled register page; its lines rule themselves in once. --}}
+            <aside class="relative hidden overflow-hidden border-e border-line bg-surface lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16" aria-hidden="true">
+                <x-brand-logo size="lg" />
 
                 <div class="max-w-xl">
-                    <p class="text-[34px] font-semibold leading-[1.15] tracking-tight">{{ __('Every employee, every company, every month: in one place.') }}</p>
-                    <p class="mt-4 max-w-md text-base text-white/60">{{ __('Attendance, compliance and payroll for your client sites.') }}</p>
+                    <p class="text-4xl font-semibold text-ink">{{ __('Attendance, payroll and compliance for every client site.') }}</p>
+                    <p class="mt-4 max-w-md text-base text-ink-2">{{ __('One register for every employee, every company and every month.') }}</p>
 
-                    <div class="mt-10 rounded-xl border border-white/10 bg-white/[0.04] p-5">
-                        <div class="mb-3 flex items-center justify-between font-mono text-[11px] text-white/45">
-                            <span>{{ __('Muster roll') }}</span>
-                            <span>{{ now()->format('M Y') }}</span>
-                        </div>
-                        <div class="grid grid-cols-[4.5rem_repeat(14,minmax(0,1fr))] items-center gap-[5px]">
-                            <span></span>
-                            @for ($d = 1; $d <= 14; $d++)
-                                <span class="text-center font-mono text-[10px] {{ $d === $today ? 'text-white' : 'text-white/35' }}">{{ $d }}</span>
-                            @endfor
-                            @foreach ($roll as $label => $days)
-                                <span class="truncate font-mono text-[11px] text-white/55">{{ $label }}</span>
-                                @foreach (str_split($days) as $i => $state)
-                                    <span class="muster-cell aspect-square rounded-[3px] {{ $cell[$state] }} {{ $i + 1 === $today ? 'ring-2 ring-white/70 ring-offset-1 ring-offset-[#17181C]' : '' }}"
-                                          style="--i: {{ $i }}"></span>
-                                @endforeach
+                    <div class="relative mt-12 ps-16">
+                        <span class="register-line absolute inset-y-0 start-12 w-0.5 origin-top rounded-full bg-primary" style="--i: 0"></span>
+                        <p class="register-line mb-2 flex justify-between font-mono text-xs text-ink-3" style="--i: 0"><span>{{ now()->format('F Y') }}</span><span>{{ __('Register') }}</span></p>
+                        <ol>
+                            @foreach ($entries as $i => [$day, $what, $where])
+                                <li class="register-line relative flex items-baseline gap-4 border-t border-line py-3 text-sm" style="--i: {{ $i + 1 }}">
+                                    <span class="absolute -start-16 w-10 text-end font-mono text-xs text-ink-3">{{ $day }}</span>
+                                    <span class="flex-1 text-ink">{{ $what }}</span>
+                                    <span class="text-13 text-ink-3">{{ $where }}</span>
+                                </li>
                             @endforeach
-                        </div>
+                            <li class="register-line border-t border-line" style="--i: 7"></li>
+                        </ol>
                     </div>
                 </div>
 
-                <p class="flex items-center justify-between font-mono text-xs text-white/45">
+                <p class="flex items-center justify-between font-mono text-xs text-ink-3">
                     <span>{{ now()->format('d M Y') }}</span>
                     <span>{{ __('Bharuch · Mumbai') }}</span>
                 </p>
             </aside>
 
-            <main class="flex flex-col items-center justify-center px-5 py-10 sm:px-10">
+            <main class="flex flex-col items-center justify-center px-4 py-10 sm:px-10">
                 <div class="w-full max-w-sm">
                     <a href="/" class="mb-10 inline-block lg:hidden"><x-brand-logo /></a>
                     {{ $slot }}

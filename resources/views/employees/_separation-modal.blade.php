@@ -13,11 +13,11 @@
                 <p class="text-sm text-gray-500" x-text="target.name"></p>
             </div>
             <div class="px-6 py-5">
-                <label for="separation_date" class="sr-only">{{ __('Separation date') }}</label>
+                <label for="separation_date" class="control-label">{{ __('Separation date') }}</label>
                 <div class="flex gap-2">
-                    <x-text-input type="date" id="separation_date" name="separation_date" x-model="target.date" class="block w-full" />
+                    <x-text-input type="date" id="separation_date" name="separation_date" x-model="target.date" />
                     <button type="button" x-show="target.date" x-on:click="target.date = ''" title="{{ __('Clear date') }}"
-                            class="rounded-md bg-red-600 px-3 text-sm font-semibold text-white hover:bg-red-700">✕</button>
+                            class="inline-flex shrink-0 items-center rounded-control border border-line-strong px-3 text-sm font-medium text-ink-2 hover:bg-sunken hover:text-ink">{{ __('Clear') }}</button>
                 </div>
                 <x-input-error class="mt-2" :messages="$errors->get('separation_date')" />
             </div>
