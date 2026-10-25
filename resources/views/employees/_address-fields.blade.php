@@ -15,7 +15,7 @@
     ];
 @endphp
 
-<div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+<div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
     @foreach ($fields as $field => [$label, $list])
         <div>
             <label for="address-{{ $type }}-{{ $field }}" class="control-label">{{ __($label) }}</label>

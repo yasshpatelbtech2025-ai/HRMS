@@ -69,57 +69,50 @@
             @method('PUT')
         @endif
 
-        {{-- Steps (like the first version): adding goes one section at a time; editing shows every section with a jump list. --}}
-        <div x-data="formSteps({ stepped: @js(! $editing), remember: @js(! $editing) })" class="grid gap-6 pb-24 lg:grid-cols-[15rem_1fr] xl:gap-8">
-            <nav aria-label="{{ __('Form sections') }}" class="lg:sticky lg:top-[calc(var(--topbar-h)+1.5rem)] lg:self-start">
-                {{-- Phones: a progress bar --}}
-                <div class="mb-4" x-show="stepped">
-                    <div class="mb-1.5 flex items-center justify-between text-13">
-                        <span class="font-medium text-ink lg:sr-only" x-text="steps[step]?.title"></span>
-                        <span class="text-ink-3">{{ __('Step') }} <span x-text="step + 1"></span> {{ __('of') }} <span x-text="steps.length"></span></span>
-                    </div>
-                    <div class="h-1 overflow-hidden rounded-full bg-sunken" role="progressbar" :aria-label="@js(__('Form progress'))" aria-valuemin="1" :aria-valuenow="step + 1" :aria-valuemax="steps.length">
-                        <div class="h-full rounded-full bg-primary transition-[width] duration-slow ease-out" :style="`width: ${progress}%`"></div>
-                    </div>
+        {{-- Steps: adding goes one section at a time with the steps across the top; editing shows every section. --}}
+        <div x-data="formSteps({ stepped: @js(! $editing), remember: @js(! $editing) })" class="mx-auto max-w-5xl pb-28">
+            <nav aria-label="{{ __('Form sections') }}" class="mb-6">
+                <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
+                    <p class="text-sm text-ink-2" x-show="stepped">
+                        <span class="font-mono text-ink">{{ __('Step') }} <span x-text="step + 1"></span> / <span x-text="steps.length"></span></span>
+                        <span class="mx-1.5 text-line-strong">·</span><span class="font-medium text-ink" x-text="steps[step]?.title"></span>
+                    </p>
+                    <p class="text-sm text-ink-2" x-show="! stepped">{{ __('Jump to a section') }}</p>
+                    @unless ($editing)
+                        <label class="flex cursor-pointer items-center gap-2 text-13 text-ink-2">
+                            <input type="checkbox" class="size-4 rounded border-field text-primary focus:ring-primary/30" :checked="! stepped" @change="stepped = ! $event.target.checked">
+                            {{ __('Show all sections on one page') }}
+                        </label>
+                    @endunless
                 </div>
-
-                <ol class="relative space-y-px border-s border-line max-lg:hidden">
+                {{-- One segment per step: filled when done, Cobalt when current, red when it has a problem. --}}
+                <ol class="grid gap-1.5" :style="`grid-template-columns: repeat(${steps.length}, minmax(0, 1fr))`">
                     <template x-for="(s, i) in steps" :key="i">
-                        <li>
-                            <button type="button" @click="go(i)" :aria-current="stepped && step === i ? 'step' : null"
-                                    :class="stepped && step === i ? 'bg-primary-soft/60 before:bg-primary' : 'hover:bg-sunken before:bg-transparent'"
-                                    class="relative flex w-full items-center gap-3 rounded-e-control py-2 pe-2.5 ps-3.5 text-start transition-colors duration-fast before:absolute before:-start-px before:inset-y-1 before:w-0.5 before:rounded-full">
-                                <span class="flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition-colors"
+                        <li class="min-w-0">
+                            <button type="button" @click="go(i)" :aria-current="stepped && step === i ? 'step' : null" :title="s.title"
+                                    class="group block w-full rounded pt-1 text-start focus-visible:outline-offset-4">
+                                <span class="block h-1.5 rounded-full transition-colors duration-base"
                                       :class="{
-                                          'border-danger bg-danger-soft text-danger': state(i) === 'error',
-                                          'border-primary bg-primary text-on-primary': state(i) === 'current',
-                                          'border-primary/30 bg-primary-soft text-primary': state(i) === 'done',
-                                          'border-line-strong text-ink-3': state(i) === 'todo',
-                                      }">
-                                    <template x-if="state(i) === 'done'"><x-icon name="check" class="size-3.5" stroke="2.5" /></template>
-                                    <template x-if="state(i) === 'error'"><span>!</span></template>
-                                    <template x-if="! ['done', 'error'].includes(state(i))"><span x-text="i + 1"></span></template>
+                                          'bg-danger': state(i) === 'error',
+                                          'bg-primary': state(i) === 'current',
+                                          'bg-primary/40': state(i) === 'done',
+                                          'bg-line-strong group-hover:bg-field': state(i) === 'todo',
+                                      }"></span>
+                                <span class="mt-2 hidden truncate text-xs lg:block" :class="stepped && step === i ? 'font-medium text-primary-ink' : (state(i) === 'error' ? 'text-danger' : 'text-ink-3 group-hover:text-ink')">
+                                    <span class="font-mono" x-text="String(i + 1).padStart(2, '0')"></span> <span x-text="s.title"></span>
                                 </span>
-                                <span class="min-w-0 truncate text-sm" :class="stepped && step === i ? 'font-medium text-primary-ink' : 'text-ink-2'" x-text="s.title"></span>
-                                <span x-show="s.required" class="ms-auto text-danger" aria-hidden="true">*</span>
+                                <span class="sr-only" x-text="(i + 1) + '. ' + s.title"></span>
                             </button>
                         </li>
                     </template>
                 </ol>
-
-                @unless ($editing)
-                    <label class="mt-5 flex cursor-pointer items-center gap-2 text-13 text-ink-2 max-lg:hidden">
-                        <input type="checkbox" class="size-4 rounded border-field text-primary focus:ring-primary/30" :checked="! stepped" @change="stepped = ! $event.target.checked">
-                        {{ __('Show all sections on one page') }}
-                    </label>
-                @endunless
             </nav>
 
-            <div class="flex min-w-0 flex-col gap-4">
+            <div class="flex min-w-0 flex-col gap-6 [counter-reset:step]">
 
         {{-- 1. Basic info --}}
         <x-form-section :title="__('Basic Info')" :description="__('Name, contact details and the company this person works for.')" required open :fields="['first_name', 'middle_name', 'last_name', 'gender', 'email', 'phone', 'alternate_phone', 'date_of_birth', 'marital_status', 'country', 'company_id', 'date_of_joining']">
-            <div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
                 <x-field name="first_name" :label="__('First Name')" required :value="$e->first_name" />
                 <x-field name="middle_name" :label="__('Middle Name')" :value="$e->middle_name" />
                 <x-field name="last_name" :label="__('Last Name')" required :value="$e->last_name" />
@@ -162,7 +155,7 @@
 
         {{-- 4. Employee docs --}}
         <x-form-section :title="__('Employee Docs')" :description="__('ID numbers, scanned copies and a profile photo.')" :fields="['passport_no', 'driving_license_no', 'photo', 'photo_data', 'aadhar_attachment', 'pan_attachment']">
-            <div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
                 <x-field name="passport_no" :label="__('Passport No')" :value="$e->passport_no" />
                 <x-field name="driving_license_no" :label="__('Driving License No')" :value="$e->driving_license_no" />
                 @foreach (['aadhar_attachment' => 'Aadhar (attachment)', 'pan_attachment' => 'PAN (attachment)'] as $field => $label)
@@ -209,7 +202,7 @@
         {{-- 5. Statutory info --}}
         {{-- Every statutory field is mandatory when adding an employee. --}}
         <x-form-section :title="__('Statutory Info')" :description="__('Needed for PF, ESIC and the statutory registers.')" :required="! $editing" :fields="['aadhar_card_no', 'pan_card_no', 'uan_code', 'uan_document', 'ip_number', 'nominee_name', 'nominee_relationship', 'nominee_document']">
-            <div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
                 <x-field name="aadhar_card_no" :label="__('Aadhar No')" :required="! $editing" :value="$e->aadhar_card_no" inputmode="numeric" maxlength="14" />
                 <x-field name="pan_card_no" :label="__('PAN No')" :required="! $editing" :value="$e->pan_card_no" class="uppercase" maxlength="10" />
                 <x-field name="uan_code" :label="__('UAN No')" :required="! $editing" :value="$e->uan_code" inputmode="numeric" maxlength="12" />
@@ -225,7 +218,7 @@
 
         {{-- 6. Bank info --}}
         <x-form-section :title="__('Bank Info')" :description="__('Where the salary is paid. Check the IFSC on the passbook or cheque.')" required :fields="['bank_name', 'account_number', 'ifsc_code', 'branch_address', 'micr_code', 'bank_passbook']">
-            <div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
                 <x-field name="bank_name" :label="__('Bank Name')" required :value="$e->bank_name" />
                 <x-field name="account_number" :label="__('Account Number')" required :value="$e->account_number" inputmode="numeric" />
                 <x-field name="ifsc_code" :label="__('IFSC Code')" required :value="$e->ifsc_code" class="uppercase" maxlength="11" />
@@ -237,7 +230,7 @@
 
         {{-- 6. Medical info --}}
         <x-form-section :title="__('Medical Info')" :description="__('For emergencies and the disability declaration.')" :fields="['blood_group', 'health_condition', 'is_disabled', 'disability_description']">
-            <div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3" x-data="{ disabled: @js((string) (int) old('is_disabled', $e->is_disabled ?? 0)) }">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2" x-data="{ disabled: @js((string) (int) old('is_disabled', $e->is_disabled ?? 0)) }">
                 <x-select-field name="blood_group" :label="__('Blood Group')" :value="$e->blood_group" :placeholder="__('Select blood group')"
                                 :options="array_combine(config('employee.blood_groups'), config('employee.blood_groups'))" />
                 <x-field name="health_condition" :label="__('Health Condition')" :value="$e->health_condition" />
@@ -355,7 +348,7 @@
 
         {{-- 11. Attendance card --}}
         <x-form-section :title="__('Attendance card')" :description="__('The card number used on the punching machine.')" :fields="['nfc_card_no']">
-            <div class="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
                 <x-field name="nfc_card_no" :label="__('Nfc card no')" :value="$e->nfc_card_no" />
             </div>
             <p class="mt-3 text-xs text-ink-3">{{ __('Employee self-service logins (email and password) will be added with the employee portal.') }}</p>
@@ -374,7 +367,7 @@
                     </p>
                     <span class="flex-1"></span>
                     <x-secondary-button x-show="stepped && step > 0" x-on:click="back()"><x-icon name="chevron-left" class="size-4" />{{ __('Back') }}</x-secondary-button>
-                    <x-primary-button type="button" x-show="stepped && ! last" x-on:click="next()">{{ __('Next') }}<x-icon name="chevron-right" class="size-4" /></x-primary-button>
+                    <x-primary-button type="button" x-show="stepped && ! last" x-on:click="next()"><span>{{ __('Next') }}<span class="max-sm:hidden">: <span x-text="steps[step + 1]?.title"></span></span></span><x-icon name="chevron-right" class="size-4" /></x-primary-button>
                     <x-primary-button x-show="! stepped || last">{{ $editing ? __('Update') : __('Submit') }}</x-primary-button>
                 </div>
             </div>
