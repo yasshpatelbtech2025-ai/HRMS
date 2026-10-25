@@ -12,7 +12,7 @@
                    :hint="__('One row per punch: the employee code, the date and time, and IN or OUT. Punches already recorded are skipped.')" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $styles = [
             'P' => 'bg-success-soft text-success border-success/30',
             'HD' => 'bg-violet-100 text-violet-800 border-violet-200',
@@ -82,8 +82,8 @@
                  this.leave.days = days > 0 ? days : '';
              },
          }">
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Monthly present report') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Monthly present report') }}</h1>
         </div>
         @if ($company && $employees->isNotEmpty())
             @php $sum = fn (string $key) => collect($grid)->sum(fn ($row) => $row['totals'][$key]) + 0; @endphp
@@ -95,7 +95,7 @@
             ]" />
         @endif
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('attendance.index') }}" class="grid grid-cols-1 gap-3 border-b border-gray-200 px-5 py-4 sm:grid-cols-3 lg:grid-cols-6 print:hidden">
             <select name="company" onchange="this.form.querySelectorAll('[data-reset]').forEach(el => el.value = ''); this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -126,7 +126,7 @@
                 @endforeach
             </select>
             <div class="flex items-center gap-2">
-                <button type="button" onclick="window.print()" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Print') }}</button>
+                <button type="button" onclick="window.print()" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Print') }}</button>
             </div>
         </form>
 
@@ -241,7 +241,7 @@
                         <input type="datetime-local" id="grid-out" name="out_time" :value="cell.out" value="{{ old('out_time') }}" required class="block w-full {{ $select }}">
                     </x-form-row>
                 </div>
-                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                     <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>
@@ -282,7 +282,7 @@
                         <input id="grid-leave-reason" name="reason" value="{{ old('reason') }}" class="block w-full {{ $select }}">
                     </x-form-row>
                 </div>
-                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                     <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>

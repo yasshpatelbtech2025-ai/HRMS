@@ -7,14 +7,14 @@
     @include('employees.id-cards._card-styles')
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('ID Card Format List') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('ID Card Format List') }}</h1>
                 <p class="text-sm text-gray-500">{{ __('Pick the design employee ID cards are printed in. Hover over a card to see its back.') }}</p>
             </div>
-            <a href="{{ route('employees.id-cards') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Employee ID cards') }}</a>
+            <a href="{{ route('employees.id-cards') }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Employee ID cards') }}</a>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $firm->logo_path || ! ($firm->stamp_signature_path || $firm->signature_path || $firm->stamp_path))
             <div class="mx-5 mt-4 rounded-md bg-info-soft px-4 py-3 text-sm text-info ring-1 ring-info/30">

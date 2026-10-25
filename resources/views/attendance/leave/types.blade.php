@@ -5,11 +5,11 @@
     <x-section-tabs section="attendance.leave" nested />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave type list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Leave type list') }}</h1>
             <x-add-button modal="create-leave-type">{{ __('Add leave type') }}</x-add-button>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('attendance.leave.types')" :per-page="$perPage" />
 

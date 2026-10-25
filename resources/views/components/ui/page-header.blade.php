@@ -1,4 +1,8 @@
-{{-- Breadcrumbs (from config/navigation.php) + page title + primary action slot. --}}
+{{--
+    The page title on the ruled margin (.page-head): optional breadcrumbs, the title,
+    one line of description, and `actions` on the right: one primary action, the
+    rest secondary or in a menu.
+--}}
 @props(['title', 'description' => null, 'crumbs' => null])
 @php
     $crumbs ??= [];
@@ -7,10 +11,10 @@
     }
 @endphp
 
-<div {{ $attributes->class(['mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-3']) }}>
+<div {{ $attributes->class(['page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3']) }}>
     <div class="min-w-0">
         @if ($crumbs)
-            <nav aria-label="{{ __('Breadcrumb') }}" class="mb-1">
+            <nav aria-label="{{ __('Breadcrumb') }}" class="mb-1.5 print:hidden">
                 <ol class="flex flex-wrap items-center gap-1 text-13 text-ink-3">
                     @foreach ($crumbs as $crumb)
                         <li class="flex items-center gap-1">
@@ -18,14 +22,14 @@
                             <x-icon name="chevron-right" class="size-3" />
                         </li>
                     @endforeach
-                    <li aria-current="page" class="text-ink-2">{{ $title }}</li>
                 </ol>
             </nav>
         @endif
-        <h1 class="truncate text-2xl font-semibold tracking-tight text-ink">{{ $title }}</h1>
-        @if ($description)<p class="mt-1 text-sm text-ink-3">{{ $description }}</p>@endif
+        <h1 class="text-2xl font-semibold text-ink">{{ $title }}</h1>
+        @if ($description)<p class="mt-1 max-w-3xl text-sm text-ink-2">{{ $description }}</p>@endif
+        {{ $meta ?? '' }}
     </div>
     @isset($actions)
-        <div class="flex flex-wrap items-center gap-2">{{ $actions }}</div>
+        <div class="flex flex-wrap items-center gap-2 print:hidden">{{ $actions }}</div>
     @endisset
 </div>

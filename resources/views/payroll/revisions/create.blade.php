@@ -6,7 +6,7 @@
     @php
         $labels = config('employee.gross_elements') + config('employee.deduction_elements');
         $allowed = $newStructure ? ['basic', 'allowance', 'bonus', ...array_keys(config('employee.deduction_elements'))] : array_keys($labels);
-        $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $cell = 'control';
         $rows = collect($labels)->only($allowed)->map(fn ($label, $key) => [
             'label' => $label,
             'current' => $current[$key]['monthly'] ?? 0,
@@ -24,20 +24,20 @@
                     applyPct() { const p = Number(this.pct) || 0; Object.entries(this.rows).forEach(([k, r]) => { if (k === 'bonus' || k in @js(config('employee.deduction_elements'))) return; r.monthly = Math.round(r.current * (1 + p / 100) * 100) / 100; r.yearly = Math.round(r.monthly * 12 * 100) / 100; }) },
                     total(field) { return @js(config('employee.gross_salary_elements')).reduce((s, k) => s + (Number(this.rows[k]?.[field === 'current' ? 'current' : field]) || 0), 0) } }">
         @csrf
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('Add salary revision') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('Add salary revision') }}</h1>
                 <p class="text-sm text-gray-500">{{ $employee->employee_code }} · {{ $employee->full_name }} · {{ $employee->company?->establishment_name }}</p>
             </div>
             <label class="text-sm text-gray-700">
                 <span class="mb-1 block font-medium">{{ __('Raise all gross elements by %') }}</span>
                 <span class="flex gap-2">
                     <input type="number" step="0.01" x-model="pct" class="w-28 {{ $cell }}">
-                    <button type="button" x-on:click="applyPct()" class="rounded-md border border-gray-300 px-3 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Apply') }}</button>
+                    <button type="button" x-on:click="applyPct()" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Apply') }}</button>
                 </span>
             </label>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <div class="grid grid-cols-1 gap-4 px-5 py-4 sm:grid-cols-2">
             <x-form-row :label="__('Effective from')" for="effective_from" required :messages="$errors->get('effective_from')" class="!block">

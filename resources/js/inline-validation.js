@@ -54,22 +54,23 @@ function show(field, text) {
     if (!el) {
         el = document.createElement('p');
         el.dataset.fieldError = '';
-        el.className = 'mt-1 text-sm text-red-600';
+        el.className = 'mt-1.5 flex items-start gap-1.5 text-13 text-danger';
         el.setAttribute('role', 'alert');
         box.after(el);
     }
     el.textContent = text;
+    if (!el.id) el.id = `${field.id || field.name.replace(/\W+/g, '-')}-error`;
     field.setAttribute('aria-invalid', 'true');
-    field.classList.add('!border-red-500', 'focus:!ring-red-500');
+    field.setAttribute('aria-errormessage', el.id);
 }
 
 function clear(field) {
     const box = anchor(field);
     if (box.nextElementSibling?.matches('[data-field-error]')) box.nextElementSibling.remove();
     field.removeAttribute('aria-invalid');
-    field.classList.remove('!border-red-500', 'focus:!ring-red-500');
+    field.removeAttribute('aria-errormessage');
     // The server's message for this field is out of date once it is edited.
-    field.closest('div')?.querySelectorAll(':scope > ul.text-red-600').forEach((ul) => ul.remove());
+    field.closest('div')?.querySelectorAll(':scope > ul[data-server-error], :scope > ul.text-red-600').forEach((ul) => ul.remove());
 }
 
 function check(field) {
@@ -107,7 +108,7 @@ document.addEventListener('input', (event) => {
     if (!inScope(field)) return;
     field.dataset.touched = '1';
     // Once an error shows, update it as the user types.
-    if (field.getAttribute('aria-invalid') === 'true' || anchor(field).nextElementSibling?.matches('ul.text-red-600')) check(field);
+    if (field.getAttribute('aria-invalid') === 'true' || anchor(field).nextElementSibling?.matches('ul[data-server-error], ul.text-red-600')) check(field);
 });
 
 // Runs before the confirm dialog and the loading spinner (both listen later).

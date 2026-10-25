@@ -21,7 +21,7 @@
                 </div>
                 <x-input-error class="mt-2" :messages="$errors->get('separation_date')" />
             </div>
-            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                 <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                 <x-primary-button>{{ __('Save') }}</x-primary-button>
             </div>

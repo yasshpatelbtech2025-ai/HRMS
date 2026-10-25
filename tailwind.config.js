@@ -2,20 +2,21 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /*
- * SRYMPEX HRMS design tokens ("Muster Roll").
+ * SRYMPEX HRMS design tokens ("Register").
  *
- * - Paper (#F5F6F8) pages, white cards, Site Ink (#17181C) text and primary
- *   buttons, Steel (#525A68) secondary text. Srympex Red (#DD2A1B) is kept for
- *   the logo, the active navigation marker and the dashboard muster strip.
- *   Colour is otherwise for meaning: Present Green, amber warning, crimson danger.
- * - `brand` (legacy scale) and `gray` are CSS variables, so every page follows
- *   the theme and dark mode. Newer components use the semantic names.
- * - Type: Figtree (UI, self-hosted in resources/fonts) and IBM Plex Mono (IDs, numbers).
- *   Scale: xs 12 · sm 13.5 · base 15 · lg 17 · xl 20 · 2xl 24 · 3xl 28 · 4xl 34.
- * - Radius: controls 6px (md), cards 10px (lg), dialogs 14px (xl).
+ * - Paper (#F5F7FA) pages, white cards, Ink (#131722) text, Slate (#566074)
+ *   secondary text, Cobalt (#2445A8) for buttons, links, selection and focus.
+ *   Srympex Red is the logo only, so red always means "danger".
+ * - Every colour is a CSS variable (resources/css/app.css), so pages follow the
+ *   theme and dark mode. `brand` (legacy scale) maps to Cobalt, `gray` to Slate.
+ * - Type: Instrument Sans (headings + interface) and IBM Plex Mono (IDs, amounts,
+ *   dates). Scale: xs 12 · 13 · sm 14 · base 15 · lg 17 · xl 20 · 2xl 24 · 3xl 30.
+ * - Spacing: Tailwind's 4px grid (1 = 4px). Radius: controls 6px, cards 8px, dialogs 12px.
+ * - Motion: 150-250ms ease-out on hover/open/close only (`duration-fast/base/slow`).
  */
 
 const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+const scale = (prefix) => Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`${prefix}-${n}`)]));
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -31,17 +32,15 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['"Instrument Sans"', ...defaultTheme.fontFamily.sans],
                 mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
             },
             colors: {
-                // Legacy scale, now the Site Ink neutrals (CSS variables, flips in dark mode).
-                brand: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`brand-${n}`)])),
-                // Srympex Red: logo, active marker and the muster strip only.
+                // Legacy scale used by older markup: now Cobalt (flips in dark mode).
+                brand: scale('brand'),
+                // Srympex Red: the logo only.
                 srympex: { DEFAULT: token('brand'), soft: token('brand-soft'), ink: token('brand-ink') },
-                // Warm neutrals: surfaces stay paper-like, text stays crisp.
-                // The scale is backed by CSS variables so it flips in dark mode.
-                gray: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, token(`gray-${n}`)])),
+                gray: scale('gray'),
                 canvas: token('canvas'),
                 surface: token('surface'),
                 sunken: token('sunken'),
@@ -56,32 +55,45 @@ export default {
                 info: { DEFAULT: token('info'), soft: token('info-soft') },
             },
             fontSize: {
+                '2xs': ['11px', { lineHeight: '14px' }],
                 xs: ['12px', { lineHeight: '16px' }],
                 13: ['13px', { lineHeight: '18px' }],
-                sm: ['13.5px', { lineHeight: '20px' }],
+                sm: ['14px', { lineHeight: '20px' }],
                 base: ['15px', { lineHeight: '22px' }],
                 lg: ['17px', { lineHeight: '24px' }],
                 xl: ['20px', { lineHeight: '28px' }],
-                '2xl': ['24px', { lineHeight: '32px' }],
-                '3xl': ['28px', { lineHeight: '34px' }],
-                '4xl': ['34px', { lineHeight: '40px' }],
+                '2xl': ['24px', { lineHeight: '30px', letterSpacing: '-0.015em' }],
+                '3xl': ['30px', { lineHeight: '36px', letterSpacing: '-0.02em' }],
+                '4xl': ['36px', { lineHeight: '42px', letterSpacing: '-0.02em' }],
+            },
+            spacing: {
+                control: 'var(--control-h)',
+                'control-sm': 'var(--control-h-sm)',
             },
             borderRadius: {
                 DEFAULT: '5px',
-                md: '6px',
-                lg: '10px',
-                xl: '14px',
-                control: '6px',
-                card: '10px',
+                md: 'var(--radius-control)',
+                lg: 'var(--radius-card)',
+                xl: 'var(--radius-dialog)',
+                control: 'var(--radius-control)',
+                card: 'var(--radius-card)',
+                dialog: 'var(--radius-dialog)',
             },
             boxShadow: {
-                sm: '0 1px 2px 0 rgb(22 24 29 / 0.05)',
-                DEFAULT: '0 1px 2px 0 rgb(22 24 29 / 0.06)',
-                hairline: '0 1px 2px 0 rgb(22 24 29 / 0.05)',
-                md: '0 1px 2px rgb(22 24 29 / 0.06), 0 8px 24px -8px rgb(22 24 29 / 0.16)',
-                pop: '0 1px 2px rgb(22 24 29 / 0.06), 0 12px 32px -8px rgb(22 24 29 / 0.18)',
-                lg: '0 1px 2px rgb(22 24 29 / 0.06), 0 16px 40px -12px rgb(22 24 29 / 0.22)',
-                xl: '0 24px 48px -12px rgb(22 24 29 / 0.25)',
+                sm: 'none',
+                DEFAULT: 'none',
+                hairline: 'none',
+                // Raised layers only: menus, pop-overs, dialogs, toasts.
+                md: '0 1px 2px rgb(var(--shadow) / 0.06), 0 8px 24px -10px rgb(var(--shadow) / 0.18)',
+                pop: '0 1px 2px rgb(var(--shadow) / 0.06), 0 12px 32px -10px rgb(var(--shadow) / 0.22)',
+                lg: '0 1px 2px rgb(var(--shadow) / 0.06), 0 20px 48px -16px rgb(var(--shadow) / 0.28)',
+                xl: '0 24px 56px -16px rgb(var(--shadow) / 0.32)',
+                bar: '0 -1px 0 rgb(var(--line)), 0 -8px 24px -12px rgb(var(--shadow) / 0.14)',
+            },
+            transitionDuration: {
+                fast: '150ms',
+                base: '200ms',
+                slow: '250ms',
             },
             keyframes: {
                 'progress-indeterminate': {

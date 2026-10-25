@@ -3,14 +3,14 @@
 
     <x-section-tabs section="attendance" />
 
-    @php($input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500')
+    @php($input = 'control')
 
     <div>
         <div class="mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Smart attendance') }}</h2>
+            <h1 class="page-head text-2xl font-semibold text-ink">{{ __('Smart attendance') }}</h1>
             <p class="mt-1 text-sm text-gray-500">{{ __('Marks the chosen employees present at their shift times on every working day of the month that has no punches yet. Week-offs, holidays and days outside their employment are skipped.') }}</p>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="POST" action="{{ route('attendance.smart.store') }}" class="max-w-3xl space-y-4 px-5 py-6"
               x-data="{
@@ -34,13 +34,13 @@
                 <div class="rounded-md border border-gray-300">
                     <label class="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-sm font-medium text-gray-700" x-show="listed.length">
                         <input type="checkbox" x-on:change="toggleAll($event.target.checked)" :checked="listed.length && selected.length === listed.length"
-                               class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                               class="rounded border-field text-primary focus:ring-primary/30">
                         {{ __('All employees') }}
                     </label>
                     <div class="max-h-64 overflow-y-auto p-1">
                         <template x-for="e in listed" :key="e.uuid">
                             <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-gray-700 hover:bg-gray-50">
-                                <input type="checkbox" name="employees[]" :value="e.uuid" x-model="selected" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                <input type="checkbox" name="employees[]" :value="e.uuid" x-model="selected" class="rounded border-field text-primary focus:ring-primary/30">
                                 <span x-text="e.label"></span>
                                 <span x-show="! e.hasShift" class="text-xs text-warn">({{ __('no shift — will be skipped') }})</span>
                             </label>

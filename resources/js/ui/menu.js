@@ -36,6 +36,10 @@ export default ({ align = 'end' } = {}) => ({
         this.show();
         this.$nextTick(() => this.items()[0]?.focus());
     },
+    focusEdge(last) {
+        const items = this.items();
+        items[last ? items.length - 1 : 0]?.focus();
+    },
     focusNext(step) {
         const items = this.items();
         const i = items.indexOf(document.activeElement);

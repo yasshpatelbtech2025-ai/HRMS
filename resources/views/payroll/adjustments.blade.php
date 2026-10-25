@@ -4,8 +4,8 @@
     <x-section-tabs section="payroll" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary adjustment list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Salary adjustment list') }}</h1>
             <x-add-button modal="create-adjustment">{{ __('Add adjustment') }}</x-add-button>
         </div>
         <x-stat-strip :items="[
@@ -15,7 +15,7 @@
             ['label' => __('Net effect'), 'value' => '₹'.number_format($stats['earnings'] - $stats['deductions'])],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('payroll.adjustments')" :per-page="$perPage" :exports="[
             __('CSV') => route('payroll.adjustments.export', ['format' => 'csv'] + request()->only('search')),

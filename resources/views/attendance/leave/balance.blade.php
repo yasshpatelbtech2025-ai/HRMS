@@ -5,13 +5,13 @@
     <x-section-tabs section="attendance.leave" nested />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $num = fn ($n) => rtrim(rtrim(number_format((float) $n, 1, '.', ''), '0'), '.');
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave Balance Sheet') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Leave Balance Sheet') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave.balance') }}" class="flex gap-2">
                     <select name="year" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Year') }}">
@@ -26,11 +26,11 @@
                     </select>
                 </form>
                 @if ($company && $types->isNotEmpty())
-                    <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Export Data') }}</a>
+                    <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Export Data') }}</a>
                 @endif
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
@@ -99,7 +99,7 @@
                                                 </form>
                                             @endforeach
                                         </div>
-                                        <div class="flex justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
+                                        <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                                             <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                                         </div>
                                     </x-modal>

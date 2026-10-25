@@ -28,7 +28,7 @@
         @csrf
         @if ($editing) @method('PUT') @endif
 
-        <section class="rounded-lg bg-white p-5 shadow-sm ring-1 ring-gray-200">
+        <section class="card p-5">
             <h3 class="mb-4 text-sm font-semibold text-ink">{{ __('Customer and month') }}</h3>
             <div class="grid gap-4 sm:grid-cols-3">
                 <x-select-field name="company" :label="__('Company')" required :placeholder="__('Choose a company')" x-model="company"
@@ -55,7 +55,7 @@
             @endif
         </section>
 
-        <section class="rounded-lg bg-white p-5 shadow-sm ring-1 ring-gray-200">
+        <section class="card p-5">
             <h3 class="mb-4 text-sm font-semibold text-ink">{{ __('Invoice details') }}</h3>
             <div class="grid gap-4 sm:grid-cols-2">
                 <x-field name="invoice_no" :label="__('Invoice no')" required :value="$invoice->invoice_no"
@@ -71,7 +71,7 @@
             </div>
         </section>
 
-        <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <section class="card">
             <h3 class="px-5 pt-5 text-sm font-semibold text-ink">{{ __('Charges') }}</h3>
             <x-input-error class="px-5 pt-2" :messages="$errors->get('lines')" />
             <div class="overflow-x-auto">

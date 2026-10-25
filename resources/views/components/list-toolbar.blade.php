@@ -69,7 +69,7 @@
                 <x-slot:trigger>
                     <button type="button" class="{{ $tool }}" aria-haspopup="menu"><x-icon name="bookmark" class="size-4" /><span class="max-sm:sr-only">{{ __('Views') }}</span></button>
                 </x-slot:trigger>
-                <p class="px-2.5 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{{ __('Saved views') }}</p>
+                <p class="px-2.5 pb-1 pt-1.5 text-xs font-medium text-ink-3">{{ __('Saved views') }}</p>
                 <template x-for="(view, i) in views" :key="view.name">
                     <div class="group flex items-center rounded-[5px] hover:bg-sunken">
                         <a :href="view.url" role="menuitem" class="flex-1 truncate px-2.5 py-1.5 text-sm text-ink" x-text="view.name"></a>
@@ -89,7 +89,7 @@
                 <x-slot:trigger>
                     <button type="button" class="{{ $tool }}" aria-haspopup="menu" x-show="columns.length"><x-icon name="columns" class="size-4" /><span class="max-sm:sr-only">{{ __('Columns') }}</span></button>
                 </x-slot:trigger>
-                <p class="px-2.5 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{{ __('Show columns') }}</p>
+                <p class="px-2.5 pb-1 pt-1.5 text-xs font-medium text-ink-3">{{ __('Show columns') }}</p>
                 <div class="max-h-72 overflow-y-auto">
                     <template x-for="col in columns" :key="col.index">
                         <label class="flex cursor-pointer items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-sm text-ink hover:bg-sunken">

@@ -4,8 +4,8 @@
     <x-section-tabs section="employees" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Position list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Position list') }}</h1>
             <x-add-button modal="create-position">{{ __('Add position') }}</x-add-button>
         </div>
         <x-stat-strip :items="[
@@ -14,7 +14,7 @@
             ['label' => __('Inactive'), 'value' => max($positions->total() - $active, 0), 'tone' => $positions->total() > $active ? 'warn' : null],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('employees.positions')" :per-page="$perPage" />
 

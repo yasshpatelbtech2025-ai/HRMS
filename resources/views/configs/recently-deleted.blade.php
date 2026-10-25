@@ -4,13 +4,13 @@
     <x-section-tabs section="configs" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('Recently deleted') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('Recently deleted') }}</h1>
                 <p class="text-sm text-gray-500">{{ __('Restore anything deleted by mistake. Records are removed for good :days days after deletion; employees and companies are kept until restored.', ['days' => $retention]) }}</p>
             </div>
             <form method="GET" action="{{ route('configs.recently-deleted') }}">
-                <select name="type" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Type') }}">
+                <select name="type" onchange="this.form.submit()" class="control-inline" aria-label="{{ __('Type') }}">
                     <option value="">{{ __('Everything') }}</option>
                     @foreach ($types as $key => $label)<option value="{{ $key }}" @selected($type === $key)>{{ __($label) }}</option>@endforeach
                 </select>
@@ -22,7 +22,7 @@
             ['label' => __('Kept for'), 'value' => trans_choice(':count day|:count days', $retention)],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">

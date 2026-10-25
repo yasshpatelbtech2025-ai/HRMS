@@ -4,15 +4,15 @@
     <x-section-tabs section="payroll" />
 
     <div x-data="{ filtersOpen: @js((bool) $month) }">
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee salary') }}</h2>
-            <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Filter') }}</button>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Employee salary') }}</h1>
+            <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Filter') }}</button>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('payroll.salaries') }}" x-show="filtersOpen" x-transition class="flex flex-wrap items-end gap-3 border-b border-gray-200 bg-gray-50 px-5 py-4" style="display: none;">
-            <input type="month" name="salary_month" value="{{ $month }}" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Salary month') }}">
-            <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Find') }}</button>
+            <input type="month" name="salary_month" value="{{ $month }}" class="control-inline" aria-label="{{ __('Salary month') }}">
+            <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Find') }}</button>
             <a href="{{ route('payroll.salaries') }}" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">{{ __('Reset') }}</a>
         </form>
 
@@ -46,13 +46,13 @@
                             <td class="px-4 py-3 font-semibold">{{ number_format((float) $payslip->net_pay, 2) }}</td>
                             <td class="px-4 py-3 print:hidden">
                                 <div class="flex flex-wrap gap-1">
-                                    <a href="{{ route('payroll.payslips.show', $payslip) }}" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Payslip') }}</a>
-                                    <a href="{{ route('payroll.payslips.show', ['payslip' => $payslip, 'print' => 1]) }}" target="_blank" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Download pay slip') }}</a>
+                                    <a href="{{ route('payroll.payslips.show', $payslip) }}" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Payslip') }}</a>
+                                    <a href="{{ route('payroll.payslips.show', ['payslip' => $payslip, 'print' => 1]) }}" target="_blank" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Download pay slip') }}</a>
                                     @unless ($payslip->sheet->isApproved())
                                         <form method="POST" action="{{ route('payroll.payslips.regenerate', $payslip) }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md border border-gray-300 px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">{{ __('Regenerate') }}</button>
+                                            <button class="inline-flex h-7 items-center justify-center gap-1 rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-ink hover:bg-sunken">{{ __('Regenerate') }}</button>
                                         </form>
                                     @endunless
                                 </div>

@@ -4,7 +4,7 @@
     @include('compliance.forms._styles')
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $btn = 'rounded-md px-3 py-2 text-sm font-semibold';
         $query = request()->except('output');
         $examView = in_array($view, config('compliance.examination_views'), true);
@@ -14,7 +14,7 @@
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
             <a href="{{ route('compliance.index', ['company' => $company->uuid, 'act' => $act]) }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Compliance') }}</a>
-            <h2 class="text-2xl font-bold text-gray-900">{{ $title }}</h2>
+            <h1 class="page-head text-2xl font-semibold text-ink">{{ $title }}</h1>
             <p class="text-sm text-gray-500">{{ $company->label }}</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -75,7 +75,7 @@
     @if ($examView)
         @include('compliance.forms._examinations')
     @else
-        <div class="overflow-x-auto rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+        <div class="overflow-x-auto card p-6">
             @if ($blank ?? false)
                 <div class="mb-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
                     {{ __(':company has no employees yet, so this is the blank form to print and fill by hand.', ['company' => $company->establishment_name]) }}

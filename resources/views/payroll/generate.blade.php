@@ -3,14 +3,14 @@
 
     <x-section-tabs section="payroll" />
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
+    @php $select = 'control-inline'; @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Salary list') }}</h1>
             <div class="flex gap-2">
-                <a href="{{ route('payroll.export', 'csv') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
-                <a href="{{ route('payroll.export', 'xlsx') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
+                <a href="{{ route('payroll.export', 'csv') }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('CSV') }}</a>
+                <a href="{{ route('payroll.export', 'xlsx') }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Excel') }}</a>
             </div>
         </div>
         <x-stat-strip :items="[
@@ -20,7 +20,7 @@
             ['label' => __('Approved, not yet paid'), 'value' => $stats['unpaid'], 'tone' => $stats['unpaid'] ? 'warn' : null],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4"
               x-data="{ company: @js((string) old('company_id', '')), month: @js(old('salary_month', now()->subMonth()->format('Y-m'))), employees: @js($fixedDaysEmployees),
@@ -85,11 +85,11 @@
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->paid_date?->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
-                                    <a href="{{ route('payroll.approval', $sheet) }}" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Salary Approval') }}</a>
+                                    <a href="{{ route('payroll.approval', $sheet) }}" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Salary Approval') }}</a>
                                     @if ($sheet->isApproved())
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Add Paid Date') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Add Paid Date') }}</button>
                                     @endif
-                                    <a href="{{ route('payroll.chart', $sheet) }}" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">{{ __('Employee Salary Chart') }}</a>
+                                    <a href="{{ route('payroll.chart', $sheet) }}" class="inline-flex h-7 items-center justify-center gap-1 rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-ink hover:bg-sunken">{{ __('Employee Salary Chart') }}</a>
                                     @unless ($sheet->isApproved())
                                         @can('delete-records')
                                             <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
@@ -112,7 +112,7 @@
                                                     <input type="date" id="{{ $modal }}-date" name="paid_date" value="{{ $sheet->paid_date?->toDateString() ?? today()->toDateString() }}" required class="block w-full {{ $select }}">
                                                 </x-form-row>
                                             </div>
-                                            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                                            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                                                 <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                                                 <x-primary-button>{{ __('Save') }}</x-primary-button>
                                             </div>

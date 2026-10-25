@@ -4,7 +4,7 @@
     $mine = old('_modal') === $modal;
     $value = fn (string $field) => $mine ? old($field) : $leaveType->{$field};
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
-    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
+    $input = 'control';
 @endphp
 
 <form method="POST" action="{{ $editing ? route('attendance.leave.types.update', $leaveType) : route('attendance.leave.types.store') }}">
@@ -38,11 +38,11 @@
         </x-form-row>
         <x-form-row :label="__('Is paid')" for="{{ $modal }}-is_paid" :messages="$error('is_paid')">
             <input type="hidden" name="is_paid" value="0">
-            <input type="checkbox" id="{{ $modal }}-is_paid" name="is_paid" value="1" @checked($value('is_paid')) class="mt-2.5 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+            <input type="checkbox" id="{{ $modal }}-is_paid" name="is_paid" value="1" @checked($value('is_paid')) class="mt-2.5 rounded border-field text-primary focus:ring-primary/30">
         </x-form-row>
     </div>
 
-    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+    <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
         <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
         <x-primary-button>{{ __('Save') }}</x-primary-button>
     </div>

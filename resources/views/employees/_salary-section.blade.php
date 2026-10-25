@@ -26,7 +26,7 @@
         <div class="mt-3" x-data="{ picking: false }">
             <div class="relative inline-block">
                 <button type="button" x-on:click="picking = ! picking" x-on:click.outside="picking = false" :aria-expanded="picking"
-                        class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">
                     {{ $pickerLabel }}
                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" /></svg>
                 </button>
@@ -34,7 +34,7 @@
                     @foreach ($labels as $key => $label)
                         @continue($key === 'basic')
                         <label class="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50" x-show="offered(@js($key))">
-                            <input type="checkbox" :checked="{{ $list }}.includes(@js($key))" x-on:change="toggleElement(@js($list), @js($key))" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                            <input type="checkbox" :checked="{{ $list }}.includes(@js($key))" x-on:change="toggleElement(@js($list), @js($key))" class="rounded border-field text-primary focus:ring-primary/30">
                             {{ $label }}
                         </label>
                     @endforeach

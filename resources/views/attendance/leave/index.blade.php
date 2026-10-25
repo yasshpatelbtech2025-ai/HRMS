@@ -5,17 +5,17 @@
     <x-section-tabs section="attendance.leave" nested />
 
     @php
-        $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $input = 'control';
         $exportQuery = request()->only('status', 'search');
         $badge = ['pending' => 'bg-warn-soft text-warn', 'approved' => 'bg-success-soft text-success', 'rejected' => 'bg-danger-soft text-danger'];
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Leave list') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave') }}">
-                    <select name="status" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Status') }}">
+                    <select name="status" onchange="this.form.submit()" class="control-inline" aria-label="{{ __('Status') }}">
                         <option value="">{{ __('All statuses') }}</option>
                         @foreach (\App\Http\Controllers\Attendance\LeaveController::STATUSES as $value => $label)
                             <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
@@ -32,7 +32,7 @@
             ['label' => __('Rejected'), 'value' => $counts['rejected'] ?? 0, 'href' => route('attendance.leave', ['status' => 'rejected']), 'active' => request('status') === 'rejected'],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('attendance.leave')" :per-page="$perPage" :exports="[
             __('CSV') => route('attendance.leave.export', ['format' => 'csv'] + $exportQuery),
@@ -82,7 +82,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
                                     @unless ($approved)
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Approve') }}</button>
                                     @endunless
                                     @if ($leave->status !== 'rejected')
                                         <form method="POST" action="{{ route('attendance.leave.reject', $leave) }}" data-confirm="{{ __('Reject this leave?') }}">
@@ -126,7 +126,7 @@
                                                     <textarea name="description" rows="2" class="{{ $input }}">{{ $mine ? old('description') : '' }}</textarea>
                                                 </x-form-row>
                                             </div>
-                                            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                                            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                                                 <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                                                 <x-primary-button>{{ __('Approve') }}</x-primary-button>
                                             </div>
@@ -195,7 +195,7 @@
                     <textarea id="leave-reason" name="reason" rows="2" class="{{ $input }}">{{ old('reason') }}</textarea>
                 </x-form-row>
             </div>
-            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                 <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                 <x-primary-button>{{ __('Save') }}</x-primary-button>
             </div>

@@ -4,8 +4,8 @@
     <x-section-tabs section="company" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Company List') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Company List') }}</h1>
             @can('admin')
                 <div class="flex flex-wrap items-center gap-2 print:hidden">
                     <button type="button" x-data x-on:click="$dispatch('open-modal', 'import-companies')"
@@ -20,7 +20,7 @@
             ['label' => __('Employees across companies'), 'value' => $employeeCount],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('company.index')" :per-page="$perPage" print
                         :exports="[__('CSV') => route('company.export', request()->only('search', 'sort', 'direction'))]" />

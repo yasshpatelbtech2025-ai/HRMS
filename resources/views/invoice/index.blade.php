@@ -4,8 +4,8 @@
     @php $money = fn ($n) => '₹'.\App\Support\IndianNumber::format((float) $n); @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Invoices') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Invoices') }}</h1>
             <a href="{{ route('invoice.create') }}" class="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-medium text-white shadow-hairline hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1">
                 <x-icon name="plus" class="h-4 w-4" />{{ __('New invoice') }}
             </a>
@@ -17,7 +17,7 @@
             ['label' => __('Billed in total'), 'value' => $money($stats['total'])],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
             <x-list-toolbar :action="route('invoice.index')" :per-page="$perPage" />
 
             <div class="overflow-x-auto">

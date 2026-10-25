@@ -4,9 +4,9 @@
     <x-section-tabs section="company" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('User access') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('User access') }}</h1>
             </div>
             <x-add-button modal="create-user">{{ __('Add login') }}</x-add-button>
         </div>
@@ -17,7 +17,7 @@
             'hint' => $seat['used'] >= $seat['cap'] ? __('No seats left') : __(':n left', ['n' => $seat['cap'] - $seat['used']]),
         ])->values()->all()" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">

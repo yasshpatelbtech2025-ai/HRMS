@@ -4,18 +4,18 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $exportQuery = ['employee' => $employee?->uuid, 'month' => $month->format('Y-m')];
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee attendance raw data') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Employee attendance raw data') }}</h1>
             @if ($employee)
                 <div class="flex flex-wrap gap-2 print:hidden">
                     <x-add-button modal="add-raw-data">{{ __('Add attendance data') }}</x-add-button>
                     <button type="button" x-data x-on:click="$dispatch('open-modal', 'correct-raw-data')"
-                            class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
+                            class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                         {{ __('Attendance data correction') }}
                     </button>
                 </div>
@@ -27,7 +27,7 @@
             ]" />
         @endif
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('attendance.raw-data') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-sm text-gray-700">
@@ -160,7 +160,7 @@
                         </select>
                     </x-form-row>
                 </div>
-                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                     <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>

@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">{{ __('Documents') }}</x-slot>
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
+    @php $select = 'control-inline'; @endphp
 
     <div x-data="{ category: 'all', doc: null, open: false }" class="space-y-6">
         <div class="flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Documents') }}</h2>
+            <h1 class="page-head text-2xl font-semibold text-ink">{{ __('Documents') }}</h1>
             <div class="relative" x-on:click.outside="open = false">
-                <button type="button" x-on:click="open = ! open" :aria-expanded="open" class="inline-flex items-center gap-1 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+                <button type="button" x-on:click="open = ! open" :aria-expanded="open" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                     {{ __('Select Documents') }}
                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" /></svg>
                 </button>

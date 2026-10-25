@@ -7,11 +7,11 @@
     $link = fn ($e, $x = null) => route('compliance.forms.show', array_filter([$company, $form, 'employee' => $e->uuid, 'exam' => $x?->uuid]));
 @endphp
 <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
-    <aside class="shrink-0 overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 lg:sticky lg:top-4 lg:w-80">
+    <aside class="shrink-0 card overflow-hidden lg:sticky lg:top-4 lg:w-80">
         <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
             <h3 class="text-[15px] font-bold text-gray-900">{{ __('Employees') }}</h3>
             <button type="button" x-data x-on:click="$dispatch('open-modal', 'examination-add')"
-                    class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">+ {{ __('Add examination') }}</button>
+                    class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control bg-primary px-3 text-13 font-medium text-on-primary hover:bg-primary-hover">+ {{ __('Add examination') }}</button>
         </div>
         <ul class="max-h-[70vh] divide-y divide-gray-100 overflow-y-auto" x-data="{ open: @js($employee?->uuid) }">
             @forelse ($employees as $e)
@@ -60,7 +60,7 @@
                 </div>
                 @if ($examination)
                     <div class="flex items-center gap-2">
-                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'examination-edit')" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</button>
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'examination-edit')" class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Edit') }}</button>
                         @can('delete-records')
                             <form method="POST" action="{{ route('compliance.examinations.destroy', $examination) }}" data-confirm="{{ __('Delete this examination? It is removed from Form 5, 27-A, 30 and 32.') }}">
                                 @csrf
@@ -72,7 +72,7 @@
                 @endif
             </div>
         @endif
-        <div class="overflow-x-auto rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+        <div class="overflow-x-auto card p-6">
             <div class="sheet">
                 @include('compliance.forms.sheets.'.$view)
             </div>

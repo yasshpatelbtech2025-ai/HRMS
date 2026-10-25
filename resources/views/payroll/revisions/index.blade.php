@@ -9,11 +9,11 @@
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary revision list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Salary revision list') }}</h1>
             <form method="GET" action="{{ route('payroll.revisions') }}" class="flex flex-wrap items-center gap-2"
                   x-data="{ employee: @js($employee?->uuid ?? '') }">
-                <select name="employee" x-model="employee" onchange="this.form.submit()" class="min-w-72 rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Employee') }}">
+                <select name="employee" x-model="employee" onchange="this.form.submit()" class="min-w-72 control-inline" aria-label="{{ __('Employee') }}">
                     <option value="">{{ __('Select employee') }}</option>
                     @foreach ($employees as $option)
                         <option value="{{ $option->uuid }}">{{ $option->employee_code }} - {{ $option->full_name }}</option>
@@ -21,11 +21,11 @@
                 </select>
                 <a :href="employee ? @js(route('payroll.revisions.create', '__UUID__')).replace('__UUID__', employee) : null"
                    x-on:click="if (! employee) { $event.preventDefault(); alert(@js(__('Please select employee'))); }"
-                   class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+                   class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                     {{ __('Add salary revision') }}
                 </a>
-                <a href="{{ route('payroll.revisions.export', ['format' => 'csv'] + request()->only('employee')) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
-                <a href="{{ route('payroll.revisions.export', ['format' => 'xlsx'] + request()->only('employee')) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
+                <a href="{{ route('payroll.revisions.export', ['format' => 'csv'] + request()->only('employee')) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('CSV') }}</a>
+                <a href="{{ route('payroll.revisions.export', ['format' => 'xlsx'] + request()->only('employee')) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Excel') }}</a>
             </form>
         </div>
         <x-stat-strip :items="[
@@ -34,7 +34,7 @@
             ['label' => __('Applied'), 'value' => $counts['applied'] ?? 0, 'tone' => 'success'],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -62,7 +62,7 @@
                                         <form method="POST" action="{{ route('payroll.revisions.apply', $revision) }}" data-confirm="{{ __('Apply this revision now?') }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Apply now') }}</button>
+                                            <button class="inline-flex h-7 items-center justify-center gap-1 rounded-control bg-primary px-2.5 text-xs font-medium text-on-primary hover:bg-primary-hover">{{ __('Apply now') }}</button>
                                         </form>
                                         <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" data-confirm="{{ __('Cancel this revision?') }}">
                                             @csrf

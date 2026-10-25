@@ -6,11 +6,11 @@
     @php $forms = $acts[$act]['forms']; @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Company compliance') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Company compliance') }}</h1>
             <form method="GET" action="{{ route('compliance.index') }}">
                 <input type="hidden" name="act" value="{{ $act }}">
-                <select name="company" onchange="this.form.submit()" class="min-w-64 rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Company') }}">
+                <select name="company" onchange="this.form.submit()" class="min-w-64 control-inline" aria-label="{{ __('Company') }}">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach
@@ -27,7 +27,7 @@
             ['label' => __('Coming soon'), 'value' => count($acts) - $live->count()],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a></p>

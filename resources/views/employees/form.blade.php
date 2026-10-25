@@ -48,13 +48,13 @@
             'officers' => $officers->map(fn ($o) => ['id' => $o->id, 'company_id' => $o->company_id, 'label' => "{$o->employee_code} - {$o->full_name}"]),
         ];
         $yesNo = ['1' => __('Yes'), '0' => __('No')];
-        $select = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
-        $cell = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'mt-1.5 control';
+        $cell = 'control';
     @endphp
 
-    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div>
-            <h2 class="text-2xl font-bold text-gray-900">{{ $editing ? __('Edit employee') : __('Add employee') }}</h2>
+            <h1 class="text-2xl font-semibold text-ink">{{ $editing ? __('Edit employee') : __('Add employee') }}</h1>
             @if ($editing)
                 <p class="mt-1 text-sm text-ink-3">{{ __('Employee id') }} <span class="font-mono">{{ $e->employee_code }}</span> · {{ $e->full_name }}</p>
             @endif
@@ -156,7 +156,7 @@
                         @if ($type === 'permanent')
                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                 <input type="hidden" name="permanent_address_is_present" value="0">
-                                <input type="checkbox" name="permanent_address_is_present" value="1" x-model="permanentSame" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                <input type="checkbox" name="permanent_address_is_present" value="1" x-model="permanentSame" class="rounded border-field text-primary focus:ring-primary/30">
                                 {{ __('Present Address Is Permanent Address') }}
                             </label>
                         @endif
@@ -191,13 +191,13 @@
                     </div>
                     <div class="space-y-2">
                         <div class="flex flex-wrap gap-2">
-                            <label class="cursor-pointer rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <label class="cursor-pointer inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">
                                 {{ __('Choose File') }}
                                 <input type="file" accept="image/*" class="sr-only" x-on:change="chooseFile($event)">
                             </label>
-                            <button type="button" x-show="! stream" x-on:click="openCamera()" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Open Camera') }}</button>
-                            <button type="button" x-show="stream" x-on:click="capture()" class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Capture') }}</button>
-                            <button type="button" x-show="data" x-on:click="openCamera()" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Retake') }}</button>
+                            <button type="button" x-show="! stream" x-on:click="openCamera()" class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Open Camera') }}</button>
+                            <button type="button" x-show="stream" x-on:click="capture()" class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control bg-primary px-3 text-13 font-medium text-on-primary hover:bg-primary-hover">{{ __('Capture') }}</button>
+                            <button type="button" x-show="data" x-on:click="openCamera()" class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Retake') }}</button>
                             <button type="button" x-show="data || stream" x-on:click="clear()" class="rounded-md px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</button>
                         </div>
                         <select x-show="cameras.length > 1" x-model.number="cameraIndex" x-on:change="stream && startCamera()" class="rounded-md border-gray-300 text-sm" aria-label="{{ __('Select Camera') }}">
@@ -321,7 +321,7 @@
                 </table>
             </div>
             <x-input-error class="mt-2" :messages="collect($errors->getMessages())->filter(fn ($m, $k) => str_starts_with($k, 'experiences.'))->flatten()->all()" />
-            <button type="button" x-on:click="addExperience()" class="mt-3 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">+ {{ __('Add another experience') }}</button>
+            <button type="button" x-on:click="addExperience()" class="mt-3 inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">+ {{ __('Add another experience') }}</button>
             <div class="mt-4 max-w-xs">
                 <x-field name="date_of_exit_prev_org" type="date" :label="__('Date of exit from the previous organisation (if exp)')" :value="$e->date_of_exit_prev_org" />
             </div>
@@ -347,7 +347,7 @@
             </div>
 
             <label class="mt-6 inline-flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" x-on:change="copyNomineeAddresses($event.target.checked)" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                <input type="checkbox" x-on:change="copyNomineeAddresses($event.target.checked)" class="rounded border-field text-primary focus:ring-primary/30">
                 {{ __('Nominee address is employee address') }}
             </label>
 

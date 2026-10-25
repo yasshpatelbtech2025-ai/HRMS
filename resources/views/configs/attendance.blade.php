@@ -4,13 +4,13 @@
     <x-section-tabs section="configs" />
 
     @php
-        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
-        $input = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control';
+        $input = 'control';
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Attendance setting') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Attendance setting') }}</h1>
             <form method="GET" action="{{ route('configs.index') }}">
                 <label for="settings-company" class="sr-only">{{ __('Company') }}</label>
                 <select id="settings-company" name="company" onchange="this.form.submit()" class="{{ $select }} min-w-56">
@@ -20,7 +20,7 @@
                 </select>
             </form>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">
@@ -51,7 +51,7 @@
                             <h4 class="text-base font-semibold text-gray-900">{{ __($definition['label']) }}</h4>
                             @if ($definition['slots'] > 1)
                                 <button type="button" x-show="shown < max" x-on:click="shown++"
-                                        class="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">
+                                        class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control bg-primary px-3 text-13 font-medium text-on-primary hover:bg-primary-hover">
                                     {{ __('Add :type', ['type' => __($definition['label'])]) }}
                                 </button>
                             @endif
@@ -137,7 +137,7 @@
                                                 </div>
                                             @endforeach
                                         </div>
-                                        <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                                        <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                                             <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                                             <x-primary-button>{{ __('Save') }}</x-primary-button>
                                         </div>

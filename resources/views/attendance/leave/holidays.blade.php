@@ -4,11 +4,11 @@
     <x-section-tabs section="attendance" />
     <x-section-tabs section="attendance.leave" nested />
 
-    @php($select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500')
+    @php($select = 'control-inline')
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Holiday list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Holiday list') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave.holidays') }}" class="flex gap-2">
                     <select name="year" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Year') }}">
@@ -27,7 +27,7 @@
                 @endif
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -94,7 +94,7 @@
                             @forelse ($available as $holiday)
                                 <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-gray-700 hover:bg-gray-50">
                                     <input type="checkbox" name="holidays[]" value="{{ $holiday->uuid }}" @checked(in_array($holiday->uuid, old('holidays', []), true))
-                                           class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                           class="rounded border-field text-primary focus:ring-primary/30">
                                     {{ $holiday->name }} — {{ __('Start: :start End: :end', ['start' => $holiday->start_date->toDateString(), 'end' => $holiday->end_date->toDateString()]) }}
                                 </label>
                             @empty
@@ -106,7 +106,7 @@
                         </div>
                     </x-form-row>
                 </div>
-                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                     <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>

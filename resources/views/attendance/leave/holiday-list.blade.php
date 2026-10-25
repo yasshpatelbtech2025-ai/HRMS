@@ -5,12 +5,12 @@
     <x-section-tabs section="attendance.leave" nested />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Holiday list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Holiday list') }}</h1>
             <div class="flex items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave.holiday-list') }}">
                     <label for="holiday-year" class="sr-only">{{ __('Year') }}</label>
-                    <select id="holiday-year" name="year" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                    <select id="holiday-year" name="year" onchange="this.form.submit()" class="control-inline">
                         @foreach (range((int) date('Y') + 1, 2020) as $option)
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
@@ -21,7 +21,7 @@
                 @endcan
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('attendance.leave.holiday-list')" :per-page="$perPage" />
 

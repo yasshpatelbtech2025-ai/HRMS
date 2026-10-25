@@ -3,92 +3,99 @@
 @tailwind utilities;
 
 /*
- * Global styles on top of the design tokens (tailwind.config.js).
- * "Muster Roll": Figtree at 14px, 24px semibold page titles, sentence-case
- * 12px table headings over 13.5px cells, compact square row actions and
- * one Site Ink focus ring. Statutory forms (.sheet), the attendance and roster
- * grids (text-xs tables) and print keep their compact layout.
+ * "Register": global styles on top of the design tokens (tailwind.config.js).
+ * Instrument Sans at 14px, hairline rules instead of shadows, Cobalt for
+ * anything you can act on, and the "ruled margin" (.page-head) as the one
+ * signature: a page title sits on a hairline rule with a thin Cobalt margin
+ * line at its left, like a page in a register.
+ * Statutory forms (.sheet), dense grids (text-xs tables) and print keep their
+ * compact, official layout.
  */
 @layer base {
-    /* Semantic colours as RGB channels (Tailwind opacity modifiers work). */
-    /* Muster Roll palette. Brand red is the logo, the active-menu marker and the
-       muster strip only; buttons use Site Ink so red never reads as "delete". */
+    /* Colours as RGB channels, so Tailwind opacity modifiers work. */
     :root,
     .dark .sheet {
-        --canvas: 245 246 248;       /* Paper #F5F6F8 */
+        --canvas: 245 247 250;       /* Paper #F5F7FA */
         --surface: 255 255 255;      /* cards, tables, menus */
-        --sunken: 238 240 243;       /* table headings, wells */
-        --rail: 251 251 252;         /* sidebar */
-        --line: 226 229 234;         /* Rule #E2E5EA */
-        --line-strong: 204 209 216;
-        --ink: 23 24 28;             /* Site Ink #17181C */
-        --ink-2: 82 90 104;          /* Steel #525A68 */
-        --ink-3: 99 107 121;         /* hints (AA on paper) */
-        --primary: 23 24 28;         /* primary buttons, focus */
-        --primary-hover: 52 56 65;
-        --primary-soft: 233 235 239;
-        --primary-ink: 23 24 28;
+        --sunken: 239 242 246;       /* table hover, wells, tracks */
+        --rail: 255 255 255;         /* sidebar */
+        --line: 223 227 234;         /* Rule #DFE3EA */
+        --line-strong: 196 203 214;
+        --field: 140 149 165;        /* input borders (3:1 on white) */
+        --ink: 19 23 34;             /* Ink #131722 */
+        --ink-2: 86 96 116;          /* Slate #566074 */
+        --ink-3: 99 108 126;         /* hints, 4.7:1 on paper */
+        --primary: 36 69 168;        /* Cobalt #2445A8 */
+        --primary-hover: 28 55 140;
+        --primary-soft: 233 238 251;
+        --primary-ink: 30 58 148;
         --on-primary: 255 255 255;
-        --brand: 221 42 27;          /* Srympex Red #DD2A1B */
+        --brand: 221 42 27;          /* Srympex Red: the logo only */
         --brand-soft: 252 236 234;
         --brand-ink: 168 28 18;
-        --success: 30 127 79;   --success-soft: 226 243 234;  /* Present Green #1E7F4F */
-        --warn: 173 92 8;       --warn-soft: 253 241 220;
-        --danger: 176 30 45;    --danger-hover: 146 22 36; --danger-soft: 251 232 234;
-        --info: 37 84 199;      --info-soft: 230 237 252;
-        --gray-50: 245 246 248;  --gray-100: 238 240 243; --gray-200: 226 229 234; --gray-300: 204 209 216;
-        --gray-400: 156 163 175; --gray-500: 99 107 121;  --gray-600: 82 90 104;   --gray-700: 58 63 74;
-        --gray-800: 37 40 47;    --gray-900: 23 24 28;    --gray-950: 12 13 15;
-        /* The legacy "brand" scale now follows Site Ink, so older pages match. */
-        --brand-50: 241 243 246; --brand-100: 228 231 236; --brand-200: 203 208 216; --brand-300: 165 172 184;
-        --brand-400: 120 128 142; --brand-500: 82 90 104; --brand-600: 37 40 47;   --brand-700: 23 24 28;
-        --brand-800: 18 19 22;   --brand-900: 12 13 15;  --brand-950: 8 8 10;
+        --success: 28 122 74;   --success-soft: 228 243 235;
+        --warn: 163 91 0;       --warn-soft: 253 242 222;
+        --danger: 180 35 47;    --danger-hover: 150 26 38; --danger-soft: 251 233 235;
+        --info: 23 105 142;     --info-soft: 226 240 247;
+        --shadow: 19 23 34;
+        /* Slate neutrals. */
+        --gray-50: 245 247 250;  --gray-100: 239 242 246; --gray-200: 223 227 234; --gray-300: 196 203 214;
+        --gray-400: 148 156 172; --gray-500: 99 108 126;  --gray-600: 86 96 116;   --gray-700: 60 68 85;
+        --gray-800: 37 43 56;    --gray-900: 19 23 34;    --gray-950: 10 12 18;
+        /* The legacy "brand" scale is Cobalt, so older markup matches. */
+        --brand-50: 238 242 252; --brand-100: 224 231 250; --brand-200: 195 208 243; --brand-300: 154 175 234;
+        --brand-400: 101 132 214; --brand-500: 58 91 192; --brand-600: 36 69 168;  --brand-700: 28 55 140;
+        --brand-800: 24 47 112;  --brand-900: 21 40 92;   --brand-950: 13 24 56;
+        /* Size and shape. */
+        --radius-control: 6px;
+        --radius-card: 8px;
+        --radius-dialog: 12px;
+        --control-h: 38px;
+        --control-h-sm: 32px;
         --sidebar-w: 248px;
         --sidebar-rail-w: 64px;
         --topbar-h: 56px;
+        --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     /* Dark theme: <html class="dark">, set before first paint by the layouts. */
     :root.dark {
         color-scheme: dark;
-        --canvas: 15 16 19;
-        --surface: 23 25 30;
-        --sunken: 31 34 40;
-        --rail: 18 20 24;
-        --line: 42 46 54;
-        --line-strong: 62 67 77;
-        --ink: 236 237 240;
-        --ink-2: 178 183 192;
-        --ink-3: 145 151 162;
-        --primary: 236 237 240;
-        --primary-hover: 214 217 223;
-        --primary-soft: 38 42 50;
-        --primary-ink: 236 237 240;
-        --on-primary: 16 17 20;
+        --canvas: 14 17 23;          /* #0E1117 */
+        --surface: 22 26 34;
+        --sunken: 29 34 44;
+        --rail: 17 20 27;
+        --line: 42 48 60;
+        --line-strong: 60 68 83;
+        --field: 96 106 124;
+        --ink: 231 234 240;
+        --ink-2: 170 178 192;
+        --ink-3: 141 150 166;
+        --primary: 143 168 245;      /* #8FA8F5 */
+        --primary-hover: 169 188 248;
+        --primary-soft: 30 39 66;
+        --primary-ink: 169 188 248;
+        --on-primary: 14 17 23;
         --brand: 240 84 68;
         --brand-soft: 58 26 24;
         --brand-ink: 250 140 128;
-        --success: 82 196 132;  --success-soft: 22 48 34;
-        --warn: 240 168 80;     --warn-soft: 56 40 18;
-        --danger: 248 113 120;  --danger-hover: 252 140 146; --danger-soft: 62 26 30;
-        --info: 125 163 250;    --info-soft: 28 40 70;
-        --gray-50: 31 34 40;   --gray-100: 38 42 50;  --gray-200: 47 51 60;  --gray-300: 66 71 81;
-        --gray-400: 122 128 139; --gray-500: 150 156 167; --gray-600: 178 183 192; --gray-700: 205 209 215;
-        --gray-800: 224 226 231; --gray-900: 238 239 242; --gray-950: 248 248 250;
-        --brand-50: 32 35 42;  --brand-100: 40 44 52;  --brand-200: 58 63 73;  --brand-300: 92 99 112;
-        --brand-400: 140 147 160; --brand-500: 170 177 190; --brand-600: 72 78 90; --brand-700: 92 99 112;
-        --brand-800: 205 209 215; --brand-900: 228 230 234; --brand-950: 245 246 248;
+        --success: 92 196 138;  --success-soft: 20 46 33;
+        --warn: 236 170 84;     --warn-soft: 54 39 17;
+        --danger: 247 120 128;  --danger-hover: 250 148 154; --danger-soft: 60 25 30;
+        --info: 110 190 225;    --info-soft: 20 42 54;
+        --shadow: 0 0 0;
+        --gray-50: 29 34 44;   --gray-100: 36 41 52;  --gray-200: 46 52 64;  --gray-300: 64 72 87;
+        --gray-400: 118 126 141; --gray-500: 141 150 166; --gray-600: 170 178 192; --gray-700: 200 206 216;
+        --gray-800: 222 226 233; --gray-900: 236 238 243; --gray-950: 247 248 250;
+        --brand-50: 30 39 66;  --brand-100: 37 48 82;  --brand-200: 52 66 112; --brand-300: 84 105 170;
+        --brand-400: 120 145 225; --brand-500: 143 168 245; --brand-600: 143 168 245; --brand-700: 169 188 248;
+        --brand-800: 190 205 250; --brand-900: 212 222 252; --brand-950: 236 240 254;
     }
 
-    /* Dark mode: legacy text-brand-* links stay readable on dark cards. */
-    :root.dark :where(.text-brand-600, .text-brand-700, .text-brand-800, .text-brand-900) {
-        color: rgb(var(--ink));
-    }
-
-    @font-face { font-family: 'Figtree'; font-weight: 400; font-display: swap; src: url('../fonts/figtree/figtree-latin-400-normal.woff2') format('woff2'); }
-    @font-face { font-family: 'Figtree'; font-weight: 500; font-display: swap; src: url('../fonts/figtree/figtree-latin-500-normal.woff2') format('woff2'); }
-    @font-face { font-family: 'Figtree'; font-weight: 600; font-display: swap; src: url('../fonts/figtree/figtree-latin-600-normal.woff2') format('woff2'); }
-    @font-face { font-family: 'Figtree'; font-weight: 700; font-display: swap; src: url('../fonts/figtree/figtree-latin-700-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Instrument Sans'; font-weight: 400; font-display: swap; src: url('../fonts/instrument-sans/instrument-sans-latin-400-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Instrument Sans'; font-weight: 500; font-display: swap; src: url('../fonts/instrument-sans/instrument-sans-latin-500-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Instrument Sans'; font-weight: 600; font-display: swap; src: url('../fonts/instrument-sans/instrument-sans-latin-600-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Instrument Sans'; font-weight: 700; font-display: swap; src: url('../fonts/instrument-sans/instrument-sans-latin-700-normal.woff2') format('woff2'); }
 
     html {
         -webkit-tap-highlight-color: transparent;
@@ -96,12 +103,14 @@
 
     body {
         font-size: 14px;
+        line-height: 1.45;
         color: rgb(var(--ink));
         background-color: rgb(var(--canvas));
-        font-feature-settings: "tnum" 0;
     }
 
-    /* One visible focus style for keyboard users, in the primary colour. */
+    ::selection { background: rgb(var(--primary) / 0.18); }
+
+    /* One visible focus style for keyboard users, in Cobalt. */
     :focus-visible {
         outline: 2px solid rgb(var(--primary));
         outline-offset: 2px;
@@ -115,10 +124,12 @@
     textarea {
         transition-property: color, background-color, border-color, box-shadow, opacity, transform;
         transition-duration: 150ms;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-timing-function: var(--ease-out);
     }
 
     td, .tabular { font-variant-numeric: tabular-nums; }
+
+    [x-cloak] { display: none !important; }
 
     /* Scroll boxes contain their absolutely positioned content (e.g. the
        screen-reader labels on row actions), so a wide table scrolls inside
@@ -133,15 +144,58 @@
         *::before,
         *::after {
             animation-duration: 1ms !important;
+            animation-iteration-count: 1 !important;
             transition-duration: 1ms !important;
+            scroll-behavior: auto !important;
         }
     }
 }
 
 @layer components {
-    /* A white card on the page canvas. */
+    /* A white card on the page: a hairline, no shadow. */
     .card {
-        @apply rounded-lg border border-line bg-surface shadow-hairline;
+        @apply rounded-card border border-line bg-surface;
+    }
+
+    /* The ruled margin: page title on a hairline with a Cobalt margin line at its left. */
+    .page-head {
+        position: relative;
+        padding-inline-start: 16px;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgb(var(--line));
+    }
+    .page-head::before {
+        content: '';
+        position: absolute;
+        inset-inline-start: 0;
+        top: 2px;
+        bottom: 18px;
+        width: 2px;
+        border-radius: 1px;
+        background-color: rgb(var(--primary));
+    }
+
+    /* Form controls built by the x-ui.* components. */
+    .control {
+        @apply block w-full rounded-control border bg-surface text-sm text-ink placeholder:text-ink-3 focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-sunken disabled:text-ink-3;
+        border-color: rgb(var(--field));
+        min-height: var(--control-h);
+    }
+    .control-inline {
+        @apply rounded-control border bg-surface text-sm text-ink placeholder:text-ink-3 focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-sunken;
+        border-color: rgb(var(--field));
+        min-height: var(--control-h);
+    }
+    :is(.control, .control-inline)[aria-invalid='true'] {
+        border-color: rgb(var(--danger));
+        --tw-ring-color: rgb(var(--danger) / 0.2);
+    }
+    .control-label {
+        @apply mb-1.5 block text-13 font-medium text-ink;
+    }
+    .control-help {
+        @apply mt-1.5 text-xs text-ink-3;
     }
 
     /* A spinner for buttons and loading areas (inherits the text colour). */
@@ -155,11 +209,11 @@
         animation: spin 0.7s linear infinite;
     }
 
-    /* A grey placeholder with a light sweep while content loads. */
+    /* A placeholder with a light sweep while content loads. */
     .skeleton {
         position: relative;
         overflow: hidden;
-        border-radius: 6px;
+        border-radius: 4px;
         background-color: rgb(var(--sunken));
     }
 
@@ -172,15 +226,16 @@
         animation: shimmer 1.4s infinite;
     }
 
-    /* Login muster roll: the squares fill in day by day, once (the only load animation). */
-    .muster-cell {
-        animation: muster-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-        animation-delay: calc(var(--i, 0) * 35ms + 150ms);
+    /* Login: the register lines rule themselves in, once (the app's one special animation). */
+    .register-line {
+        transform-origin: left center;
+        animation: register-rule 700ms var(--ease-out) both;
+        animation-delay: calc(var(--i, 0) * 60ms + 120ms);
     }
 
-    @keyframes muster-in {
-        from { opacity: 0; transform: scale(0.4); }
-        to { opacity: 1; transform: none; }
+    @keyframes register-rule {
+        from { transform: scaleX(0); opacity: 0; }
+        to { transform: none; opacity: 1; }
     }
 
     /* A submit button while its form is being sent (resources/js/loading.js). */
@@ -190,21 +245,7 @@
     }
 }
 
-/* Page titles, with a short Srympex Red rule underneath (like the letterhead). */
-main :is(h1, h2).text-2xl::after {
-    content: '';
-    display: block;
-    width: 28px;
-    height: 3px;
-    margin-top: 8px;
-    border-radius: 2px;
-    background-color: rgb(var(--brand));
-}
-
-@media print {
-    main :is(h1, h2).text-2xl::after { display: none; }
-}
-
+/* Older page titles that are not yet an x-ui.page-header. */
 main h2.text-2xl {
     font-size: 24px;
     line-height: 1.25;
@@ -212,45 +253,64 @@ main h2.text-2xl {
     letter-spacing: -0.015em;
 }
 
-/* List tables: quiet sentence-case headings on a tinted band, dense rows. */
+/* List tables: sentence-case headings on white over a rule, airy rows. */
 main table.text-sm > thead th {
     font-size: 12px;
     font-weight: 500;
     color: rgb(var(--ink-2));
-    background-color: rgb(var(--sunken));
+    background-color: rgb(var(--surface));
     text-transform: none;
     letter-spacing: 0;
-    padding: 9px 12px;
+    padding: 10px 14px;
     white-space: nowrap;
     border-bottom: 1px solid rgb(var(--line));
+    box-shadow: inset 0 -1px 0 rgb(var(--line));
 }
 
 main table.text-sm > tbody td {
-    font-size: 13.5px;
-    padding: 9px 12px;
+    font-size: 14px;
+    padding: 11px 14px;
     vertical-align: middle;
 }
 
-main table.text-sm > tbody > tr:hover {
-    background-color: rgb(var(--sunken) / 0.6);
+/* List cells stay on one line (the table scrolls inside its card); long text opts in with .whitespace-normal. */
+main table.text-sm > tbody td:where(:not(.whitespace-normal, .whitespace-pre-line)) {
+    white-space: nowrap;
 }
 
-/* Form controls (not inside statutory forms or grids). */
-main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *, table.text-xs *)) {
+main table.text-sm > tbody > tr {
+    border-color: rgb(var(--line));
+}
+
+main table.text-sm > tbody > tr:hover {
+    background-color: rgb(var(--sunken) / 0.7);
+}
+
+/* Form controls in older markup (not inside statutory forms or grids). */
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden'], [type='range'], [type='color']), select, textarea):where(:not(.sheet *, table.text-xs *)) {
     font-size: 14px;
 }
 
+main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden'], [type='range'], [type='color']), select):where(:not(.sheet *, table *, .h-8, .h-9)) {
+    min-height: var(--control-h);
+}
+
 main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), textarea):where(:not(.sheet *, table *)) {
-    padding: 7px 12px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    border-radius: var(--radius-control);
 }
 
 main :where(select):where(:not(.sheet *, table.text-xs *)) {
-    border-radius: 6px;
+    border-radius: var(--radius-control);
 }
 
-main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *)) {
-    border-color: rgb(var(--line-strong));
+:where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='hidden']), select, textarea):where(:not(.sheet *)) {
+    border-color: rgb(var(--field));
+}
+
+:where([type='checkbox'], [type='radio']):where(:not(.sheet *)) {
+    border-color: rgb(var(--field));
+    color: rgb(var(--primary));
 }
 
 :is(input, select, textarea):not(.sheet *):focus {
@@ -258,11 +318,15 @@ main :where(input:not([type='checkbox'], [type='radio'], [type='file'], [type='h
     --tw-ring-color: rgb(var(--primary) / 0.2);
 }
 
+:is(input, select, textarea)[aria-invalid='true']:not(.sheet *) {
+    border-color: rgb(var(--danger));
+}
+
 /* Row action buttons: compact ghost squares that fill on hover. */
 main table.text-sm > tbody td :is(a, button).rounded-md.p-2 {
     width: 32px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -290,6 +354,9 @@ main table.text-sm > tbody td :is(a, button).rounded-md.p-2:hover {
     body {
         background: #fff;
     }
+
+    .page-head { padding-inline-start: 0; border: 0; margin-bottom: 12px; }
+    .page-head::before { display: none; }
 
     main table.text-sm > thead th,
     main table.text-sm > tbody td {
@@ -329,7 +396,7 @@ main table.text-sm > tbody td .row-menu-panel :is(a, button).rounded-md.p-2 {
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
-    padding: 6px 10px;
+    padding: 7px 10px;
     border-radius: 5px;
     font-size: 14px;
     color: rgb(var(--ink));
@@ -351,12 +418,19 @@ main table.text-sm > tbody td .row-menu-panel :is(a, button).rounded-md.p-2 {
 /* ---------------------------------------------------------------
    List tables: compact density and a header that stays in view.
 ---------------------------------------------------------------- */
-main table.text-sm[data-density="compact"] > tbody td { padding-top: 4px; padding-bottom: 4px; }
+main table.text-sm[data-density="compact"] > tbody td { padding-top: 5px; padding-bottom: 5px; }
 main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; padding-bottom: 7px; }
 @media (min-width: 1024px) {
     main .overflow-x-auto:has(> table.text-sm > thead) { max-height: calc(100dvh - 14rem); overflow: auto; }
     main .overflow-x-auto > table.text-sm > thead th { position: sticky; top: 0; z-index: 2; }
 }
+
+/* ---------------------------------------------------------------
+   Dense grids (monthly attendance, roster): sticky first column and
+   date row; today's column carries the ruled-margin Cobalt line.
+---------------------------------------------------------------- */
+.grid-today { box-shadow: inset 2px 0 0 rgb(var(--primary)), inset -2px 0 0 rgb(var(--primary)); background-color: rgb(var(--primary-soft) / 0.55); }
+thead .grid-today { box-shadow: inset 2px 0 0 rgb(var(--primary)), inset -2px 0 0 rgb(var(--primary)), inset 0 2px 0 rgb(var(--primary)); color: rgb(var(--primary-ink)); }
 
 /* ---------------------------------------------------------------
    Dark mode: pages still using plain Tailwind colours get matching
@@ -369,7 +443,7 @@ main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; paddin
 .dark .bg-brand-50, .dark .bg-brand-100, .dark .hover\:bg-brand-50:hover, .dark .focus\:bg-brand-100:focus, .dark .bg-brand-50\/60 { background-color: rgb(var(--primary-soft)); }
 .dark .text-brand-600, .dark .text-brand-700, .dark .text-brand-800, .dark .text-brand-900, .dark .focus\:text-brand-800:focus { color: rgb(var(--primary-ink)); }
 .dark .border-brand-300, .dark .border-brand-400, .dark .ring-brand-300 { border-color: rgb(var(--primary) / 0.5); --tw-ring-color: rgb(var(--primary) / 0.5); }
-.dark .text-red-600 { color: rgb(var(--danger)); }
+.dark .text-red-600, .dark .text-red-700 { color: rgb(var(--danger)); }
 .dark .bg-red-50, .dark .bg-red-600\/10 { background-color: rgb(var(--danger-soft)); }
 .dark .border-red-200, .dark .border-red-300, .dark .ring-red-200 { border-color: rgb(var(--danger) / 0.35); --tw-ring-color: rgb(var(--danger) / 0.35); }
 .dark .bg-amber-50 { background-color: rgb(var(--warn-soft)); }
@@ -378,7 +452,8 @@ main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; paddin
 .dark .bg-sky-50 { background-color: rgb(var(--info-soft)); }
 .dark .text-sky-600 { color: rgb(var(--info)); }
 .dark .ring-emerald-200 { --tw-ring-color: rgb(var(--success) / 0.35); }
-.dark .text-emerald-600, .dark .text-emerald-900 { color: rgb(var(--success)); }
+.dark .bg-emerald-50 { background-color: rgb(var(--success-soft)); }
+.dark .text-emerald-600, .dark .text-emerald-700, .dark .text-emerald-900 { color: rgb(var(--success)); }
 .dark .bg-violet-100 { background-color: rgb(46 34 80); }
 .dark .text-violet-700, .dark .text-violet-800 { color: rgb(196 181 253); }
 .dark .border-violet-200 { border-color: rgb(196 181 253 / 0.35); }
@@ -401,10 +476,22 @@ main table.text-sm[data-density="compact"] > thead th { padding-top: 7px; paddin
     .dark :where(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color']), select, textarea) {
         background-color: rgb(var(--surface));
         color: rgb(var(--ink));
-        border-color: rgb(var(--line-strong));
+        border-color: rgb(var(--field));
     }
     .dark :is(input, textarea)::placeholder { color: rgb(var(--ink-3)); }
     .dark select option { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
-    .dark [type='checkbox'], .dark [type='radio'] { background-color: rgb(var(--sunken)); border-color: rgb(var(--line-strong)); }
+    .dark [type='checkbox'], .dark [type='radio'] { background-color: rgb(var(--sunken)); border-color: rgb(var(--field)); }
     .dark [type='checkbox']:checked, .dark [type='radio']:checked { background-color: rgb(var(--primary)); border-color: rgb(var(--primary)); }
+    .dark [type='date']::-webkit-calendar-picker-indicator { filter: invert(0.8); }
+}
+
+/* ---------------------------------------------------------------
+   Pop-up forms (x-modal): one heading style, room for the close
+   button, a quiet footer with the buttons on the right.
+---------------------------------------------------------------- */
+.modal-panel h2.text-lg { font-size: 17px; line-height: 24px; font-weight: 600; letter-spacing: -0.01em; padding-inline-end: 2.25rem; }
+.modal-panel :where(.bg-gray-50.border-t) { background-color: rgb(var(--sunken) / 0.6); }
+@media (max-width: 639.98px) {
+    .modal-panel :where(.border-t.px-6.py-4):last-child { position: sticky; bottom: 0; z-index: 5; }
+    .modal-panel :where(.justify-end.gap-3.border-t) > * { flex: 1 1 0; }
 }

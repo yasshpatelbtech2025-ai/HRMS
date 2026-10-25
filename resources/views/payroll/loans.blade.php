@@ -9,10 +9,10 @@
     @endphp
 
     <div x-data="{ filtersOpen: @js(request()->filled('employee')) }">
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Loan list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Loan list') }}</h1>
             <div class="flex gap-2">
-                <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Filter') }}</button>
+                <button type="button" x-on:click="filtersOpen = ! filtersOpen" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Filter') }}</button>
                 <x-add-button modal="create-loan">{{ __('Add loan') }}</x-add-button>
             </div>
         </div>
@@ -23,13 +23,13 @@
             ['label' => __('Total lent'), 'value' => '₹'.number_format($stats['lent'])],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('payroll.loans') }}" x-show="filtersOpen" x-transition class="flex flex-wrap items-end gap-3 border-b border-gray-200 bg-gray-50 px-5 py-4" style="display: none;">
             <div class="min-w-72">
                 @include('payroll._employee-select', ['id' => 'loan-filter-employee', 'selected' => request('employee')])
             </div>
-            <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Find') }}</button>
+            <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Find') }}</button>
             <a href="{{ route('payroll.loans') }}" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">{{ __('Reset') }}</a>
         </form>
 

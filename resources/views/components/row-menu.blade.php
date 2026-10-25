@@ -9,7 +9,7 @@
     </div>
     <div x-show="open" x-ref="panel" role="menu" :style="pos" style="display: none;"
          x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 -translate-y-1"
-         @keydown.down.prevent="focusNext(1)" @keydown.up.prevent="focusNext(-1)" @keydown.tab="close()"
+         @keydown.down.prevent="focusNext(1)" @keydown.up.prevent="focusNext(-1)" @keydown.home.prevent="focusEdge(false)" @keydown.end.prevent="focusEdge(true)" @keydown.tab="close()"
          class="row-menu-panel fixed z-[45] w-52 rounded-lg border border-line bg-surface p-1 text-start shadow-pop">
         {{ $slot }}
     </div>

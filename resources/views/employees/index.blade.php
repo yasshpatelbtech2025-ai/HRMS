@@ -12,7 +12,7 @@
         $exportQuery = request()->only([...$filterKeys, 'status', 'search', 'sort', 'direction']);
         $status = in_array(request('status'), ['active', 'inactive'], true) ? request('status') : null;
         $statusUrl = fn (?string $value) => route('employees.index', array_filter(['status' => $value, 'per_page' => request('per_page')]));
-        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control';
     @endphp
 
     @if ($importRun)
@@ -20,8 +20,8 @@
     @endif
 
     <div x-data="{ filtersOpen: @js($filtering) }">
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Employee list') }}</h1>
             <div class="flex flex-wrap items-center gap-2 print:hidden">
                 <button type="button" x-on:click="filtersOpen = ! filtersOpen" :aria-expanded="filtersOpen"
                         class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">
@@ -34,7 +34,7 @@
                     {{ __('Import Employees') }}
                 </button>
                 <a href="{{ route('employees.create') }}"
-                   class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
+                   class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                     {{ __('Add employee') }}
                 </a>
@@ -69,7 +69,7 @@
             ['label' => __('Joined this month'), 'value' => $stats['joined'], 'hint' => now()->format('F Y')],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         {{-- Filter panel --}}
         <form method="GET" action="{{ route('employees.index') }}" x-show="filtersOpen" x-transition
@@ -132,7 +132,7 @@
                 @endforeach
             </select>
             <div class="flex items-end gap-2">
-                <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Find') }}</button>
+                <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Find') }}</button>
                 <a href="{{ route('employees.index') }}" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">{{ __('Reset') }}</a>
             </div>
         </form>
@@ -149,7 +149,7 @@
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50 text-left font-semibold text-gray-700">
                     <tr>
-                        <th class="w-10 px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all on this page') }}"></th>
+                        <th class="w-10 px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-field text-primary focus:ring-primary/30" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all on this page') }}"></th>
                         <x-sort-header column="name" class="px-4 py-3">{{ __('Employee') }}</x-sort-header>
                         <x-sort-header column="company" default class="px-4 py-3">{{ __('Company') }}</x-sort-header>
                         <th class="px-4 py-3">{{ __('Contact') }}</th>
@@ -166,7 +166,7 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($employees as $employee)
                         <tr class="hover:bg-gray-50" :class="selected.includes(@js($employee->uuid)) && 'bg-brand-50/60'">
-                            <td class="px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="{{ $employee->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :name', ['name' => $employee->full_name]) }}"></td>
+                            <td class="px-4 py-3"><input type="checkbox" class="h-4 w-4 rounded border-field text-primary focus:ring-primary/30" value="{{ $employee->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :name', ['name' => $employee->full_name]) }}"></td>
                             <td class="px-4 py-3">
                                 <a href="{{ route('employees.show', $employee) }}" class="flex items-center gap-3">
                                     <x-employee-photo :employee="$employee" class="h-9 w-9 shrink-0" />
@@ -240,7 +240,7 @@
                         @else
                             <x-empty-state colspan="17" icon="users" :title="__('No employees yet')">
                                 {{ __('Add your first employee to start tracking attendance, payroll and compliance.') }}
-                                <x-slot name="action"><a href="{{ route('employees.create') }}" class="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">+ {{ __('Add employee') }}</a></x-slot>
+                                <x-slot name="action"><a href="{{ route('employees.create') }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">+ {{ __('Add employee') }}</a></x-slot>
                             </x-empty-state>
                         @endif
                     @endforelse
@@ -266,7 +266,7 @@
                 <a :href="letters?.offer" target="_blank" class="rounded-md border border-info/30 px-4 py-2 text-sm font-medium text-info hover:bg-info-soft">📄 {{ __('Offer Letter') }}</a>
                 <a :href="letters?.joining" target="_blank" class="rounded-md border border-amber-300 px-4 py-2 text-sm font-medium text-warn hover:bg-warn-soft">📄 {{ __('Joining Letter') }}</a>
             </div>
-            <div class="flex justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                 <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
             </div>
         </x-modal>
@@ -301,7 +301,7 @@
                     <p class="mt-1 text-xs text-gray-500">{{ __('Acceptable formats: .xlsx, .csv. Maximum file size: 10MB.') }}</p>
                 </x-form-row>
             </div>
-            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                 <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                 <x-primary-button>{{ __('Import') }}</x-primary-button>
             </div>

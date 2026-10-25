@@ -6,7 +6,7 @@
 @php
     $mine = old('_modal') === $modal;
     $val = fn (string $key, $current = null) => $mine ? old($key) : ($current instanceof \DateTimeInterface ? $current->format('Y-m-d') : $current);
-    $input = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+    $input = 'mt-1.5 control';
     $label = 'block text-[15px] font-bold text-gray-700';
     $id = fn (string $key) => $modal.'-'.str_replace(['.', '_'], '-', $key);
 @endphp

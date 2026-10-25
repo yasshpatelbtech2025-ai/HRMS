@@ -4,22 +4,22 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $labels = ['A' => 'A', 'P' => 'P', 'HD' => 'HD', 'WO' => 'WO', 'PH' => 'PH', 'LEAVE' => 'LEAVE', 'COFF' => 'COFF'];
         $hours = fn (float $h) => $h > 0 ? sprintf('%d:%02d', floor($h), round(($h - floor($h)) * 60)) : '--';
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee wise attendance report') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Employee wise attendance report') }}</h1>
             <div class="flex gap-2 print:hidden">
                 @if ($employee)
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'correct-raw-data')" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance data correction') }}</button>
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'correct-raw-data')" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Attendance data correction') }}</button>
                 @endif
-                <button type="button" onclick="window.print()" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Print') }}</button>
+                <button type="button" onclick="window.print()" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Print') }}</button>
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('attendance.employee-report') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-sm text-gray-700">
@@ -35,7 +35,7 @@
                     @endforeach
                 </select>
             </label>
-            <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Find') }}</button>
+            <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Find') }}</button>
         </form>
 
         @if (! $employee)

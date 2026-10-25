@@ -4,8 +4,8 @@
     <x-section-tabs section="employees" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Employee list for id card') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Employee list for id card') }}</h1>
             <x-add-button modal="assign-id-card">{{ __('Assign id card') }}</x-add-button>
         </div>
         <x-stat-strip :items="[
@@ -13,7 +13,7 @@
             ['label' => __('Card not yet assigned'), 'value' => $unassigned->count(), 'tone' => $unassigned->count() ? 'warn' : 'success'],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('employees.id-cards')" :per-page="$perPage" />
 

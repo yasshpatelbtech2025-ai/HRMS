@@ -4,16 +4,16 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $days = collect(range(1, $month->daysInMonth))->map(fn ($d) => $month->setDay($d));
         $codeStyles = "{ 'WO': 'bg-warn-soft text-warn', 'NS': 'bg-brand-100 text-brand-800', 'SS': 'bg-info-soft text-info', 'FS': 'bg-success-soft text-success', 'DS': 'bg-success-soft text-success', 'GS': 'bg-gray-100 text-gray-800' }";
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Shift management') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Shift management') }}</h1>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('attendance.shifts') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4">
             <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
@@ -78,7 +78,7 @@
                                         <div class="flex flex-col gap-1 text-left">
                                             @foreach (\App\Http\Controllers\Attendance\ShiftManagementController::PARTS as $code => $label)
                                                 <label class="flex items-center gap-1 whitespace-nowrap">
-                                                    <input type="checkbox" value="{{ $code }}" x-model="group.parts" x-on:change="refresh(group)" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                                    <input type="checkbox" value="{{ $code }}" x-model="group.parts" x-on:change="refresh(group)" class="rounded border-field text-primary focus:ring-primary/30">
                                                     {{ __($label) }}
                                                 </label>
                                             @endforeach
@@ -115,7 +115,7 @@
                                             </select>
                                         </td>
                                         <td class="border-t border-gray-100 px-2 py-1 text-center">
-                                            <input type="checkbox" x-model="entry.manual" x-on:change="toggleManual(group, entry)" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500" aria-label="{{ __('Edit days by hand') }}">
+                                            <input type="checkbox" x-model="entry.manual" x-on:change="toggleManual(group, entry)" class="rounded border-field text-primary focus:ring-primary/30" aria-label="{{ __('Edit days by hand') }}">
                                         </td>
                                         @foreach ($days as $day)
                                             <td class="border-t border-gray-100 px-0.5 py-1 text-center">

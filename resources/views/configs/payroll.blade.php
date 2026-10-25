@@ -4,7 +4,7 @@
     <x-section-tabs section="configs" />
 
     @php
-        $select = 'block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control';
         $yesNo = ['0' => __('No'), '1' => __('Yes')];
         $value = fn (string $field) => old($field, is_bool($setting?->{$field}) ? (int) $setting->{$field} : $setting?->{$field});
         $questions = [
@@ -20,8 +20,8 @@
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Payroll setting') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Payroll setting') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('configs.payroll') }}">
                     <label for="payroll-company" class="sr-only">{{ __('Company') }}</label>
@@ -36,7 +36,7 @@
                 @endif
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">

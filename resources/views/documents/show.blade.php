@@ -9,17 +9,17 @@
         <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <p class="text-xs font-semibold uppercase text-gray-500">{{ $category }}</p>
-                <h2 class="text-2xl font-bold text-gray-900">{{ $slot['name'] }}</h2>
+                <h1 class="page-head text-2xl font-semibold text-ink">{{ $slot['name'] }}</h1>
             </div>
             <form method="POST" action="{{ route('documents.upload', $slot['slug']) }}" enctype="multipart/form-data">
                 @csrf
-                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+                <label class="cursor-pointer inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                     {{ __('Upload files') }}
                     <input type="file" name="files[]" multiple class="sr-only" onchange="this.form.submit()" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
                 </label>
             </form>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
         <x-input-error class="px-5 pt-3" :messages="array_merge($errors->get('files'), $errors->get('files.*'))" />
 
         <div class="overflow-x-auto">
