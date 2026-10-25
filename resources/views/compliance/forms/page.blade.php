@@ -11,11 +11,11 @@
         $noFilter = $examView || in_array($view, ['form-13', 'form-15', 'id-card-register'], true);
     @endphp
 
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-            <a href="{{ route('compliance.index', ['company' => $company->uuid, 'act' => $act]) }}" class="text-sm text-gray-600 hover:text-gray-900">← {{ __('Compliance') }}</a>
-            <h1 class="page-head text-2xl font-semibold text-ink">{{ $title }}</h1>
-            <p class="text-sm text-gray-500">{{ $company->label }}</p>
+    <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div class="min-w-0">
+            <a href="{{ route('compliance.index', ['company' => $company->uuid, 'act' => $act]) }}" class="mb-1.5 inline-flex items-center gap-1 text-13 text-ink-3 hover:text-ink hover:underline"><x-icon name="chevron-left" class="size-3" />{{ __('Compliance') }}</a>
+            <h1 class="text-2xl font-semibold text-ink">{{ $title }}</h1>
+            <p class="mt-1 text-sm text-ink-2">{{ $company->label }}</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <form method="GET" action="{{ route('compliance.forms.show', [$company, $form]) }}" class="flex flex-wrap items-center gap-2">

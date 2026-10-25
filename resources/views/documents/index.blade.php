@@ -4,8 +4,8 @@
     @php $select = 'control-inline'; @endphp
 
     <div x-data="{ category: 'all', doc: null, open: false }" class="space-y-6">
-        <div class="flex flex-wrap items-end justify-between gap-3">
-            <h1 class="page-head text-2xl font-semibold text-ink">{{ __('Documents') }}</h1>
+        <div class="page-head !mb-0 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Documents') }}</h1>
             <div class="relative" x-on:click.outside="open = false">
                 <button type="button" x-on:click="open = ! open" :aria-expanded="open" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                     {{ __('Select Documents') }}

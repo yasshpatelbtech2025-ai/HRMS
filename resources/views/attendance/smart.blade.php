@@ -6,8 +6,8 @@
     @php($input = 'control')
 
     <div>
-        <div class="mb-4">
-            <h1 class="page-head text-2xl font-semibold text-ink">{{ __('Smart attendance') }}</h1>
+        <div class="page-head">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Smart attendance') }}</h1>
             <p class="mt-1 text-sm text-gray-500">{{ __('Marks the chosen employees present at their shift times on every working day of the month that has no punches yet. Week-offs, holidays and days outside their employment are skipped.') }}</p>
         </div>
         <div class="card">

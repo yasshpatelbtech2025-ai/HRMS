@@ -6,10 +6,10 @@
     </div>
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <p class="text-xs font-semibold uppercase text-gray-500">{{ $category }}</p>
-                <h1 class="page-head text-2xl font-semibold text-ink">{{ $slot['name'] }}</h1>
+                <p class="text-13 text-ink-2">{{ $category }}</p>
+                <h1 class="text-2xl font-semibold text-ink">{{ $slot['name'] }}</h1>
             </div>
             <form method="POST" action="{{ route('documents.upload', $slot['slug']) }}" enctype="multipart/form-data">
                 @csrf

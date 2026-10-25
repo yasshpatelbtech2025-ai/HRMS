@@ -14,8 +14,8 @@
     @endphp
 
     <div>
-        <div class="mb-4">
-            <h1 class="page-head text-2xl font-semibold text-ink">{{ __('Activity log') }}</h1>
+        <div class="page-head">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Activity log') }}</h1>
             <p class="text-sm text-gray-500">{{ __('Who created, changed, deleted, exported or signed in, and when. Entries are kept for :days days. Passwords and ID numbers are never shown.', ['days' => config('access.activity_retention_days')]) }}</p>
         </div>
         <div class="card">
