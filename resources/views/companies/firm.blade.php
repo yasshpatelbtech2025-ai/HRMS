@@ -6,7 +6,7 @@
     <x-section-tabs section="company" />
 
     @php
-        $input = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $input = 'mt-1.5 control';
         $label = 'block text-[15px] font-bold text-gray-700';
         $val = fn (string $field) => old($field, $firm->{$field} instanceof \DateTimeInterface ? $firm->{$field}->format('Y-m-d') : $firm->{$field});
         $blankPerson = array_fill_keys(array_keys(Firm::PERSON_FIELDS), '') + ['is_primary' => false, 'is_factory_manager' => false];
@@ -34,13 +34,13 @@
         <input type="hidden" name="step" :value="step">
 
         <div>
-            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900">{{ __('Contractor firm') }}</h2>
+                    <h1 class="text-2xl font-semibold text-ink">{{ __('Contractor firm') }}</h1>
                     <p class="text-sm text-gray-500">{{ __('Your own firm: its details, owners and factory manager, and the email account the HRMS sends from.') }}</p>
                 </div>
             </div>
-            <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+            <div class="card">
 
             {{-- Steps --}}
             <nav class="flex flex-wrap gap-2 border-b border-gray-200 px-5 py-3" aria-label="{{ __('Steps') }}">
@@ -57,7 +57,7 @@
             <section x-show="step === 1" class="space-y-6 px-5 py-5" @if ($step !== 1) style="display: none;" @endif>
                 <h3 class="text-lg font-semibold text-gray-900">{{ __('Establishment Details:') }}</h3>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <div><label class="{{ $label }}" for="establishment_name">{{ __('Establishment Name') }} <span class="text-red-600">*</span></label>
+                    <div><label class="{{ $label }}" for="establishment_name">{{ __('Establishment Name') }} <span class="text-danger" aria-hidden="true">*</span></label>
                         <input id="establishment_name" name="establishment_name" required value="{{ $val('establishment_name') }}" class="{{ $input }}"></div>
                     @foreach (['sector' => [__('Sector (Ownership Type)'), Firm::SECTORS], 'organization_type' => [__('Organization Type'), Firm::ORGANIZATION_TYPES], 'establishment_category' => [__('Establishment Category'), Firm::CATEGORIES]] as $field => [$text, $options])
                         <div><label class="{{ $label }}" for="{{ $field }}">{{ $text }}</label>
@@ -72,7 +72,7 @@
                     @endforeach
                     <label class="flex items-center gap-2 pt-7 text-sm font-medium text-gray-700">
                         <input type="hidden" name="is_factory_registered" value="0">
-                        <input type="checkbox" name="is_factory_registered" value="1" @checked(old('is_factory_registered', $firm->is_factory_registered)) class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                        <input type="checkbox" name="is_factory_registered" value="1" @checked(old('is_factory_registered', $firm->is_factory_registered)) class="rounded border-field text-primary focus:ring-primary/30">
                         {{ __('Is factory registered under the Factory Act') }}
                     </label>
                 </div>
@@ -106,7 +106,7 @@
             <section x-show="step === 2" class="space-y-6 px-5 py-5" @if ($step !== 2) style="display: none;" @endif>
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">{{ __('Owners Details:') }}</h3>
-                    <button type="button" x-on:click="addOwner()" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">+ {{ __('Add owner') }}</button>
+                    <button type="button" x-on:click="addOwner()" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">+ {{ __('Add owner') }}</button>
                 </div>
                 <template x-for="(owner, i) in owners" :key="i">
                     <div class="rounded-md border border-gray-200 p-4">
@@ -114,10 +114,10 @@
                             <p class="font-semibold text-gray-900" x-text="`{{ __('Owner') }} ${i + 1}` + ((owner.first_name || owner.last_name) ? ` — ${owner.first_name} ${owner.last_name}` : '')"></p>
                             <div class="flex flex-wrap items-center gap-4 text-sm">
                                 <label class="flex items-center gap-2"><input type="hidden" :name="`owners[${i}][is_primary]`" :value="owner.is_primary ? 1 : 0">
-                                    <input type="checkbox" x-model="owner.is_primary" class="rounded border-gray-300 text-brand-600"> {{ __('Is Primary') }}</label>
+                                    <input type="checkbox" x-model="owner.is_primary" class="rounded border-field text-primary focus:ring-primary/30"> {{ __('Is Primary') }}</label>
                                 <label class="flex items-center gap-2"><input type="hidden" :name="`owners[${i}][is_factory_manager]`" :value="owner.is_factory_manager ? 1 : 0">
-                                    <input type="checkbox" x-model="owner.is_factory_manager" class="rounded border-gray-300 text-brand-600"> {{ __('Is factory manager') }}</label>
-                                <button type="button" x-on:click="owners.splice(i, 1)" x-show="owners.length > 1" class="text-sm font-medium text-red-600 hover:underline">{{ __('Remove') }}</button>
+                                    <input type="checkbox" x-model="owner.is_factory_manager" class="rounded border-field text-primary focus:ring-primary/30"> {{ __('Is factory manager') }}</label>
+                                <button type="button" x-on:click="owners.splice(i, 1)" x-show="owners.length > 1" class="text-sm font-medium text-danger hover:underline">{{ __('Remove') }}</button>
                             </div>
                         </div>
                         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -140,7 +140,7 @@
 
                 <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 pt-5">
                     <h3 class="text-lg font-semibold text-gray-900">{{ __('Factory Manager Details:') }}</h3>
-                    <button type="button" x-on:click="copyManager()" x-show="owners.some((o) => o.is_factory_manager)" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Copy from the owner marked factory manager') }}</button>
+                    <button type="button" x-on:click="copyManager()" x-show="owners.some((o) => o.is_factory_manager)" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Copy from the owner marked factory manager') }}</button>
                 </div>
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach (Firm::PERSON_FIELDS as $field => $text)
@@ -183,15 +183,15 @@
                 @if ($firm->mailConfig())
                     <div class="flex flex-wrap items-center gap-3 rounded-md bg-gray-50 px-4 py-3 text-sm text-gray-700">
                         {{ __('Check the saved settings work:') }}
-                        <button type="submit" form="test-mail" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100">{{ __('Send test email to :email', ['email' => auth()->user()->email]) }}</button>
+                        <button type="submit" form="test-mail" class="inline-flex h-control-sm items-center justify-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-13 font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Send test email to :email', ['email' => auth()->user()->email]) }}</button>
                     </div>
                 @endif
             </section>
 
             <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 px-5 py-4">
                 <div class="flex gap-2">
-                    <button type="button" x-show="step > 1" x-on:click="step--" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Previous') }}</button>
-                    <button type="button" x-show="step < 3" x-on:click="step++" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Next') }}</button>
+                    <button type="button" x-show="step > 1" x-on:click="step--" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Previous') }}</button>
+                    <button type="button" x-show="step < 3" x-on:click="step++" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Next') }}</button>
                 </div>
                 <x-primary-button>{{ __('Save') }}</x-primary-button>
             </div>

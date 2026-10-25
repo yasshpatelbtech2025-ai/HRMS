@@ -6,25 +6,25 @@
     </div>
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <p class="text-xs font-semibold uppercase text-gray-500">{{ $category }}</p>
-                <h2 class="text-2xl font-bold text-gray-900">{{ $slot['name'] }}</h2>
+                <p class="text-13 text-ink-2">{{ $category }}</p>
+                <h1 class="text-2xl font-semibold text-ink">{{ $slot['name'] }}</h1>
             </div>
             <form method="POST" action="{{ route('documents.upload', $slot['slug']) }}" enctype="multipart/form-data">
                 @csrf
-                <label class="inline-flex cursor-pointer items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+                <label class="cursor-pointer inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">
                     {{ __('Upload files') }}
                     <input type="file" name="files[]" multiple class="sr-only" onchange="this.form.submit()" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
                 </label>
             </form>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
         <x-input-error class="px-5 pt-3" :messages="array_merge($errors->get('files'), $errors->get('files.*'))" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('File') }}</th>
                         <th class="px-5 py-3">{{ __('Size') }}</th>
@@ -33,9 +33,9 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($files as $file)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3"><a href="{{ route('documents.file', $file) }}" target="_blank" class="font-medium text-brand-600 hover:underline">{{ $file->original_name }}</a></td>
                             <td class="px-5 py-3">{{ number_format($file->size / 1024, 0) }} KB</td>
                             <td class="px-5 py-3">{{ $file->created_at->format('d M Y H:i') }}</td>
@@ -45,7 +45,7 @@
                                     <form method="POST" action="{{ route('documents.destroy', $file) }}" data-confirm="{{ __('Delete :name?', ['name' => $file->original_name]) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="text-sm font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                        <button class="text-sm font-medium text-danger hover:underline">{{ __('Delete') }}</button>
                                     </form>
                                 @endcan
                             </td>

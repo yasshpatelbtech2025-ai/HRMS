@@ -6,7 +6,7 @@
 @php
     $mine = old('_modal') === $modal;
     $val = fn (string $key, $current = null) => $mine ? old($key) : ($current instanceof \DateTimeInterface ? $current->format('Y-m-d') : $current);
-    $input = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+    $input = 'mt-1.5 control';
     $label = 'block text-[15px] font-bold text-gray-700';
     $id = fn (string $key) => $modal.'-'.str_replace(['.', '_'], '-', $key);
 @endphp
@@ -17,12 +17,12 @@
     <input type="hidden" name="_modal" value="{{ $modal }}">
     <input type="hidden" name="form" value="{{ $form }}">
 
-    <h2 class="text-lg font-semibold text-gray-900">{{ $examination ? __('Edit examination') : __('Add examination') }}</h2>
+    <h2 class="text-lg font-semibold text-ink">{{ $examination ? __('Edit examination') : __('Add examination') }}</h2>
     <p class="mt-1 text-sm text-gray-500">{{ __('Fill in what the certifying surgeon recorded. Form 5, 27-A, 30 and the Form 32 health register are all printed from this examination; leave out what does not apply.') }}</p>
 
     <div class="mt-5 grid gap-4 sm:grid-cols-2">
         <div class="sm:col-span-2">
-            <label for="{{ $id('employee') }}" class="{{ $label }}">{{ __('Employee') }} <span class="text-red-600">*</span></label>
+            <label for="{{ $id('employee') }}" class="{{ $label }}">{{ __('Employee') }} <span class="text-danger" aria-hidden="true">*</span></label>
             @if ($examination)
                 <p class="mt-2 text-sm text-gray-900">{{ $examination->employee->employee_code }} - {{ $examination->employee->full_name }}</p>
             @else
@@ -35,7 +35,7 @@
             @endif
         </div>
         <div>
-            <label for="{{ $id('examined_on') }}" class="{{ $label }}">{{ __('Examination date') }} <span class="text-red-600">*</span></label>
+            <label for="{{ $id('examined_on') }}" class="{{ $label }}">{{ __('Examination date') }} <span class="text-danger" aria-hidden="true">*</span></label>
             <input id="{{ $id('examined_on') }}" type="date" name="examined_on" required value="{{ $val('examined_on', $examination?->examined_on ?? today()) }}" class="{{ $input }}">
         </div>
         <div>
@@ -78,7 +78,7 @@
         <label for="{{ $id('doc') }}" class="{{ $label }}">{{ __('Signed copy (PDF or image)') }}</label>
         <input id="{{ $id('doc') }}" type="file" name="doc" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-200">
         @if ($examination?->signed_copy_path)
-            <p class="mt-1 text-xs text-gray-500">{{ __('Current:') }} <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="text-brand-600 hover:underline">{{ $examination->signed_copy_name }}</a> &mdash; {{ __('choosing a file replaces it.') }}</p>
+            <p class="mt-1 text-xs text-gray-500">{{ __('Current:') }} <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ $examination->signed_copy_name }}</a> &mdash; {{ __('choosing a file replaces it.') }}</p>
         @endif
     </div>
 

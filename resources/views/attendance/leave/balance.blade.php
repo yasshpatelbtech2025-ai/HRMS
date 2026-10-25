@@ -5,40 +5,40 @@
     <x-section-tabs section="attendance.leave" nested />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $num = fn ($n) => rtrim(rtrim(number_format((float) $n, 1, '.', ''), '0'), '.');
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave Balance Sheet') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Leave Balance Sheet') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
-                <form method="GET" action="{{ route('attendance.leave.balance') }}" class="flex gap-2">
+                <form method="GET" action="{{ route('attendance.leave.balance') }}" class="flex min-w-0 flex-wrap gap-2">
                     <select name="year" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y') + 1, 2020) as $option)
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
                     </select>
-                    <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+                    <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                         @foreach ($companies as $option)
                             <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                         @endforeach
-                    </select>
+                    </select></label>
                 </form>
                 @if ($company && $types->isNotEmpty())
-                    <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Export Data') }}</a>
+                    <a href="{{ route('attendance.leave.balance.export', ['company' => $company->uuid, 'year' => $year]) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Export Data') }}</a>
                 @endif
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
         @elseif ($types->isEmpty())
-            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __(':company has no leave types.', ['company' => $company->establishment_name]) }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a></p>
+            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __(':company has no leave types.', ['company' => $company->establishment_name]) }} <a href="{{ route('attendance.leave.types') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Add them first.') }}</a></p>
         @else
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <table class="min-w-full divide-y divide-line text-sm">
                     <thead class="bg-gray-50 text-center font-semibold text-gray-700">
                         <tr>
                             <th rowspan="2" class="px-4 py-2 text-left">{{ __('SL') }}</th>
@@ -57,10 +57,10 @@
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-line">
                         @forelse ($employees as $employee)
                             @php $modal = 'balance-'.$employee->uuid; @endphp
-                            <tr class="hover:bg-gray-50">
+                            <tr>
                                 <td class="px-4 py-2 text-gray-500">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-2 font-mono">{{ $employee->employee_code }}</td>
                                 <td class="px-4 py-2 font-medium text-gray-900">{{ $employee->full_name }}</td>
@@ -68,7 +68,7 @@
                                     @php $b = $balances[$employee->id][$type->id]; @endphp
                                     <td class="border-l border-gray-100 px-2 py-2 text-center">{{ $num($b['total']) }}</td>
                                     <td class="px-2 py-2 text-center">{{ $num($b['used']) }}</td>
-                                    <td class="px-2 py-2 text-center font-semibold {{ $b['balance'] < 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $num($b['balance']) }}</td>
+                                    <td class="px-2 py-2 text-center font-semibold {{ $b['balance'] < 0 ? 'text-danger' : 'text-gray-900' }}">{{ $num($b['balance']) }}</td>
                                 @endforeach
                                 <td class="border-l border-gray-100 px-4 py-2 text-center">
                                     <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md p-1.5 text-brand-600 hover:bg-brand-50" title="{{ __('Edit') }}">
@@ -77,7 +77,7 @@
                                     </button>
                                     <x-modal :name="$modal" max-width="lg">
                                         <div class="border-b border-gray-200 px-6 py-4 text-left">
-                                            <h2 class="text-lg font-semibold text-gray-900">{{ __('Update leave balance') }}</h2>
+                                            <h2 class="text-lg font-semibold text-ink">{{ __('Update leave balance') }}</h2>
                                             <p class="text-sm text-gray-500">{{ $employee->full_name }} · {{ $year }}</p>
                                         </div>
                                         <div class="divide-y divide-gray-100 px-6 text-left">
@@ -99,7 +99,7 @@
                                                 </form>
                                             @endforeach
                                         </div>
-                                        <div class="flex justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
+                                        <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
                                             <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                                         </div>
                                     </x-modal>

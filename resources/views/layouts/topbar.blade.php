@@ -1,6 +1,6 @@
-<header class="sticky top-0 z-30 flex h-[var(--topbar-h)] items-center gap-2 border-b border-line bg-canvas px-3 sm:gap-3 sm:px-6 lg:px-8 print:hidden">
+<header class="sticky top-0 z-30 flex h-[var(--topbar-h)] items-center gap-2 border-b border-line bg-surface/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-surface/85 sm:gap-3 sm:px-6 lg:px-8 print:hidden">
     <button type="button" @click="drawer = true" aria-controls="sidebar"
-            class="-ms-1 rounded-md p-2 text-ink-2 hover:bg-sunken hover:text-ink lg:hidden">
+            class="-ms-1 inline-flex size-9 items-center justify-center rounded-control text-ink-2 hover:bg-sunken hover:text-ink lg:hidden">
         <span class="sr-only">{{ __('Open menu') }}</span>
         <x-icon name="menu" />
     </button>
@@ -17,13 +17,11 @@
          }"
          class="relative min-w-0" @keydown.escape.stop="open = false; $refs.trigger.focus()" @click.outside="open = false">
         <button type="button" x-ref="trigger" @click="toggle()" @pointerenter.once="load()" @focus.once="load()" :aria-expanded="open" aria-haspopup="listbox"
-                class="flex h-9 max-w-[16rem] items-center gap-2 rounded-md border px-2 text-sm transition-colors sm:max-w-xs {{ $currentCompany ? 'border-line-strong bg-surface shadow-hairline hover:border-ink-3' : 'border-dashed border-line-strong text-ink-2 hover:bg-surface' }}">
+                class="flex h-9 max-w-[13rem] items-center gap-2 rounded-control border px-2 text-sm transition-colors duration-fast sm:max-w-xs {{ $currentCompany ? 'border-line-strong bg-surface hover:border-field' : 'border-line-strong bg-canvas text-ink-2 hover:border-field hover:bg-surface' }}">
             @if ($currentCompany)
                 <span class="flex size-6 shrink-0 items-center justify-center rounded-[5px] text-[11px] font-semibold text-white" style="background: hsl({{ \App\Support\CurrentCompany::hue($currentCompany->id) }} 42% 38%)">{{ mb_strtoupper(mb_substr($currentCompany->establishment_name, 0, 2)) }}</span>
-                <span class="min-w-0 text-start leading-tight">
-                    <span class="block text-[10px] font-medium uppercase tracking-wide text-ink-3 max-sm:hidden">{{ __('Company') }}</span>
-                    <span class="block truncate font-medium text-ink">{{ $currentCompany->establishment_name }}</span>
-                </span>
+                <span class="sr-only">{{ __('Company') }}:</span>
+                <span class="min-w-0 truncate text-start font-medium text-ink">{{ $currentCompany->establishment_name }}</span>
             @else
                 <x-icon name="building" class="size-4 text-ink-3" />
                 <span class="truncate">{{ __('All companies') }}</span>
@@ -31,12 +29,12 @@
             <x-icon name="chevron-up-down" class="size-4 shrink-0 text-ink-3" />
         </button>
 
-        <div x-show="open" x-ref="panel" :style="pos" x-transition.opacity.duration.100ms style="display: none;" class="fixed z-[45] w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-line bg-surface shadow-pop">
+        <div x-show="open" x-ref="panel" :style="pos" x-transition.opacity.duration.100ms style="display: none;" class="fixed z-[45] w-[min(20rem,calc(100vw-1.5rem))] rounded-card border border-line bg-surface shadow-pop">
             <div class="border-b border-line p-2">
                 <input x-ref="filter" x-model="q" @input="active = 0" type="text" placeholder="{{ __('Find a company…') }}" aria-label="{{ __('Find a company') }}"
                        role="combobox" aria-controls="company-picker-list" :aria-activedescendant="'company-opt-' + active"
                        @keydown.down.prevent="active = Math.min(active + 1, list.length - 1)" @keydown.up.prevent="active = Math.max(active - 1, 0)" @keydown.enter.prevent="pick(list[active])"
-                       class="block h-8 w-full rounded-md border-line-strong py-1 text-13 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                       class="control h-control-sm min-h-0 px-2.5 text-13">
             </div>
             <form x-ref="form" method="POST" action="{{ route('context.company') }}">
                 @csrf
@@ -70,15 +68,15 @@
     <button type="button" x-data="{ dark: document.documentElement.classList.contains('dark') }"
             @click="dark = ! dark; document.documentElement.classList.toggle('dark', dark); try { localStorage.setItem('theme', dark ? 'dark' : 'light') } catch (e) {}"
             :aria-label="dark ? @js(__('Switch to light mode')) : @js(__('Switch to dark mode'))" :title="dark ? @js(__('Switch to light mode')) : @js(__('Switch to dark mode'))"
-            class="rounded-md p-2 text-ink-2 hover:bg-sunken hover:text-ink">
+            class="inline-flex size-9 items-center justify-center rounded-control text-ink-2 hover:bg-sunken hover:text-ink">
         <x-icon name="sun" class="size-5" x-show="dark" style="display: none;" />
         <x-icon name="moon" class="size-5" x-show="! dark" />
     </button>
 
     <x-ui.menu width="w-60">
         <x-slot:trigger>
-            <button type="button" class="flex items-center gap-2 rounded-md p-1 hover:bg-sunken" aria-label="{{ __('Account menu') }}" aria-haspopup="menu">
-                <span class="flex size-7 items-center justify-center rounded-full bg-ink text-xs font-semibold text-canvas">{{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+            <button type="button" class="flex items-center gap-2 rounded-control p-1 hover:bg-sunken" aria-label="{{ __('Account menu') }}" aria-haspopup="menu">
+                <span class="flex size-7 items-center justify-center rounded-full bg-primary-soft text-xs font-semibold text-primary-ink">{{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
                 <span class="hidden max-w-[10rem] truncate text-sm font-medium text-ink-2 md:block">{{ Auth::user()->name }}</span>
                 <x-icon name="chevron-down" class="hidden size-3.5 text-ink-3 md:block" />
             </button>

@@ -4,9 +4,9 @@
     <x-section-tabs section="company" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('User access') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('User access') }}</h1>
             </div>
             <x-add-button modal="create-user">{{ __('Add login') }}</x-add-button>
         </div>
@@ -17,11 +17,11 @@
             'hint' => $seat['used'] >= $seat['cap'] ? __('No seats left') : __(':n left', ['n' => $seat['cap'] - $seat['used']]),
         ])->values()->all()" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Name') }}</th>
                         <th class="px-5 py-3">{{ __('Role') }}</th>
@@ -31,10 +31,10 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @foreach ($users as $user)
                         @php $modal = 'edit-user-'.$user->id; @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3">
                                 <p class="font-medium text-gray-900">{{ $user->name }} @if ($user->is(auth()->user()))<span class="text-xs font-normal text-gray-500">({{ __('you') }})</span>@endif</p>
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>

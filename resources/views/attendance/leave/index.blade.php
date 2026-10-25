@@ -5,17 +5,17 @@
     <x-section-tabs section="attendance.leave" nested />
 
     @php
-        $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $input = 'control';
         $exportQuery = request()->only('status', 'search');
         $badge = ['pending' => 'bg-warn-soft text-warn', 'approved' => 'bg-success-soft text-success', 'rejected' => 'bg-danger-soft text-danger'];
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Leave list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Leave list') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave') }}">
-                    <select name="status" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Status') }}">
+                    <select name="status" onchange="this.form.submit()" class="control-inline" aria-label="{{ __('Status') }}">
                         <option value="">{{ __('All statuses') }}</option>
                         @foreach (\App\Http\Controllers\Attendance\LeaveController::STATUSES as $value => $label)
                             <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
@@ -32,7 +32,7 @@
             ['label' => __('Rejected'), 'value' => $counts['rejected'] ?? 0, 'href' => route('attendance.leave', ['status' => 'rejected']), 'active' => request('status') === 'rejected'],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('attendance.leave')" :per-page="$perPage" :exports="[
             __('CSV') => route('attendance.leave.export', ['format' => 'csv'] + $exportQuery),
@@ -40,8 +40,8 @@
         ]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="employee" class="px-4 py-3">{{ __('Employee name') }}</x-sort-header>
@@ -56,13 +56,13 @@
                         <th class="px-4 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($leaves as $leave)
                         @php
                             $approved = $leave->status === 'approved';
                             $modal = 'approve-leave-'.$leave->uuid;
                         @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 text-gray-500">{{ $leaves->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $leave->employee->full_name }} <span class="font-normal text-gray-500">({{ $leave->employee->employee_code }})</span></td>
                             <td class="px-4 py-3">{{ $leave->leaveType->code }}</td>
@@ -72,7 +72,7 @@
                             <td class="px-4 py-3">{{ rtrim(rtrim($approved ? $leave->approved_days : $leave->days, '0'), '.') }}</td>
                             <td class="px-4 py-3">
                                 @if ($leave->hard_copy_path)
-                                    <a href="{{ route('attendance.leave.hard-copy', $leave) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('View') }}</a>
+                                    <a href="{{ route('attendance.leave.hard-copy', $leave) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('View') }}</a>
                                 @else
                                     —
                                 @endif
@@ -82,7 +82,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
                                     @unless ($approved)
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Approve') }}</button>
                                     @endunless
                                     @if ($leave->status !== 'rejected')
                                         <form method="POST" action="{{ route('attendance.leave.reject', $leave) }}" data-confirm="{{ __('Reject this leave?') }}">
@@ -95,7 +95,7 @@
                                         <form method="POST" action="{{ route('attendance.leave.destroy', $leave) }}" data-confirm="{{ __('Delete this leave application?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                         </form>
                                     @endcan
                                 </div>
@@ -107,8 +107,8 @@
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="_modal" value="{{ $modal }}">
-                                            <div class="border-b border-gray-200 px-6 py-4">
-                                                <h2 class="text-lg font-semibold text-gray-900">{{ __('Application approved by manager') }}</h2>
+                                            <div class="border-b border-line px-6 py-4">
+                                                <h2 class="text-lg font-semibold text-ink">{{ __('Application approved by manager') }}</h2>
                                                 <p class="text-sm text-gray-500">{{ $leave->employee->full_name }} · {{ $leave->leaveType->name }}</p>
                                             </div>
                                             <div class="space-y-4 px-6 py-5">
@@ -126,8 +126,8 @@
                                                     <textarea name="description" rows="2" class="{{ $input }}">{{ $mine ? old('description') : '' }}</textarea>
                                                 </x-form-row>
                                             </div>
-                                            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-                                                <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+                                            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
+                                                <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                                                 <x-primary-button>{{ __('Approve') }}</x-primary-button>
                                             </div>
                                         </form>
@@ -158,8 +158,8 @@
                   count() { if (this.start && this.end) this.days = Math.max(1, (new Date(this.end) - new Date(this.start)) / 86400000 + 1) },
               }">
             @csrf
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h2 class="text-lg font-semibold text-gray-900">{{ __('Leave application create') }}</h2>
+            <div class="border-b border-line px-6 py-4">
+                <h2 class="text-lg font-semibold text-ink">{{ __('Leave application create') }}</h2>
             </div>
             <div class="space-y-4 px-6 py-5">
                 <x-form-row :label="__('Employee')" for="leave-employee" required :messages="$errors->get('employee')">
@@ -176,7 +176,7 @@
                         <template x-for="t in companyTypes" :key="t.id"><option :value="t.id" x-text="t.code + ' — ' + t.name" :selected="String(t.id) === @js((string) old('leave_type_id'))"></option></template>
                     </select>
                     <p class="mt-1 text-xs text-gray-500" x-show="employee && ! companyTypes.length">
-                        {{ __("This employee's company has no leave types.") }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a>
+                        {{ __("This employee's company has no leave types.") }} <a href="{{ route('attendance.leave.types') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Add them first.') }}</a>
                     </p>
                 </x-form-row>
                 <x-form-row :label="__('From date')" for="leave-start" required :messages="$errors->get('start_date')">
@@ -195,8 +195,8 @@
                     <textarea id="leave-reason" name="reason" rows="2" class="{{ $input }}">{{ old('reason') }}</textarea>
                 </x-form-row>
             </div>
-            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-                <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
+                <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                 <x-primary-button>{{ __('Save') }}</x-primary-button>
             </div>
         </form>

@@ -9,14 +9,14 @@
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Current Salary List') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Current Salary List') }}</h1>
             <form method="GET" action="{{ route('payroll.current') }}">
-                <select name="company" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500" aria-label="{{ __('Company') }}">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="control-inline">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach
-                </select>
+                </select></label>
             </form>
         </div>
         @if ($company)
@@ -27,7 +27,7 @@
             ]" />
         @endif
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $employees)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
@@ -38,8 +38,8 @@
             ]" />
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+                <table class="min-w-full divide-y divide-line text-sm">
+                    <thead class="text-left">
                         <tr>
                             @foreach (['Card No', 'Employee Name', 'Designation', 'Salary Type', 'Daily Rate', 'Basic', 'HRA', 'Conveyance', 'Bonus', 'CTC'] as $heading)
                                 @if ($sortKey = ['Card No' => 'code', 'Employee Name' => 'name'][$heading] ?? null)
@@ -50,13 +50,13 @@
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-line">
                         @forelse ($employees as $employee)
                             @php
                                 $elements = $employee->salaryElements->keyBy('element');
                                 $ctc = $revisions->yearlyGross($elements->map(fn ($e) => ['yearly' => $e->yearly])->all());
                             @endphp
-                            <tr class="hover:bg-gray-50">
+                            <tr>
                                 <td class="px-4 py-3 font-mono">{{ $employee->employee_code }}</td>
                                 <td class="px-4 py-3 font-medium text-gray-900">{{ $employee->full_name }}</td>
                                 <td class="px-4 py-3">{{ $employee->position?->name }}</td>

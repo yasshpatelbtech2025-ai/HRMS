@@ -3,8 +3,8 @@
 <x-modal :name="$name" :show="$errors->has('file') || $errors->has('company_id')" max-width="2xl">
     <form method="POST" action="{{ $action }}" enctype="multipart/form-data">
         @csrf
-        <div class="border-b border-gray-200 px-6 py-4">
-            <h2 class="text-lg font-semibold text-gray-900">{{ $title }}</h2>
+        <div class="border-b border-line px-6 py-4">
+            <h2 class="text-lg font-semibold text-ink">{{ $title }}</h2>
         </div>
         <div class="space-y-4 px-6 py-5">
             @if ($companies)
@@ -28,7 +28,7 @@
             </x-form-row>
         </div>
         <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-            <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+            <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
             <x-primary-button>{{ __('Import') }}</x-primary-button>
         </div>
     </form>

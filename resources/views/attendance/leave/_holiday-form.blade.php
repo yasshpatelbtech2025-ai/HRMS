@@ -4,7 +4,7 @@
     $mine = old('_modal') === $modal;
     $value = fn (string $field) => $mine ? old($field) : ($holiday->{$field} instanceof \DateTimeInterface ? $holiday->{$field}->toDateString() : $holiday->{$field});
     $error = fn (string $field) => $mine ? $errors->get($field) : [];
-    $input = 'block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
+    $input = 'control';
 @endphp
 
 <form method="POST" action="{{ $editing ? route('attendance.leave.holiday-list.update', $holiday) : route('attendance.leave.holiday-list.store') }}">
@@ -14,8 +14,8 @@
     @endif
     <input type="hidden" name="_modal" value="{{ $modal }}">
 
-    <div class="border-b border-gray-200 px-6 py-4">
-        <h2 class="text-lg font-semibold text-gray-900">{{ $editing ? __('Edit holiday') : __('New holiday') }}</h2>
+    <div class="border-b border-line px-6 py-4">
+        <h2 class="text-lg font-semibold text-ink">{{ $editing ? __('Edit holiday') : __('New holiday') }}</h2>
     </div>
 
     <div class="space-y-4 px-6 py-5">
@@ -30,8 +30,8 @@
         </x-form-row>
     </div>
 
-    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-        <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+    <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
+        <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
         <x-primary-button>{{ __('Save') }}</x-primary-button>
     </div>
 </form>

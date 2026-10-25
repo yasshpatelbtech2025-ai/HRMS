@@ -3,16 +3,20 @@
 
     <x-section-tabs section="payroll" />
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
+    @php $select = 'control-inline'; @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary list') }}</h2>
-            <div class="flex gap-2">
-                <a href="{{ route('payroll.export', 'csv') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
-                <a href="{{ route('payroll.export', 'xlsx') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
-            </div>
-        </div>
+        <x-ui.page-header :title="__('Salary list')" :description="__('Generate a month\'s salary from attendance, check it, approve it, then mark it paid.')">
+            <x-slot:actions>
+                <x-ui.menu width="w-40">
+                    <x-slot:trigger>
+                        <x-ui.button variant="secondary" type="button" icon="download" icon-right="chevron-down" aria-haspopup="menu">{{ __('Export') }}</x-ui.button>
+                    </x-slot:trigger>
+                    <x-ui.menu-item :href="route('payroll.export', 'csv')" icon="download">{{ __('CSV') }}</x-ui.menu-item>
+                    <x-ui.menu-item :href="route('payroll.export', 'xlsx')" icon="download">{{ __('Excel') }}</x-ui.menu-item>
+                </x-ui.menu>
+            </x-slot:actions>
+        </x-ui.page-header>
         <x-stat-strip :items="[
             ['label' => __('Salary sheets'), 'value' => $stats['sheets']],
             ['label' => __('Waiting for approval'), 'value' => $stats['waiting'], 'tone' => $stats['waiting'] ? 'warn' : null, 'hint' => $stats['waiting'] ? __('Review and approve to finalise') : null],
@@ -20,33 +24,37 @@
             ['label' => __('Approved, not yet paid'), 'value' => $stats['unpaid'], 'tone' => $stats['unpaid'] ? 'warn' : null],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
-        <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4"
+        <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap items-end gap-3 border-b border-line bg-sunken/40 px-5 py-4"
               x-data="{ company: @js((string) old('company_id', '')), month: @js(old('salary_month', now()->subMonth()->format('Y-m'))), employees: @js($fixedDaysEmployees),
                         get payable() { return this.employees.filter(e => String(e.company) === this.company && (! e.from || e.from <= this.month) && (! e.until || e.until > this.month + '-01')) } }">
             @csrf
-            <label class="text-sm text-gray-700">
-                <span class="mb-1 block font-medium">{{ __('Company') }} <span class="text-red-600">*</span></span>
-                <select name="company_id" required class="{{ $select }} min-w-64" x-model="company">
+            <div class="w-full">
+                <h2 class="text-[15px] font-semibold text-ink">{{ __('Generate salary') }}</h2>
+                <p class="mt-0.5 text-13 text-ink-2">{{ __('Uses the attendance and salary details already entered for that month.') }}</p>
+            </div>
+            <label class="text-sm text-ink max-sm:w-full">
+                <span class="mb-1.5 block text-13 font-medium">{{ __('Company') }} <span class="text-danger" aria-hidden="true">*</span></span>
+                <select name="company_id" required class="{{ $select }} min-w-64 max-sm:w-full" x-model="company">
                     <option value="">{{ __('Select company') }}</option>
                     @foreach ($companies as $company)
                         <option value="{{ $company->id }}" @selected((string) old('company_id') === (string) $company->id)>{{ $company->label }}</option>
                     @endforeach
                 </select>
             </label>
-            <label class="text-sm text-gray-700">
-                <span class="mb-1 block font-medium">{{ __('Salary month') }} <span class="text-red-600">*</span></span>
-                <input type="month" name="salary_month" value="{{ old('salary_month', now()->subMonth()->format('Y-m')) }}" max="{{ now()->format('Y-m') }}" required class="{{ $select }}" x-model="month">
+            <label class="text-sm text-ink max-sm:w-full">
+                <span class="mb-1.5 block text-13 font-medium">{{ __('Salary month') }} <span class="text-danger" aria-hidden="true">*</span></span>
+                <input type="month" name="salary_month" value="{{ old('salary_month', now()->subMonth()->format('Y-m')) }}" max="{{ now()->format('Y-m') }}" required class="{{ $select }} px-3 max-sm:w-full" x-model="month">
             </label>
             <x-primary-button>{{ __('Generate') }}</x-primary-button>
             <div class="w-full" x-show="payable.length" style="display: none;">
-                <p class="mb-2 text-sm font-medium text-gray-700">{{ __('Payable days') }} <span class="text-red-600">*</span>
-                    <span class="font-normal text-gray-500">{{ __('— for employees on "Fixed payable days" (Salary ÷ 31 × payable days)') }}</span></p>
+                <p class="mb-2 text-13 font-medium text-ink">{{ __('Payable days') }} <span class="text-danger" aria-hidden="true">*</span>
+                    <span class="font-normal text-ink-2">{{ __('— for employees on "Fixed payable days" (Salary ÷ 31 × payable days)') }}</span></p>
                 <div class="flex flex-wrap gap-3">
                     <template x-for="e in payable" :key="e.id">
-                        <label class="text-sm text-gray-700">
-                            <span class="mb-1 block" x-text="e.name"></span>
+                        <label class="text-sm text-ink">
+                            <span class="mb-1.5 block text-13" x-text="e.name"></span>
                             <input type="number" :name="'payable_days[' + e.id + ']'" min="0" max="31" step="0.5" required class="{{ $select }} w-28"
                                    :value="@js(old('payable_days', []))[e.id] ?? ''">
                         </label>
@@ -55,23 +63,23 @@
             </div>
             <div class="w-full">
                 <x-input-error :messages="array_merge($errors->get('company_id'), $errors->get('salary_month'), $errors->get('payable_days'), $errors->get('payable_days.*'))" />
-                <p class="text-xs text-gray-500">{{ __('Generating a month again replaces its payslips, until the month is approved.') }}</p>
+                <p class="text-xs text-ink-3">{{ __('Generating a month again replaces its payslips, until the month is approved.') }}</p>
             </div>
         </form>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         @foreach (['Sl', 'Company name', 'Salary name', 'Generate date', 'Generate by', 'Status', 'Approved date', 'Approved by', 'Paid date', 'Action'] as $heading)
                             <th class="whitespace-nowrap px-4 py-3">{{ __($heading) }}</th>
                         @endforeach
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($sheets as $sheet)
                         @php $modal = 'paid-date-'.$sheet->uuid; @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 text-gray-500">{{ $sheets->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-3">{{ $sheet->company->label }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $sheet->month->format('Y-m') }} <span class="text-xs font-normal text-gray-500">({{ trans_choice(':count employee|:count employees', $sheet->payslips_count) }})</span></td>
@@ -85,17 +93,17 @@
                             <td class="px-4 py-3 whitespace-nowrap">{{ $sheet->paid_date?->format('d-m-Y') }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap items-center gap-1">
-                                    <a href="{{ route('payroll.approval', $sheet) }}" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Salary Approval') }}</a>
+                                    <a href="{{ route('payroll.approval', $sheet) }}" class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Salary Approval') }}</a>
                                     @if ($sheet->isApproved())
-                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Add Paid Date') }}</button>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Add Paid Date') }}</button>
                                     @endif
-                                    <a href="{{ route('payroll.chart', $sheet) }}" class="rounded-md border border-gray-300 px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">{{ __('Employee Salary Chart') }}</a>
+                                    <a href="{{ route('payroll.chart', $sheet) }}" class="inline-flex h-7 items-center justify-center gap-1 rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-ink hover:bg-sunken">{{ __('Employee Salary Chart') }}</a>
                                     @unless ($sheet->isApproved())
                                         @can('delete-records')
                                             <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     @endunless
@@ -106,14 +114,14 @@
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="_modal" value="{{ $modal }}">
-                                            <div class="border-b border-gray-200 px-6 py-4"><h2 class="text-lg font-semibold text-gray-900">{{ __('Add paid date') }}</h2></div>
+                                            <div class="border-b border-line px-6 py-4"><h2 class="text-lg font-semibold text-ink">{{ __('Add paid date') }}</h2></div>
                                             <div class="px-6 py-5">
                                                 <x-form-row :label="__('Paid date')" for="{{ $modal }}-date" required :messages="old('_modal') === $modal ? $errors->get('paid_date') : []">
                                                     <input type="date" id="{{ $modal }}-date" name="paid_date" value="{{ $sheet->paid_date?->toDateString() ?? today()->toDateString() }}" required class="block w-full {{ $select }}">
                                                 </x-form-row>
                                             </div>
-                                            <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-                                                <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+                                            <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
+                                                <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                                                 <x-primary-button>{{ __('Save') }}</x-primary-button>
                                             </div>
                                         </form>

@@ -4,12 +4,12 @@
     <x-section-tabs section="company" />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Company List') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Company List') }}</h1>
             @can('admin')
                 <div class="flex flex-wrap items-center gap-2 print:hidden">
                     <button type="button" x-data x-on:click="$dispatch('open-modal', 'import-companies')"
-                            class="inline-flex items-center gap-2 rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-3 py-2 text-sm font-medium">{{ __('Import Companies') }}</button>
+                            class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Import Companies') }}</button>
                     <x-add-button modal="create-company">{{ __('Add company') }}</x-add-button>
                 </div>
             @endcan
@@ -20,14 +20,14 @@
             ['label' => __('Employees across companies'), 'value' => $employeeCount],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('company.index')" :per-page="$perPage" print
                         :exports="[__('CSV') => route('company.export', request()->only('search', 'sort', 'direction'))]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="name" default>{{ __('Establishment Name') }}</x-sort-header>
@@ -36,9 +36,9 @@
                         <th class="px-5 py-3 print:hidden">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($companies as $company)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $companies->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $company->establishment_name }}</td>
                             <td class="px-5 py-3">{{ $company->employees_count }}</td>

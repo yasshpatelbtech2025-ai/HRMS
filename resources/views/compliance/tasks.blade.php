@@ -11,7 +11,7 @@
             'upcoming' => ['label' => __('Upcoming'), 'badge' => 'bg-info-soft text-info', 'accent' => 'bg-info'],
             'completed' => ['label' => __('Completed'), 'badge' => 'bg-success-soft text-success', 'accent' => 'bg-success'],
         ];
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $filter = fn (array $change) => route('compliance.to-do', array_filter(array_merge(request()->only(['company', 'status', 'department', 'type']), $change)));
     @endphp
 
@@ -26,7 +26,7 @@
         ['label' => __('Completed'), 'value' => $stats['completed'], 'tone' => 'success', 'href' => $filter(['status' => 'completed']), 'active' => $status === 'completed'],
     ]" />
 
-    <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+    <div class="card">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4">
             <form method="GET" action="{{ route('compliance.to-do') }}" class="flex flex-wrap items-center gap-2">
                 <select name="status" class="{{ $select }}" aria-label="{{ __('Status') }}" onchange="this.form.submit()">
@@ -46,10 +46,10 @@
                     <option value="">{{ __('All Companies') }}</option>
                     @foreach ($companies as $option)<option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>@endforeach
                 </select>
-                <a href="{{ route('compliance.to-do') }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Reset') }}</a>
+                <a href="{{ route('compliance.to-do') }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Reset') }}</a>
             </form>
             <div class="flex items-center gap-2">
-                <a href="{{ $filter(['refresh' => 1]) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" title="{{ __('Check again what is due and done') }}">{{ __('Refresh') }}</a>
+                <a href="{{ $filter(['refresh' => 1]) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken" title="{{ __('Check again what is due and done') }}">{{ __('Refresh') }}</a>
                 <x-add-button modal="add-task">{{ __('Add task') }}</x-add-button>
             </div>
         </div>
@@ -57,10 +57,10 @@
         <div class="overflow-x-auto" x-data="bulkSelect">
             <x-bulk-bar :action="route('compliance.tasks.bulk')" noun="task|tasks"
                         :actions="['complete' => [__('Complete'), 'default', null], 'reopen' => [__('Reopen'), 'default', null], 'delete' => [__('Delete'), 'danger', 'Delete :count selected task(s)? Deleted tasks are not created again.']]" />
-            <table class="w-full divide-y divide-gray-200 text-sm">
+            <table class="w-full divide-y divide-line text-sm">
                 <thead class="bg-gray-50 text-left text-gray-600">
                     <tr>
-                        <th class="w-10 px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all') }}"></th>
+                        <th class="w-10 px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-field text-primary focus:ring-primary/30" :checked="allOnPage()" :indeterminate="someOnPage()" x-on:change="toggleAll($event.target.checked)" aria-label="{{ __('Select all') }}"></th>
                         <th class="px-3 py-3">{{ __('ID') }}</th><th class="px-3 py-3">{{ __('Title') }}</th><th class="px-3 py-3">{{ __('Category') }} / {{ __('Department') }}</th>
                         <th class="px-3 py-3">{{ __('Company') }}</th><th class="px-3 py-3">{{ __('Due Date') }}</th>
                         <th class="px-3 py-3">{{ __('Priority') }}</th><th class="px-3 py-3">{{ __('Status') }}</th><th class="px-3 py-3">{{ __('Assigned To') }}</th>
@@ -75,7 +75,7 @@
                                 $worst = collect(['overdue', 'week', 'upcoming', 'completed'])->first(fn ($s) => isset($counts[$s]));
                             @endphp
                             <tr class="cursor-pointer bg-gray-50/60 hover:bg-gray-100" x-on:click="open = ! open">
-                                <td class="px-3 py-3" x-on:click.stop>@php $groupIds = $group->pluck('uuid')->values(); @endphp<input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" :checked="groupState(@js($groupIds)) === 'all'" :indeterminate="groupState(@js($groupIds)) === 'some'" x-on:change="toggleIds(@js($groupIds), $event.target.checked)" aria-label="{{ __('Select the whole group') }}"></td>
+                                <td class="px-3 py-3" x-on:click.stop>@php $groupIds = $group->pluck('uuid')->values(); @endphp<input type="checkbox" class="h-4 w-4 rounded border-field text-primary focus:ring-primary/30" :checked="groupState(@js($groupIds)) === 'all'" :indeterminate="groupState(@js($groupIds)) === 'some'" x-on:change="toggleIds(@js($groupIds), $event.target.checked)" aria-label="{{ __('Select the whole group') }}"></td>
                                 <td class="px-3 py-3 font-semibold text-gray-900">{{ $number }}</td>
                                 <td class="px-3 py-3 font-semibold text-gray-900" colspan="3">
                                     <span x-text="open ? '▾' : '▸'" class="me-1 text-gray-500">▸</span>{{ config('compliance.tasks.'.$first->type.'.title', $first->title) }}
@@ -93,7 +93,7 @@
                         @foreach ($group as $task)
                             @php $status = $task->status(); $link = ComplianceTasks::link($task); @endphp
                             <tr x-show="open" @if ($grouped && $group->count() > 1) style="display: none;" @endif class="align-top" :class="selected.includes(@js($task->uuid)) && 'bg-brand-50/60'">
-                                <td class="px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="{{ $task->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :title', ['title' => $task->title]) }}"></td>
+                                <td class="px-3 py-3"><input type="checkbox" class="h-4 w-4 rounded border-field text-primary focus:ring-primary/30" value="{{ $task->uuid }}" x-model="selected" data-bulk-id aria-label="{{ __('Select :title', ['title' => $task->title]) }}"></td>
                                 <td class="px-3 py-3 text-gray-500">{{ $grouped && $group->count() > 1 ? $loop->iteration : $number }}</td>
                                 <td class="min-w-[15rem] px-3 py-3">
                                     <p class="font-semibold text-gray-900">{{ $task->title }}</p>
@@ -111,7 +111,7 @@
                                             <form method="POST" action="{{ route('compliance.tasks.destroy', $task) }}" data-confirm="{{ __('Delete this task? It will not come back.') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     </div>
@@ -120,7 +120,7 @@
                                 <td class="px-3 py-3 text-gray-700">{{ $task->company->label }}</td>
                                 <td class="whitespace-nowrap px-3 py-3">
                                     <p class="font-semibold text-gray-900">{{ $task->due_on->format('d M Y') }}</p>
-                                    @if ($status === 'overdue')<p class="text-xs font-medium text-red-600">{{ trans_choice(':count day overdue|:count days overdue', (int) $task->due_on->diffInDays(today())) }}</p>@endif
+                                    @if ($status === 'overdue')<p class="text-xs font-medium text-danger">{{ trans_choice(':count day overdue|:count days overdue', (int) $task->due_on->diffInDays(today())) }}</p>@endif
                                     @if ($status === 'week')<p class="text-xs font-medium text-warn">{{ $task->due_on->isToday() ? __('Due today') : __('Due soon') }}</p>@endif
                                 </td>
                                 <td class="px-3 py-3 text-gray-700">{{ \App\Models\ComplianceTask::PRIORITIES[$task->priority] ?? $task->priority }}</td>
@@ -157,7 +157,7 @@
         <form method="POST" action="{{ route('compliance.tasks.store') }}" class="p-6">
             @csrf
             <input type="hidden" name="_modal" value="add-task">
-            <h2 class="text-lg font-semibold text-gray-900">{{ __('Add task') }}</h2>
+            <h2 class="text-lg font-semibold text-ink">{{ __('Add task') }}</h2>
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <x-select-field name="company" :label="__('Company')" required :value="$company?->uuid ?? $companies->first()?->uuid" :options="$companies->mapWithKeys(fn ($c) => [$c->uuid => $c->label])->all()" />

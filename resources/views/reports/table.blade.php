@@ -3,12 +3,12 @@
 
     <x-section-tabs section="reports" />
 
-    @php $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
+    @php $select = 'control-inline'; @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ $title }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ $title }}</h1>
                 <p class="text-sm text-gray-600">{{ $company?->establishment_name }} · {{ $period }}</p>
             </div>
             @include('reports._exports')
@@ -18,7 +18,7 @@
             ['label' => __('Period'), 'value' => $period],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('reports.'.$report) }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-sm text-gray-700">
@@ -51,7 +51,7 @@
                         @endforeach
                     </select></label>
             @endif
-            <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Find') }}</button>
+            <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Find') }}</button>
         </form>
 
         @isset($note)
@@ -59,8 +59,8 @@
         @endisset
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-3 py-3">{{ __('Sl') }}</th>
                         @foreach ($headings as $heading)
@@ -68,9 +68,9 @@
                         @endforeach
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($rows as $row)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-3 py-2 text-gray-500">{{ $loop->iteration }}</td>
                             @foreach ($row as $cell)
                                 <td class="whitespace-nowrap px-3 py-2">{{ is_float($cell) ? rtrim(rtrim(number_format($cell, 2, '.', ''), '0'), '.') : $cell }}</td>

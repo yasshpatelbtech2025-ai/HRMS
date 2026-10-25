@@ -11,6 +11,7 @@ $maxWidth = [
     'lg' => 'sm:max-w-lg',
     'xl' => 'sm:max-w-xl',
     '2xl' => 'sm:max-w-2xl',
+    '3xl' => 'sm:max-w-3xl',
 ][$maxWidth];
 @endphp
 
@@ -46,33 +47,37 @@ $maxWidth = [
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
+    class="fixed inset-0 z-50 flex items-end sm:items-stretch sm:justify-end"
+    role="dialog" aria-modal="true"
     style="display: {{ $show ? 'block' : 'none' }};"
 >
     <div
         x-show="show"
         class="fixed inset-0 transform transition-all"
         x-on:click="show = false"
-        x-transition:enter="ease-out duration-300"
+        x-transition:enter="ease-out duration-200"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
         x-transition:leave="ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="absolute inset-0 bg-ink/40 dark:bg-black/60"></div>
     </div>
 
     <div
         x-show="show"
-        class="mb-6 bg-surface rounded-xl overflow-hidden shadow-lg transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
-        x-transition:enter="ease-out duration-150"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-[.97]"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        class="modal-panel relative max-h-[92dvh] w-full overflow-y-auto overscroll-contain rounded-t-dialog border border-line bg-surface shadow-xl sm:h-full sm:max-h-none sm:rounded-none sm:border-y-0 sm:border-e-0 {{ $maxWidth }}"
+        x-transition:enter="transition ease-out duration-[250ms]"
+        x-transition:enter-start="translate-y-full sm:translate-y-0 sm:translate-x-full"
+        x-transition:enter-end="translate-y-0 sm:translate-x-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="translate-y-0 sm:translate-x-0"
+        x-transition:leave-end="translate-y-full sm:translate-y-0 sm:translate-x-full"
     >
         {{ $slot }}
+        <button type="button" x-on:click="show = false" class="absolute end-4 top-5 z-10 inline-flex size-9 items-center justify-center rounded-control text-ink-3 hover:bg-sunken hover:text-ink" aria-label="{{ __('Close') }}">
+            <x-icon name="x" class="size-4" />
+        </button>
     </div>
 </div>

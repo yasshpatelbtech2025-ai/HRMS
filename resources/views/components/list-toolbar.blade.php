@@ -8,7 +8,7 @@
 
 @php
     $toolId = str_replace('.', '-', request()->route()?->getName() ?? 'list');
-    $tool = 'inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-13 font-medium text-ink-2 hover:bg-sunken hover:text-ink';
+    $tool = 'inline-flex h-8 items-center gap-1.5 rounded-control px-2.5 text-13 font-medium text-ink-2 hover:bg-sunken hover:text-ink';
     $menuItem = 'flex w-full items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-start text-sm text-ink hover:bg-sunken';
 @endphp
 
@@ -25,7 +25,7 @@
         <div class="relative w-full sm:w-72" role="search">
             <x-icon name="search" class="pointer-events-none absolute start-2.5 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
             <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('Search this list…') }}" aria-label="{{ __('Search:') }}"
-                   class="block h-8 w-full rounded-md border-line-strong bg-surface py-1 pe-3 ps-8 text-13 placeholder:text-ink-3 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                   class="block h-9 min-h-0 w-full rounded-control border-field bg-surface py-1 pe-3 ps-8 text-13 placeholder:text-ink-3 focus:border-primary focus:ring-[3px] focus:ring-primary/20">
         </div>
         @if (request('search'))
             <a href="{{ request()->fullUrlWithoutQuery(['search', 'page']) }}" class="text-13 text-ink-3 hover:text-ink">{{ __('Clear search') }}</a>
@@ -69,7 +69,7 @@
                 <x-slot:trigger>
                     <button type="button" class="{{ $tool }}" aria-haspopup="menu"><x-icon name="bookmark" class="size-4" /><span class="max-sm:sr-only">{{ __('Views') }}</span></button>
                 </x-slot:trigger>
-                <p class="px-2.5 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{{ __('Saved views') }}</p>
+                <p class="px-2.5 pb-1 pt-1.5 text-xs font-medium text-ink-3">{{ __('Saved views') }}</p>
                 <template x-for="(view, i) in views" :key="view.name">
                     <div class="group flex items-center rounded-[5px] hover:bg-sunken">
                         <a :href="view.url" role="menuitem" class="flex-1 truncate px-2.5 py-1.5 text-sm text-ink" x-text="view.name"></a>
@@ -89,7 +89,7 @@
                 <x-slot:trigger>
                     <button type="button" class="{{ $tool }}" aria-haspopup="menu" x-show="columns.length"><x-icon name="columns" class="size-4" /><span class="max-sm:sr-only">{{ __('Columns') }}</span></button>
                 </x-slot:trigger>
-                <p class="px-2.5 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{{ __('Show columns') }}</p>
+                <p class="px-2.5 pb-1 pt-1.5 text-xs font-medium text-ink-3">{{ __('Show columns') }}</p>
                 <div class="max-h-72 overflow-y-auto">
                     <template x-for="col in columns" :key="col.index">
                         <label class="flex cursor-pointer items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-sm text-ink hover:bg-sunken">
@@ -108,7 +108,7 @@
 
             <label class="ms-1 flex items-center gap-1.5 text-ink-3">
                 {{ __('Show') }}
-                <select name="per_page" onchange="this.form.submit()" class="h-8 rounded-md border-line-strong bg-surface py-0 pe-7 ps-2 text-13 text-ink focus:border-primary focus:ring-2 focus:ring-primary/20">
+                <select name="per_page" onchange="this.form.submit()" class="h-8 min-h-0 rounded-control border-field bg-surface py-0 pe-7 ps-2 text-13 text-ink focus:border-primary focus:ring-[3px] focus:ring-primary/20">
                     @foreach (\App\Support\PageSize::OPTIONS as $size)
                         <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}</option>
                     @endforeach
@@ -120,4 +120,5 @@
             </label>
         </div>
     </form>
+    {{ $slot }}
 </div>

@@ -5,12 +5,12 @@
     <x-section-tabs section="attendance.leave" nested />
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Holiday list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Holiday list') }}</h1>
             <div class="flex items-center gap-2">
                 <form method="GET" action="{{ route('attendance.leave.holiday-list') }}">
                     <label for="holiday-year" class="sr-only">{{ __('Year') }}</label>
-                    <select id="holiday-year" name="year" onchange="this.form.submit()" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                    <select id="holiday-year" name="year" onchange="this.form.submit()" class="control-inline">
                         @foreach (range((int) date('Y') + 1, 2020) as $option)
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
@@ -21,13 +21,13 @@
                 @endcan
             </div>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('attendance.leave.holiday-list')" :per-page="$perPage" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="name" class="px-5 py-3">{{ __('Holiday name') }}</x-sort-header>
@@ -38,10 +38,10 @@
                         <th class="px-5 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($holidays as $holiday)
                         @php($modal = 'edit-holiday-'.$holiday->uuid)
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-5 py-3 text-gray-500">{{ $holidays->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-3 font-medium text-gray-900">{{ $holiday->name }}</td>
                             <td class="px-5 py-3 whitespace-nowrap">{{ $holiday->start_date->toDateString() }}</td>

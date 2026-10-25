@@ -4,18 +4,18 @@
     <x-section-tabs section="attendance" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $badge = ['pending' => 'bg-warn-soft text-warn', 'approved' => 'bg-success-soft text-success', 'rejected' => 'bg-danger-soft text-danger'];
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Attendance request') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Attendance request') }}</h1>
             <div class="flex flex-wrap gap-2 print:hidden">
+                <a href="{{ route('attendance.raw-data') }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Attendance form') }}</a>
                 @if ($company)
                     <x-add-button modal="add-attendance-request">{{ __('Add attendance request') }}</x-add-button>
                 @endif
-                <a href="{{ route('attendance.raw-data') }}" class="inline-flex items-center rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Attendance form') }}</a>
             </div>
         </div>
         @if ($company)
@@ -28,14 +28,14 @@
             ]" />
         @endif
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('attendance.requests') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
-            <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+            <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                 @foreach ($companies as $option)
                     <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                 @endforeach
-            </select>
+            </select></label>
             <select name="status" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Status') }}">
                 <option value="">{{ __('All statuses') }}</option>
                 @foreach (['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'] as $value => $label)
@@ -47,8 +47,8 @@
         <x-input-error class="px-5 pt-3" :messages="array_merge($errors->get('date'), $errors->get('out_time'))" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-4 py-3">{{ __('Employee id') }}</th>
                         <x-sort-header column="name" class="px-4 py-3">{{ __('Name') }}</x-sort-header>
@@ -64,14 +64,14 @@
                         <th class="px-4 py-3 print:hidden">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($requests ?? [] as $item)
                         @php
                             $punches = $current[$item->employee_id.'|'.$item->work_date->toDateString()] ?? collect();
                             $in = $punches->firstWhere('type', 'in');
                             $out = $punches->where('type', 'out')->last();
                         @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 font-mono">{{ $item->employee->employee_code }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $item->employee->full_name }}</td>
                             <td class="px-4 py-3">{{ $item->employee->position?->name }}</td>
@@ -92,7 +92,7 @@
                                         <form method="POST" action="{{ route('attendance.requests.approve', $item) }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
+                                            <button class="inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-control border border-line-strong bg-surface px-2.5 text-xs font-medium text-primary-ink hover:border-primary/40 hover:bg-primary-soft/60">{{ __('Approve') }}</button>
                                         </form>
                                         <form method="POST" action="{{ route('attendance.requests.reject', $item) }}">
                                             @csrf
@@ -104,7 +104,7 @@
                                         <form method="POST" action="{{ route('attendance.requests.destroy', $item) }}" data-confirm="{{ __('Delete this request?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                         </form>
                                     @endcan
                                 </div>
@@ -127,8 +127,8 @@
         <x-modal name="add-attendance-request" :show="$errors->hasAny(['employee', 'requested_in', 'requested_out'])" max-width="lg">
             <form method="POST" action="{{ route('attendance.requests.store') }}">
                 @csrf
-                <div class="border-b border-gray-200 px-6 py-4">
-                    <h2 class="text-lg font-semibold text-gray-900">{{ __('Add attendance request') }}</h2>
+                <div class="border-b border-line px-6 py-4">
+                    <h2 class="text-lg font-semibold text-ink">{{ __('Add attendance request') }}</h2>
                 </div>
                 <div class="space-y-4 px-6 py-5">
                     <x-form-row :label="__('Employee')" for="request-employee" required :messages="$errors->get('employee')">
@@ -152,8 +152,8 @@
                         <input id="request-reason" name="reason" value="{{ old('reason') }}" class="block w-full {{ $select }}">
                     </x-form-row>
                 </div>
-                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-                    <x-danger-button type="button" x-on:click="$dispatch('close')">{{ __('Close') }}</x-danger-button>
+                <div class="flex justify-end gap-2 border-t border-line bg-sunken/60 px-6 py-4">
+                    <x-secondary-button x-on:click="$dispatch('close')">{{ __('Close') }}</x-secondary-button>
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
                 </div>
             </form>

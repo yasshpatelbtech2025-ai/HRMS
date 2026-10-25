@@ -5,20 +5,20 @@
 
     @php
         $money = fn ($n) => number_format((float) $n, 2);
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $approved = $sheet?->isApproved();
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('Yearly Bonus') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('Yearly Bonus') }}</h1>
                 <p class="text-sm text-gray-500">{{ __('Accounting year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
             </div>
             <form method="GET" action="{{ route('payroll.bonus') }}" class="flex flex-wrap items-center gap-2">
-                <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                     @foreach ($companies as $option)<option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>@endforeach
-                </select>
+                </select></label>
                 <select name="fy" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Accounting year') }}">
                     @foreach (range((int) date('Y'), 2020) as $year)<option value="{{ $year }}" @selected($fy === $year)>{{ $year }} - {{ $year + 1 }}</option>@endforeach
                 </select>
@@ -33,7 +33,7 @@
             ]" />
         @endif
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
@@ -51,7 +51,7 @@
                         @csrf
                         <input type="hidden" name="company" value="{{ $company->uuid }}">
                         <input type="hidden" name="fy" value="{{ $fy }}">
-                        <button class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Work out bonus') }}</button>
+                        <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Work out bonus') }}</button>
                     </form>
                     <p class="mx-auto mt-4 max-w-2xl text-xs text-gray-500">{{ __('Works out each employee\'s bonus from the year\'s payslips under the Payment of Bonus Act: eligible if basic + DA is up to ₹:limit a month and they worked at least :days days; bonus is their Bonus % (8.33% to 20%) of basic + DA capped at ₹:ceiling a month.', ['limit' => number_format(config('bonus.eligibility_salary')), 'days' => config('bonus.eligibility_days'), 'ceiling' => number_format(config('bonus.calculation_ceiling'))]) }}</p>
                 </div>
@@ -67,31 +67,31 @@
                         @endif
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <a href="{{ route('payroll.bonus.export', [$sheet, 'xlsx']) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
-                        <a href="{{ route('payroll.bonus.export', [$sheet, 'csv']) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
+                        <a href="{{ route('payroll.bonus.export', [$sheet, 'xlsx']) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Excel') }}</a>
+                        <a href="{{ route('payroll.bonus.export', [$sheet, 'csv']) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('CSV') }}</a>
                         @if ($approved)
                             <form method="POST" action="{{ route('payroll.bonus.unapprove', $sheet) }}" data-confirm="{{ __('Unapprove this bonus sheet?') }}">
                                 @csrf
-                                <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Unapprove') }}</button>
+                                <button class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Unapprove') }}</button>
                             </form>
                         @else
                             <form method="POST" action="{{ route('payroll.bonus.generate') }}" data-confirm="{{ __('Work the bonus out again from the payslips? Amounts you changed will be reset.') }}">
                                 @csrf
                                 <input type="hidden" name="company" value="{{ $company->uuid }}">
                                 <input type="hidden" name="fy" value="{{ $fy }}">
-                                <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Work out again') }}</button>
+                                <button class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Work out again') }}</button>
                             </form>
                             @can('delete-records')
                                 <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" data-confirm="{{ __('Delete this bonus sheet?') }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                 </form>
                             @endcan
                             <form method="POST" action="{{ route('payroll.bonus.approve', $sheet) }}" class="flex items-center gap-2">
                                 @csrf
                                 <input type="date" name="paid_on" value="{{ today()->toDateString() }}" class="{{ $select }}" aria-label="{{ __('Date paid') }}">
-                                <button class="rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ __('Approve') }}</button>
+                                <button class="inline-flex h-control items-center justify-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-hover">{{ __('Approve') }}</button>
                             </form>
                         @endif
                     </div>
@@ -101,8 +101,8 @@
                     @csrf
                     @method('PUT')
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 text-sm">
-                            <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+                        <table class="min-w-full divide-y divide-line text-sm">
+                            <thead class="text-left">
                                 <tr>
                                     <th class="px-3 py-3">{{ __('Employee') }}</th>
                                     <th class="px-3 py-3 text-right">{{ __('Days worked') }}</th>
@@ -114,9 +114,9 @@
                                     <th class="px-3 py-3 text-right">{{ __('Bonus paid') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-line">
                                 @forelse ($sheet->entries as $entry)
-                                    <tr class="hover:bg-gray-50">
+                                    <tr>
                                         <td class="px-3 py-3">
                                             <p class="font-medium text-gray-900">{{ $entry->employee->full_name }}</p>
                                             <p class="text-xs text-gray-500">{{ $entry->employee->employee_code }}{{ $entry->employee->position ? ' · '.$entry->employee->position->name : '' }}</p>
@@ -160,7 +160,7 @@
                     </div>
                     @if (! $approved && $sheet->entries->isNotEmpty())
                         <div class="flex justify-end border-t border-gray-100 px-5 py-3">
-                            <button class="rounded-md border border-line-strong bg-surface text-ink shadow-hairline hover:bg-sunken px-4 py-2 text-sm font-medium">{{ __('Save amounts') }}</button>
+                            <button class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Save amounts') }}</button>
                         </div>
                     @endif
                 </form>

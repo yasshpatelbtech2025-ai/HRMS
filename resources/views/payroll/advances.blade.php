@@ -6,8 +6,8 @@
     @php $money = fn ($n) => number_format((float) $n, 2); @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Salary advanced list') }}</h2>
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Salary advanced list') }}</h1>
             <x-add-button modal="create-advance">{{ __('Add salary advance') }}</x-add-button>
         </div>
         <x-stat-strip :items="[
@@ -17,7 +17,7 @@
             ['label' => __('Still to release'), 'value' => '₹'.number_format(max($stats['given'] - $stats['released'], 0)), 'tone' => $stats['given'] > $stats['released'] ? 'warn' : null],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <x-list-toolbar :action="route('payroll.advances')" :per-page="$perPage" :exports="[
             __('CSV') => route('payroll.advances.export', ['format' => 'csv'] + request()->only('search')),
@@ -25,8 +25,8 @@
         ]" />
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-4 py-3">{{ __('Sl') }}</th>
                         <x-sort-header column="employee" class="px-4 py-3">{{ __('Employee name') }}</x-sort-header>
@@ -39,10 +39,10 @@
                         <th class="px-4 py-3">{{ __('Action') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($advances as $advance)
                         @php $modal = 'edit-advance-'.$advance->uuid; @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-4 py-3 text-gray-500">{{ $advances->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900">{{ $advance->employee->full_name }} <span class="font-normal text-gray-500">({{ $advance->employee->employee_code }})</span></td>
                             <td class="px-4 py-3">{{ $money($advance->amount) }}</td>
@@ -51,7 +51,7 @@
                             <td class="px-4 py-3">{{ $advance->advance_date->toDateString() }}</td>
                             <td class="px-4 py-3">
                                 @if ($advance->attachment_path)
-                                    <a href="{{ route('payroll.advances.attachment', $advance) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('View') }}</a>
+                                    <a href="{{ route('payroll.advances.attachment', $advance) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('View') }}</a>
                                 @else
                                     —
                                 @endif

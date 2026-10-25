@@ -5,26 +5,26 @@
 
     @php
         $money = fn ($n) => number_format((float) $n, 2);
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $exportQuery = ['company' => $company?->uuid, 'fy' => $fy];
     @endphp
 
     <div>
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">{{ __('TDS (Income Tax)') }}</h2>
+                <h1 class="text-2xl font-semibold text-ink">{{ __('TDS (Income Tax)') }}</h1>
                 <p class="text-sm text-gray-500">{{ __('Financial year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
             </div>
             <form method="GET" action="{{ route('payroll.tds') }}" class="flex flex-wrap items-center gap-2">
-                <select name="company" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Company') }}">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                     @foreach ($companies as $option)<option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>@endforeach
-                </select>
+                </select></label>
                 <select name="fy" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Financial year') }}">
                     @foreach (range((int) date('Y'), 2020) as $year)<option value="{{ $year }}" @selected($fy === $year)>{{ $year }} - {{ $year + 1 }}</option>@endforeach
                 </select>
                 @if ($company)
-                    <a href="{{ route('payroll.tds.export', ['format' => 'xlsx'] + $exportQuery) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Excel') }}</a>
-                    <a href="{{ route('payroll.tds.export', ['format' => 'csv'] + $exportQuery) }}" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('CSV') }}</a>
+                    <a href="{{ route('payroll.tds.export', ['format' => 'xlsx'] + $exportQuery) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('Excel') }}</a>
+                    <a href="{{ route('payroll.tds.export', ['format' => 'csv'] + $exportQuery) }}" class="inline-flex h-control items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:border-field hover:bg-sunken">{{ __('CSV') }}</a>
                 @endif
             </form>
         </div>
@@ -35,7 +35,7 @@
             ['label' => __('Still to deduct'), 'value' => '₹'.number_format($rows->sum('balance')), 'tone' => $rows->sum('balance') > 0 ? 'warn' : null],
         ]" />
 
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         @if ($company && ! $deducting)
             <div class="mx-5 mt-4 rounded-md bg-warn-soft px-4 py-3 text-sm text-warn ring-1 ring-amber-200">
@@ -46,8 +46,8 @@
         @endif
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-3 py-3">{{ __('Employee') }}</th>
                         <th class="px-3 py-3">{{ __('Regime') }}</th>
@@ -59,7 +59,7 @@
                         <th class="px-3 py-3">{{ __('Monthly TDS') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($rows as $r)
                         @php $e = $r['employee']; @endphp
                         <tr class="align-top hover:bg-gray-50">

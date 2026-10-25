@@ -4,7 +4,7 @@
     <x-section-tabs section="configs" />
 
     @php
-        $select = 'rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $select = 'control-inline';
         $badges = [
             'created' => 'bg-success-soft text-success', 'updated' => 'bg-warn-soft text-warn', 'deleted' => 'bg-danger-soft text-danger',
             'purged' => 'bg-danger-soft text-danger', 'restored' => 'bg-success-soft text-success', 'sign-in-failed' => 'bg-danger-soft text-danger',
@@ -14,11 +14,11 @@
     @endphp
 
     <div>
-        <div class="mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">{{ __('Activity log') }}</h2>
+        <div class="page-head">
+            <h1 class="text-2xl font-semibold text-ink">{{ __('Activity log') }}</h1>
             <p class="text-sm text-gray-500">{{ __('Who created, changed, deleted, exported or signed in, and when. Entries are kept for :days days. Passwords and ID numbers are never shown.', ['days' => config('access.activity_retention_days')]) }}</p>
         </div>
-        <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div class="card">
 
         <form method="GET" action="{{ route('configs.activity-log') }}" class="flex flex-wrap items-end gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
             <label class="text-xs font-medium text-gray-600">{{ __('Person') }}
@@ -55,8 +55,8 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-left font-semibold text-gray-700">
+            <table class="min-w-full divide-y divide-line text-sm">
+                <thead class="text-left">
                     <tr>
                         <th class="px-5 py-3">{{ __('When') }}</th>
                         <th class="px-5 py-3">{{ __('Who') }}</th>
@@ -66,7 +66,7 @@
                         <th class="px-5 py-3">{{ __('Details') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-line">
                     @forelse ($entries as $entry)
                         <tr class="align-top hover:bg-gray-50">
                             <td class="whitespace-nowrap px-5 py-3 text-gray-700" title="{{ $entry->created_at->format('d M Y H:i:s') }}">

@@ -15,14 +15,14 @@
     ];
 @endphp
 
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
     @foreach ($fields as $field => [$label, $list])
         <div>
-            <label for="address-{{ $type }}-{{ $field }}" class="block text-sm font-medium text-gray-700">{{ __($label) }}</label>
+            <label for="address-{{ $type }}-{{ $field }}" class="control-label">{{ __($label) }}</label>
             <input id="address-{{ $type }}-{{ $field }}" name="addresses[{{ $type }}][{{ $field }}]" x-model="addresses.{{ $type }}.{{ $field }}"
                    @if ($list) list="{{ $list }}" @endif :readonly="{{ $readonly }}" autocomplete="off" placeholder="{{ __($label) }}"
-                   class="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm read-only:bg-gray-100 focus:border-brand-500 focus:ring-brand-500">
-            <x-input-error class="mt-1" :messages="$errors->get('addresses.'.$type.'.'.$field)" />
+                   class="control px-3 read-only:bg-sunken read-only:text-ink-2">
+            <x-input-error class="mt-1.5" :messages="$errors->get('addresses.'.$type.'.'.$field)" />
         </div>
     @endforeach
 </div>

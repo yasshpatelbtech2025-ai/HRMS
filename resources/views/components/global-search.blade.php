@@ -11,7 +11,7 @@
         </template>
         <template x-for="group in groups" :key="group.label">
             <div class="py-1">
-                <p class="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3" x-text="group.label"></p>
+                <p class="px-3 pb-1 pt-2 text-xs font-medium text-ink-3" x-text="group.label"></p>
                 <template x-for="item in group.items" :key="item.url">
                     <a :href="item.url" :data-search-index="indexOf(item)" x-on:mouseenter="active = indexOf(item)"
                        :class="active === indexOf(item) ? 'bg-primary-soft' : ''" class="mx-1 flex items-center gap-3 rounded-md px-2.5 py-2">
@@ -33,8 +33,8 @@
         <input x-ref="input" type="search" x-model="query" x-on:input="search()" x-on:focus="open = query.trim().length >= 2"
                x-on:keydown.arrow-down.prevent="move(1)" x-on:keydown.arrow-up.prevent="move(-1)" x-on:keydown.enter.prevent="go()"
                placeholder="{{ __('Search employees, companies, pages…') }}" aria-label="{{ __('Search') }}" autocomplete="off"
-               class="block h-9 w-full rounded-md border-line bg-surface/70 pe-12 ps-9 text-sm placeholder:text-ink-3 hover:border-line-strong focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/20">
-        <kbd class="pointer-events-none absolute end-2 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-sunken px-1.5 font-mono text-[11px] text-ink-3 lg:block">Ctrl K</kbd>
+               class="block h-9 min-h-0 w-full rounded-control border-line bg-canvas pe-14 ps-9 text-sm placeholder:text-ink-3 hover:border-line-strong focus:border-primary focus:bg-surface focus:ring-[3px] focus:ring-primary/20">
+        <kbd class="pointer-events-none absolute end-2 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-surface px-1.5 font-mono text-2xs text-ink-3 lg:block">Ctrl K</kbd>
         <div x-show="open && query.trim().length >= 2" x-transition.opacity.duration.150ms style="display: none;"
              class="absolute inset-x-0 top-full z-50 mt-1.5 max-h-[70vh] overflow-y-auto rounded-lg border border-line bg-surface py-1 shadow-pop">
             {!! $results !!}
@@ -42,16 +42,16 @@
     </div>
 
     {{-- Phones: a button that opens a full-width search. --}}
-    <button type="button" x-on:click="focus()" class="rounded-md p-2 text-ink-2 hover:bg-sunken hover:text-ink sm:hidden" aria-label="{{ __('Search') }}">
+    <button type="button" x-on:click="focus()" class="inline-flex size-9 items-center justify-center rounded-control text-ink-2 hover:bg-sunken hover:text-ink sm:hidden" aria-label="{{ __('Search') }}">
         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
     </button>
-    <div x-show="mobileOpen" x-transition.opacity style="display: none;" class="fixed inset-0 z-50 bg-black/40 sm:hidden" x-on:click.self="close()">
+    <div x-show="mobileOpen" x-transition.opacity style="display: none;" class="fixed inset-0 z-50 bg-ink/40 dark:bg-black/60 sm:hidden" x-on:click.self="close()">
         <div class="bg-surface p-3 shadow-pop">
             <div class="flex items-center gap-2">
                 <input x-ref="mobileInput" type="search" x-model="query" x-on:input="search()"
                        x-on:keydown.arrow-down.prevent="move(1)" x-on:keydown.arrow-up.prevent="move(-1)" x-on:keydown.enter.prevent="go()"
                        placeholder="{{ __('Search employees, companies, pages…') }}" aria-label="{{ __('Search') }}" autocomplete="off"
-                       class="block w-full rounded-md border-line-strong text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
+                       class="control px-3">
                 <button type="button" x-on:click="close()" class="px-2 text-sm font-medium text-ink-2">{{ __('Cancel') }}</button>
             </div>
             <div class="mt-2 max-h-[70vh] overflow-y-auto">{!! $results !!}</div>
