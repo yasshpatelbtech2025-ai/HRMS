@@ -83,7 +83,7 @@
                                 <td class="bg-danger-soft px-2 py-2 font-semibold">{{ $money($row['total_deductions']) }}</td>
                                 <td class="bg-gray-50 px-2 py-2 font-bold text-gray-900">{{ $money($row['net']) }}</td>
                                 @foreach ($chart['employer'] as $label)<td class="px-2 py-2">{{ isset($row['employer'][$label]) ? $money($row['employer'][$label]) : '-' }}</td>@endforeach
-                                <td class="px-2 py-2 print:hidden"><a href="{{ route('payroll.payslips.show', $row['uuid']) }}" class="text-brand-600 hover:underline">{{ __('Payslip') }}</a></td>
+                                <td class="px-2 py-2 print:hidden"><a href="{{ route('payroll.payslips.show', $row['uuid']) }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Payslip') }}</a></td>
                             </tr>
                         @endforeach
                     </tbody>

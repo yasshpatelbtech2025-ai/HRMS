@@ -38,3 +38,14 @@ Alpine.data('formSteps', formSteps);
 window.placeBelow = placeBelow;
 
 Alpine.start();
+
+// Keyboard users can scroll a wide table that has nothing focusable inside it.
+const focusableScrollers = () => document.querySelectorAll('main :is(.overflow-x-auto, .overflow-auto)').forEach((box) => {
+    if (box.scrollWidth > box.clientWidth + 1 && !box.hasAttribute('tabindex') && !box.querySelector('a, button, input, select, textarea, [tabindex]')) {
+        box.tabIndex = 0;
+        box.setAttribute('role', 'region');
+        box.setAttribute('aria-label', box.querySelector('table')?.getAttribute('aria-label') || 'Scrollable table');
+    }
+});
+window.addEventListener('load', focusableScrollers);
+window.addEventListener('resize', focusableScrollers);

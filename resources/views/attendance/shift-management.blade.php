@@ -16,7 +16,7 @@
         <div class="card">
 
         <form method="GET" action="{{ route('attendance.shifts') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4">
-            <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
+            <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                 @foreach ($companies as $option)
                     <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                 @endforeach
@@ -37,7 +37,7 @@
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
         @elseif ($groups->isEmpty())
             <p class="px-5 py-10 text-center text-sm text-gray-500">
-                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="text-brand-600 hover:underline">{{ __('Add them in Employee › Department.') }}</a>
+                {{ __('This company has no departments yet.') }} <a href="{{ route('employees.departments') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Add them in Employee › Department.') }}</a>
             </p>
         @else
             <form method="POST" action="{{ route('attendance.shifts.store', $company) }}"
@@ -68,7 +68,7 @@
                             <tbody class="border-b border-gray-200">
                                 <tr class="bg-gray-50/60">
                                     <td class="border-t border-gray-200 px-2 py-2 align-top">
-                                        <button type="button" x-show="group.entries.length || group.parts.length" x-on:click="clear(group)" title="{{ __('Clear this department') }}" class="rounded p-1 text-red-600 hover:bg-danger-soft">
+                                        <button type="button" x-show="group.entries.length || group.parts.length" x-on:click="clear(group)" title="{{ __('Clear this department') }}" class="rounded p-1 text-danger hover:bg-danger-soft">
                                             <span class="sr-only">{{ __('Clear this department') }}</span>
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                         </button>
@@ -105,7 +105,7 @@
                                         <td colspan="4" class="border-t border-gray-100"></td>
                                         <td class="whitespace-nowrap border-t border-gray-100 px-2 py-1 text-left text-sm">
                                             <span x-text="entry.label"></span>
-                                            <button type="button" x-on:click="remove(group, index)" class="ms-1 font-bold text-red-600 hover:text-danger" title="{{ __('Remove from roster') }}">×</button>
+                                            <button type="button" x-on:click="remove(group, index)" class="ms-1 font-bold text-danger hover:text-danger" title="{{ __('Remove from roster') }}">×</button>
                                         </td>
                                         <td class="border-t border-gray-100 px-2 py-1">
                                             <select x-model="entry.weeklyOff" x-on:change="refresh(group)" class="{{ $select }} text-xs" aria-label="{{ __('Week off') }}">

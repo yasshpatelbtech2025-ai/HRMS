@@ -187,6 +187,7 @@
         border-color: rgb(var(--field));
         min-height: var(--control-h);
     }
+    .control-inline { max-width: 100%; }
     :is(.control, .control-inline)[aria-invalid='true'] {
         border-color: rgb(var(--danger));
         --tw-ring-color: rgb(var(--danger) / 0.2);

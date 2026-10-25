@@ -69,7 +69,7 @@
                             <td class="px-3 py-3">{{ $loan->repayment_start->format('Y-m') }}</td>
                             <td class="px-3 py-3">
                                 @if ($loan->attachment_path)
-                                    <a href="{{ route('payroll.loans.attachment', $loan) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('View') }}</a>
+                                    <a href="{{ route('payroll.loans.attachment', $loan) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('View') }}</a>
                                 @else
                                     —
                                 @endif

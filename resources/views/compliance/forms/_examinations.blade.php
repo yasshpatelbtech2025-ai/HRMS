@@ -27,13 +27,13 @@
                             <li>
                                 <a href="{{ $link($e, $x) }}" class="block px-6 py-2 text-sm {{ $examination?->is($x) ? 'bg-brand-600 font-semibold text-white' : 'text-gray-700 hover:bg-gray-50' }}">
                                     {{ __('Examination') }} : {{ $x->examined_on->format('d-m-Y') }}
-                                    @if ($x->result)<span class="ms-1 text-xs {{ $examination?->is($x) ? 'text-brand-100' : ($x->result === 'fit' ? 'text-emerald-600' : 'text-red-600') }}">({{ ucfirst($x->result) }})</span>@endif
+                                    @if ($x->result)<span class="ms-1 text-xs {{ $examination?->is($x) ? 'text-brand-100' : ($x->result === 'fit' ? 'text-emerald-600' : 'text-danger') }}">({{ ucfirst($x->result) }})</span>@endif
                                 </a>
                             </li>
                         @empty
                             <li class="px-6 py-2 text-sm text-gray-500">
                                 {{ __('No examinations yet.') }}
-                                <a href="{{ $link($e) }}" class="text-brand-600 hover:underline">{{ __('Open blank form') }}</a>
+                                <a href="{{ $link($e) }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Open blank form') }}</a>
                             </li>
                         @endforelse
                     </ul>
@@ -52,7 +52,7 @@
                     @if ($examination)
                         &middot; {{ __('Examination on :date', ['date' => $examination->examined_on->format('d-m-Y')]) }}
                         @if ($examination->signed_copy_path)
-                            &middot; <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('Signed copy') }}</a>
+                            &middot; <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Signed copy') }}</a>
                         @endif
                     @else
                         &middot; <span class="text-amber-700">{{ __('No examination recorded — the form prints blank.') }}</span>
@@ -65,7 +65,7 @@
                             <form method="POST" action="{{ route('compliance.examinations.destroy', $examination) }}" data-confirm="{{ __('Delete this examination? It is removed from Form 5, 27-A, 30 and 32.') }}">
                                 @csrf
                                 @method('DELETE')
-                                <button class="rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                <button class="rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-danger hover:bg-red-50">{{ __('Delete') }}</button>
                             </form>
                         @endcan
                     </div>

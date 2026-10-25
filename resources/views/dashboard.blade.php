@@ -277,14 +277,14 @@
                 <p class="text-sm text-ink-3">{{ __('Tasks past their due date that are done') }}</p>
                 <p class="mt-1 font-mono text-4xl font-medium {{ $tone[0] }}">{{ $health }}%</p>
                 <div class="mt-3 h-2 overflow-hidden rounded-full bg-sunken" role="img" aria-label="{{ $health }}%"><div class="h-full rounded-full {{ $tone[1] }}" style="width: {{ $health }}%"></div></div>
-                <dl class="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+                <ul class="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
                     @foreach (['overdue' => [__('Overdue'), 'text-danger'], 'week' => [__('This week'), 'text-warn'], 'upcoming' => [__('Upcoming'), 'text-ink']] as $key => [$label, $color])
-                        <a href="{{ route('compliance.to-do', ['status' => $key]) }}" class="rounded-md bg-sunken px-2 py-2 hover:bg-line">
-                            <dd class="font-mono text-xl font-medium {{ $color }}">{{ $compliance['counts'][$key] }}</dd>
-                            <dt class="text-xs text-ink-3">{{ $label }}</dt>
-                        </a>
+                        <li><a href="{{ route('compliance.to-do', ['status' => $key]) }}" class="block rounded-control bg-sunken px-2 py-2 hover:bg-line">
+                            <span class="block font-mono text-xl font-medium {{ $color }}">{{ $compliance['counts'][$key] }}</span>
+                            <span class="block text-xs text-ink-2">{{ $label }}</span>
+                        </a></li>
                     @endforeach
-                </dl>
+                </ul>
             </div>
             <div class="lg:col-span-2">
                 <p class="text-sm font-medium text-ink-2">{{ __('Needs attention') }}</p>

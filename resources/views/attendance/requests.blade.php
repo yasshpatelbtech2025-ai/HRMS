@@ -31,7 +31,7 @@
         <div class="card">
 
         <form method="GET" action="{{ route('attendance.requests') }}" class="flex flex-wrap gap-3 border-b border-gray-200 px-5 py-4 print:hidden">
-            <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
+            <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                 @foreach ($companies as $option)
                     <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                 @endforeach
@@ -104,7 +104,7 @@
                                         <form method="POST" action="{{ route('attendance.requests.destroy', $item) }}" data-confirm="{{ __('Delete this request?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                         </form>
                                     @endcan
                                 </div>

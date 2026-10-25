@@ -16,7 +16,7 @@
                 <p class="text-sm text-gray-500">{{ __('Financial year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
             </div>
             <form method="GET" action="{{ route('payroll.tds') }}" class="flex flex-wrap items-center gap-2">
-                <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                     @foreach ($companies as $option)<option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>@endforeach
                 </select></label>
                 <select name="fy" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Financial year') }}">

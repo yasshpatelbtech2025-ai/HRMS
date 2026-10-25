@@ -111,7 +111,7 @@
                                             <form method="POST" action="{{ route('compliance.tasks.destroy', $task) }}" data-confirm="{{ __('Delete this task? It will not come back.') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     </div>
@@ -120,7 +120,7 @@
                                 <td class="px-3 py-3 text-gray-700">{{ $task->company->label }}</td>
                                 <td class="whitespace-nowrap px-3 py-3">
                                     <p class="font-semibold text-gray-900">{{ $task->due_on->format('d M Y') }}</p>
-                                    @if ($status === 'overdue')<p class="text-xs font-medium text-red-600">{{ trans_choice(':count day overdue|:count days overdue', (int) $task->due_on->diffInDays(today())) }}</p>@endif
+                                    @if ($status === 'overdue')<p class="text-xs font-medium text-danger">{{ trans_choice(':count day overdue|:count days overdue', (int) $task->due_on->diffInDays(today())) }}</p>@endif
                                     @if ($status === 'week')<p class="text-xs font-medium text-warn">{{ $task->due_on->isToday() ? __('Due today') : __('Due soon') }}</p>@endif
                                 </td>
                                 <td class="px-3 py-3 text-gray-700">{{ \App\Models\ComplianceTask::PRIORITIES[$task->priority] ?? $task->priority }}</td>

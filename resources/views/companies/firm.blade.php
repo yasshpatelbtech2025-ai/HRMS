@@ -117,7 +117,7 @@
                                     <input type="checkbox" x-model="owner.is_primary" class="rounded border-field text-primary focus:ring-primary/30"> {{ __('Is Primary') }}</label>
                                 <label class="flex items-center gap-2"><input type="hidden" :name="`owners[${i}][is_factory_manager]`" :value="owner.is_factory_manager ? 1 : 0">
                                     <input type="checkbox" x-model="owner.is_factory_manager" class="rounded border-field text-primary focus:ring-primary/30"> {{ __('Is factory manager') }}</label>
-                                <button type="button" x-on:click="owners.splice(i, 1)" x-show="owners.length > 1" class="text-sm font-medium text-red-600 hover:underline">{{ __('Remove') }}</button>
+                                <button type="button" x-on:click="owners.splice(i, 1)" x-show="owners.length > 1" class="text-sm font-medium text-danger hover:underline">{{ __('Remove') }}</button>
                             </div>
                         </div>
                         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

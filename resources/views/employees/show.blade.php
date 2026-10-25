@@ -129,7 +129,7 @@
         <p class="-mt-3 mb-5 flex flex-wrap gap-3 text-xs print:hidden">
             @foreach (['aadhar_attachment' => 'Aadhar (attachment)', 'pan_attachment' => 'PAN (attachment)', 'uan_document' => 'UAN Document (attachment)', 'nominee_document' => 'Nominee Document (attachment)', 'bank_passbook' => 'Bank Passbook (attachment)'] as $file => $label)
                 @if ($e->{$file.'_path'})
-                    <a href="{{ route('employees.file', [$e, $file]) }}" target="_blank" class="text-brand-600 hover:underline">{{ __($label) }}</a>
+                    <a href="{{ route('employees.file', [$e, $file]) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __($label) }}</a>
                 @endif
             @endforeach
         </p>

@@ -16,7 +16,7 @@
                 <p class="text-sm text-gray-500">{{ __('Accounting year April :from – March :to', ['from' => $fy, 'to' => $fy + 1]) }}</p>
             </div>
             <form method="GET" action="{{ route('payroll.bonus') }}" class="flex flex-wrap items-center gap-2">
-                <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                     @foreach ($companies as $option)<option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>@endforeach
                 </select></label>
                 <select name="fy" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Accounting year') }}">
@@ -85,7 +85,7 @@
                                 <form method="POST" action="{{ route('payroll.bonus.destroy', $sheet) }}" data-confirm="{{ __('Delete this bonus sheet?') }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                    <button class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                 </form>
                             @endcan
                             <form method="POST" action="{{ route('payroll.bonus.approve', $sheet) }}" class="flex items-center gap-2">

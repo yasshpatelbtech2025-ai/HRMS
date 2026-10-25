@@ -103,7 +103,7 @@
                                             <form method="POST" action="{{ route('payroll.destroy', $sheet) }}" data-confirm="{{ __('Delete this salary sheet and its payslips?') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                                <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                             </form>
                                         @endcan
                                     @endunless

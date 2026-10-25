@@ -58,7 +58,7 @@
                                                   data-confirm="{{ __('Delete :name for good? This cannot be undone.', ['name' => $row['title']]) }}" data-confirm-button="{{ __('Delete for good') }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete for good') }}</button>
+                                                <button class="rounded-md px-3 py-1.5 text-sm font-semibold text-danger hover:bg-danger-soft">{{ __('Delete for good') }}</button>
                                             </form>
                                         @endcan
                                     @endif

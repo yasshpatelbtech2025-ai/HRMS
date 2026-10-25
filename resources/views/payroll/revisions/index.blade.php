@@ -54,7 +54,7 @@
                             <td class="px-4 py-3">{{ $revision->revised_on->toDateString() }}</td>
                             <td class="px-4 py-3">{{ $revision->effective_from->format('F Y') }}</td>
                             <td class="px-4 py-3">{{ $money($revision->revised_yearly) }} <span class="text-xs text-gray-500">({{ __('was :amount', ['amount' => $money($revision->previous_yearly)]) }})</span></td>
-                            <td class="px-4 py-3 font-semibold {{ $pct >= 0 ? 'text-success' : 'text-red-600' }}">{{ $pct >= 0 ? '+' : '' }}{{ $pct }}%</td>
+                            <td class="px-4 py-3 font-semibold {{ $pct >= 0 ? 'text-success' : 'text-danger' }}">{{ $pct >= 0 ? '+' : '' }}{{ $pct }}%</td>
                             <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $badge[$revision->status] }}">{{ __(ucfirst($revision->status)) }}</span></td>
                             <td class="px-4 py-3">
                                 @if ($revision->status === 'pending')
@@ -67,7 +67,7 @@
                                         <form method="POST" action="{{ route('payroll.revisions.cancel', $revision) }}" data-confirm="{{ __('Cancel this revision?') }}">
                                             @csrf
                                             @method('PUT')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Cancel') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Cancel') }}</button>
                                         </form>
                                     </div>
                                 @else

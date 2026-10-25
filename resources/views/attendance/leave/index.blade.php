@@ -72,7 +72,7 @@
                             <td class="px-4 py-3">{{ rtrim(rtrim($approved ? $leave->approved_days : $leave->days, '0'), '.') }}</td>
                             <td class="px-4 py-3">
                                 @if ($leave->hard_copy_path)
-                                    <a href="{{ route('attendance.leave.hard-copy', $leave) }}" target="_blank" class="text-brand-600 hover:underline">{{ __('View') }}</a>
+                                    <a href="{{ route('attendance.leave.hard-copy', $leave) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('View') }}</a>
                                 @else
                                     —
                                 @endif
@@ -95,7 +95,7 @@
                                         <form method="POST" action="{{ route('attendance.leave.destroy', $leave) }}" data-confirm="{{ __('Delete this leave application?') }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-danger-soft">{{ __('Delete') }}</button>
+                                            <button class="rounded-md px-2 py-1 text-xs font-semibold text-danger hover:bg-danger-soft">{{ __('Delete') }}</button>
                                         </form>
                                     @endcan
                                 </div>
@@ -176,7 +176,7 @@
                         <template x-for="t in companyTypes" :key="t.id"><option :value="t.id" x-text="t.code + ' — ' + t.name" :selected="String(t.id) === @js((string) old('leave_type_id'))"></option></template>
                     </select>
                     <p class="mt-1 text-xs text-gray-500" x-show="employee && ! companyTypes.length">
-                        {{ __("This employee's company has no leave types.") }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a>
+                        {{ __("This employee's company has no leave types.") }} <a href="{{ route('attendance.leave.types') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Add them first.') }}</a>
                     </p>
                 </x-form-row>
                 <x-form-row :label="__('From date')" for="leave-start" required :messages="$errors->get('start_date')">

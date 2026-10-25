@@ -33,6 +33,6 @@
         </div>
     </div>
     <p class="mt-4 text-center text-xs text-gray-500 print:hidden">
-        {{ __('Design :id.', ['id' => $format['id']]) }} <a href="{{ route('company.id-card-formats') }}" class="text-brand-600 hover:underline">{{ __('Change the design') }}</a>
+        {{ __('Design :id.', ['id' => $format['id']]) }} <a href="{{ route('company.id-card-formats') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Change the design') }}</a>
     </p>
 </x-app-layout>

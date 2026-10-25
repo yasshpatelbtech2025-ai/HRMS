@@ -45,7 +45,7 @@
                                     <form method="POST" action="{{ route('documents.destroy', $file) }}" data-confirm="{{ __('Delete :name?', ['name' => $file->original_name]) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="text-sm font-medium text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                        <button class="text-sm font-medium text-danger hover:underline">{{ __('Delete') }}</button>
                                     </form>
                                 @endcan
                             </td>

@@ -78,7 +78,7 @@
         <label for="{{ $id('doc') }}" class="{{ $label }}">{{ __('Signed copy (PDF or image)') }}</label>
         <input id="{{ $id('doc') }}" type="file" name="doc" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-200">
         @if ($examination?->signed_copy_path)
-            <p class="mt-1 text-xs text-gray-500">{{ __('Current:') }} <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="text-brand-600 hover:underline">{{ $examination->signed_copy_name }}</a> &mdash; {{ __('choosing a file replaces it.') }}</p>
+            <p class="mt-1 text-xs text-gray-500">{{ __('Current:') }} <a href="{{ route('compliance.examinations.signed-copy', $examination) }}" target="_blank" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ $examination->signed_copy_name }}</a> &mdash; {{ __('choosing a file replaces it.') }}</p>
         @endif
     </div>
 

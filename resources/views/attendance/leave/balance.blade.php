@@ -13,13 +13,13 @@
         <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <h1 class="text-2xl font-semibold text-ink">{{ __('Leave Balance Sheet') }}</h1>
             <div class="flex flex-wrap items-center gap-2">
-                <form method="GET" action="{{ route('attendance.leave.balance') }}" class="flex gap-2">
+                <form method="GET" action="{{ route('attendance.leave.balance') }}" class="flex min-w-0 flex-wrap gap-2">
                     <select name="year" onchange="this.form.submit()" class="{{ $select }}" aria-label="{{ __('Year') }}">
                         @foreach (range((int) date('Y') + 1, 2020) as $option)
                             <option value="{{ $option }}" @selected($year === $option)>{{ $option }}</option>
                         @endforeach
                     </select>
-                    <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
+                    <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="{{ $select }}">
                         @foreach ($companies as $option)
                             <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                         @endforeach
@@ -35,7 +35,7 @@
         @if (! $company)
             <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }}</p>
         @elseif ($types->isEmpty())
-            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __(':company has no leave types.', ['company' => $company->establishment_name]) }} <a href="{{ route('attendance.leave.types') }}" class="text-brand-600 hover:underline">{{ __('Add them first.') }}</a></p>
+            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __(':company has no leave types.', ['company' => $company->establishment_name]) }} <a href="{{ route('attendance.leave.types') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Add them first.') }}</a></p>
         @else
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-line text-sm">
@@ -68,7 +68,7 @@
                                     @php $b = $balances[$employee->id][$type->id]; @endphp
                                     <td class="border-l border-gray-100 px-2 py-2 text-center">{{ $num($b['total']) }}</td>
                                     <td class="px-2 py-2 text-center">{{ $num($b['used']) }}</td>
-                                    <td class="px-2 py-2 text-center font-semibold {{ $b['balance'] < 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $num($b['balance']) }}</td>
+                                    <td class="px-2 py-2 text-center font-semibold {{ $b['balance'] < 0 ? 'text-danger' : 'text-gray-900' }}">{{ $num($b['balance']) }}</td>
                                 @endforeach
                                 <td class="border-l border-gray-100 px-4 py-2 text-center">
                                     <button type="button" x-data x-on:click="$dispatch('open-modal', @js($modal))" class="rounded-md p-1.5 text-brand-600 hover:bg-brand-50" title="{{ __('Edit') }}">

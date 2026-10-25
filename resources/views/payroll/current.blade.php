@@ -12,7 +12,7 @@
         <div class="page-head flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <h1 class="text-2xl font-semibold text-ink">{{ __('Current Salary List') }}</h1>
             <form method="GET" action="{{ route('payroll.current') }}">
-                <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="control-inline">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="control-inline">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach

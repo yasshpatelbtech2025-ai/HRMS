@@ -10,7 +10,7 @@
             <h1 class="text-2xl font-semibold text-ink">{{ __('Company compliance') }}</h1>
             <form method="GET" action="{{ route('compliance.index') }}">
                 <input type="hidden" name="act" value="{{ $act }}">
-                <label class="flex items-center gap-2"><span class="text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="min-w-64 control-inline">
+                <label class="flex min-w-0 max-w-full items-center gap-2"><span class="shrink-0 text-13 font-medium text-ink-2">{{ __('Company') }}</span><select name="company" onchange="this.form.submit()" class="min-w-64 control-inline">
                     @foreach ($companies as $option)
                         <option value="{{ $option->uuid }}" @selected($company?->is($option))>{{ $option->label }}</option>
                     @endforeach
@@ -30,7 +30,7 @@
         <div class="card">
 
         @if (! $company)
-            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="text-brand-600 hover:underline">{{ __('Go to Company') }}</a></p>
+            <p class="px-5 py-10 text-center text-sm text-gray-500">{{ __('Add a company first.') }} <a href="{{ route('company.index') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">{{ __('Go to Company') }}</a></p>
         @else
             <div class="px-5 py-5">
                 <h3 class="mb-4 text-center text-xl font-semibold text-gray-900">{{ $company->establishment_name }}</h3>
